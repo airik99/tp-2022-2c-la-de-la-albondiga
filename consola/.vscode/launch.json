@@ -6,11 +6,11 @@
     "configurations": [
 
         {
-            "name": "Proceso1",
+            "name": "consola",
             "type": "cppdbg",
             "request": "launch",
             "preLaunchTask": "Make",
-            "program": "${workspaceFolder}/proceso1",
+            "program": "${workspaceFolder}/consola",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
