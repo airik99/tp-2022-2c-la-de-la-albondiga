@@ -1,11 +1,25 @@
 #ifndef SHARED_UTILS_H
 #define SHARED_UTILS_H
 
+#include <stdlib.h>
 #include <stdio.h>
-#include <commons/log.h>
 #include <stdbool.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <commons/log.h>
+#include <commons/collections/list.h>
+#include <commons/string.h>
+#include <commons/txt.h>
 #include <commons/config.h>
 
-char* mi_funcion_compartida();
+typedef struct{
+	char* nombre;
+	t_list* params;
+} t_instruccion;
+
+void print_instruccion(t_instruccion*);
+void destructor_instrucciones(t_list*);
+void destructor_instruccion(t_instruccion*);
 
 #endif
