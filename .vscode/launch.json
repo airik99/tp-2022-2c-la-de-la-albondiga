@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/memoria/memoria", //indicar programa a debugear carpeta/archivo
             "args": [],
             "stopAtEntry": true, //empezar en main? si no, no se donde
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/memoria",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -35,7 +35,7 @@
             "program": "${workspaceFolder}/consola/consola", //indicar programa a debugear carpeta/archivo
             "args": [],
             "stopAtEntry": true, //empezar en main? si no, no se donde
-            "cwd": "${fileDirname}",
+            "cwd": "${fileDirname}/consola",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -51,7 +51,7 @@
                     "ignoreFailures": true
                 }
             ]
-        }
+        },
         {
             "name": "cpu", //nombre ni idea para que
             "type": "cppdbg",
@@ -59,7 +59,7 @@
             "program": "${workspaceFolder}/cpu/cpu", //indicar programa a debugear carpeta/archivo
             "args": [],
             "stopAtEntry": true, //empezar en main? si no, no se donde
-            "cwd": "${fileDirname}",
+            "cwd": "${fileDirname}/cpu",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
