@@ -24,8 +24,8 @@ void cargar_configuracion() {
 	config_valores.puerto_escucha = config_get_int_value(config, "PUERTO_ESCUCHA");
 	config_valores.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
 	config_valores.grado_max_multiprogramacion = config_get_int_value(config, "GRADO_MAX_MULTIPROGRAMACION");
-    config_valores.dispositivos_io = config_get_int_value(config, "DISPOSITIVOS_IO");//esto es un array de strings
-    config_valores.tiempos_io = config_get_int_value(config, "TIEMPOS_IO"); //esto es un array de int
+    config_valores.dispositivos_io = config_get_array_value(config, "DISPOSITIVOS_IO");
+    config_valores.tiempos_io = config_get_array_value(config, "TIEMPOS_IO");
     config_valores.quantum_rr = config_get_int_value(config, "QUANTUM_RR");
 
     log_info(logger, "Termino de leer el archivo de configuracion");

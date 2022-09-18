@@ -15,7 +15,7 @@ typedef struct config_kernel {
 	int grado_max_multiprogramacion;
 	int quantum_rr;
 	char** dispositivos_io;
-    int* tiempos_io;
+    char** tiempos_io;
 } config_kernel;
 
 void cargar_configuracion();
