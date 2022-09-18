@@ -1,8 +1,6 @@
-#ifndef PROCESO2_H
-#define PROCESO2_H
-#include <stdio.h>
-#include <commons/log.h>
-#include <stdbool.h>
+#ifndef KERNEL_H
+#define KERNEL_H
+
 #include "shared_utils.h"
 #include "tests.h"
 #endif

@@ -1,5 +1,5 @@
-#ifndef PROCESO1_H
-#define PROCESO1_H
+#ifndef MEMORIA_H
+#define MEMORIA_H
 
 #include "shared_utils.h"
 #include "tests.h"
