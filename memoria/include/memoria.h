@@ -2,10 +2,12 @@
 #define MEMORIA_H
 
 #include "shared_utils.h"
+#include "conexion.h"
+#include "serializacion.h"
 #include "tests.h"
 
 typedef struct config_memoria {
-	int puerto;
+	char* puerto;
 	int tam_memoria;
 	int tam_pagina;
 	int entradas_por_tabla;
@@ -17,6 +19,9 @@ typedef struct config_memoria {
 } config_memoria;
 
 void cargar_configuracion();
+void conectar_con_clientes(void);
+int escuchar_clientes();
+void iterator(char*);
 
 #endif
 

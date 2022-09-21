@@ -1,1 +1,23 @@
 [INFO] 17:23:02:717 CPU/(25797:25797): Soy la cpu! Hice uso de la shared!
+[INFO] 19:34:54:962 CPU/(5666:5666): Arranco a leer el archivo de configuracion
+[INFO] 19:34:54:963 CPU/(5666:5666): Termino de leer el archivo de configuracion
+[INFO] 19:35:15:123 CPU/(5673:5673): Arranco a leer el archivo de configuracion
+[INFO] 19:35:15:123 CPU/(5673:5673): Termino de leer el archivo de configuracion
+[INFO] 19:38:41:813 CPU/(6197:6197): Arranco a leer el archivo de configuracion
+[INFO] 19:38:41:814 CPU/(6197:6197): Termino de leer el archivo de configuracion
+[INFO] 19:39:13:758 CPU/(6248:6248): Arranco a leer el archivo de configuracion
+[INFO] 19:39:13:758 CPU/(6248:6248): Termino de leer el archivo de configuracion
+[INFO] 19:39:13:759 CPU/(6248:6248): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 19:39:19:759 CPU/(6248:6248): Conexion correcta. Enviando mensaje
+[INFO] 19:39:48:322 CPU/(6282:6282): Arranco a leer el archivo de configuracion
+[INFO] 19:39:48:323 CPU/(6282:6282): Termino de leer el archivo de configuracion
+[INFO] 19:39:48:323 CPU/(6282:6282): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 19:39:54:324 CPU/(6282:6282): Conexion correcta. Enviando mensaje
+[INFO] 19:41:24:794 CPU/(6396:6396): Arranco a leer el archivo de configuracion
+[INFO] 19:41:24:794 CPU/(6396:6396): Termino de leer el archivo de configuracion
+[INFO] 19:41:24:794 CPU/(6396:6396): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 19:41:24:795 CPU/(6396:6396): Conexion correcta. Enviando mensaje
+[INFO] 19:45:08:601 CPU/(6658:6658): Arranco a leer el archivo de configuracion
+[INFO] 19:45:08:601 CPU/(6658:6658): Termino de leer el archivo de configuracion
+[INFO] 19:45:08:601 CPU/(6658:6658): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 19:45:08:602 CPU/(6658:6658): Conexion correcta. Enviando mensaje

@@ -16,3 +16,56 @@
 [INFO] 21:39:50:231 MEMORIA/(7901:7901): Termino de leer el archivo de configuracion
 [INFO] 21:41:26:390 MEMORIA/(8289:8289): Arranco a leer el archivo de configuracion
 [INFO] 21:41:26:393 MEMORIA/(8289:8289): Termino de leer el archivo de configuracion
+[INFO] 19:04:45:336 MEMORIA/(4053:4053): Arranco a leer el archivo de configuracion
+[INFO] 19:04:45:336 MEMORIA/(4053:4053): Termino de leer el archivo de configuracion
+[INFO] 19:05:24:116 MEMORIA/(4106:4106): Arranco a leer el archivo de configuracion
+[INFO] 19:05:24:116 MEMORIA/(4106:4106): Termino de leer el archivo de configuracion
+[INFO] 19:06:57:179 MEMORIA/(4193:4193): Arranco a leer el archivo de configuracion
+[INFO] 19:06:57:179 MEMORIA/(4193:4193): Termino de leer el archivo de configuracion
+[INFO] 19:14:50:067 MEMORIA/(4620:4620): Arranco a leer el archivo de configuracion
+[INFO] 19:14:50:067 MEMORIA/(4620:4620): Termino de leer el archivo de configuracion
+[INFO] 19:18:13:342 MEMORIA/(4800:4800): Arranco a leer el archivo de configuracion
+[INFO] 19:18:13:342 MEMORIA/(4800:4800): Termino de leer el archivo de configuracion
+[INFO] 19:32:07:306 MEMORIA/(5525:5525): Arranco a leer el archivo de configuracion
+[INFO] 19:32:07:306 MEMORIA/(5525:5525): Termino de leer el archivo de configuracion
+[INFO] 19:33:24:294 MEMORIA/(5560:5560): Arranco a leer el archivo de configuracion
+[INFO] 19:33:24:294 MEMORIA/(5560:5560): Termino de leer el archivo de configuracion
+[INFO] 19:35:12:499 MEMORIA/(5670:5670): Arranco a leer el archivo de configuracion
+[INFO] 19:35:12:499 MEMORIA/(5670:5670): Termino de leer el archivo de configuracion
+[INFO] 19:36:47:569 MEMORIA/(5789:5789): Arranco a leer el archivo de configuracion
+[INFO] 19:36:47:569 MEMORIA/(5789:5789): Termino de leer el archivo de configuracion
+[INFO] 19:37:23:369 MEMORIA/(6013:6013): Arranco a leer el archivo de configuracion
+[INFO] 19:37:23:369 MEMORIA/(6013:6013): Termino de leer el archivo de configuracion
+[INFO] 19:38:13:505 MEMORIA/(6157:6157): Arranco a leer el archivo de configuracion
+[INFO] 19:38:13:506 MEMORIA/(6157:6157): Termino de leer el archivo de configuracion
+[INFO] 19:38:35:458 MEMORIA/(6185:6185): Arranco a leer el archivo de configuracion
+[INFO] 19:38:35:458 MEMORIA/(6185:6185): Termino de leer el archivo de configuracion
+[INFO] 19:38:35:459 MEMORIA/(6185:6185): Iniciando servidor...
+[INFO] 19:38:35:459 MEMORIA/(6185:6185): Memoria lista para recibir un cliente
+
+[INFO] 19:38:44:815 MEMORIA/(6185:6185): Cpu conectada. Cerrando programa
+[INFO] 19:39:10:727 MEMORIA/(6239:6239): Arranco a leer el archivo de configuracion
+[INFO] 19:39:10:727 MEMORIA/(6239:6239): Termino de leer el archivo de configuracion
+[INFO] 19:39:10:727 MEMORIA/(6239:6239): Iniciando servidor...
+[INFO] 19:39:10:727 MEMORIA/(6239:6239): Memoria lista para recibir un cliente
+
+[INFO] 19:39:16:759 MEMORIA/(6239:6239): Cpu conectada. Cerrando programa
+[INFO] 19:39:43:980 MEMORIA/(6279:6279): Arranco a leer el archivo de configuracion
+[INFO] 19:39:43:981 MEMORIA/(6279:6279): Termino de leer el archivo de configuracion
+[INFO] 19:39:43:981 MEMORIA/(6279:6279): Iniciando servidor...
+[INFO] 19:39:43:981 MEMORIA/(6279:6279): Memoria lista para recibir un cliente
+
+[INFO] 19:39:51:323 MEMORIA/(6279:6279): Cpu conectada. Cerrando programa
+[ERROR] 19:39:51:323 MEMORIA/(6279:6279): El cliente se desconecto. Terminando servidor
+[INFO] 19:41:22:264 MEMORIA/(6387:6387): Arranco a leer el archivo de configuracion
+[INFO] 19:41:22:264 MEMORIA/(6387:6387): Termino de leer el archivo de configuracion
+[INFO] 19:41:22:264 MEMORIA/(6387:6387): Iniciando servidor...
+[INFO] 19:41:22:264 MEMORIA/(6387:6387): Memoria lista para recibir un cliente
+
+[ERROR] 19:41:24:794 MEMORIA/(6387:6387): El cliente se desconecto. Terminando servidor
+[INFO] 19:45:06:504 MEMORIA/(6649:6649): Arranco a leer el archivo de configuracion
+[INFO] 19:45:06:504 MEMORIA/(6649:6649): Termino de leer el archivo de configuracion
+[INFO] 19:45:06:504 MEMORIA/(6649:6649): Iniciando servidor...
+[INFO] 19:45:06:504 MEMORIA/(6649:6649): Memoria lista para recibir un cliente
+
+[ERROR] 19:45:08:601 MEMORIA/(6649:6649): El cliente se desconecto. Terminando servidor

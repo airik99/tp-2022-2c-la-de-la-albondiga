@@ -3,14 +3,17 @@
 
 #include "shared_utils.h"
 #include "tests.h"
+#include "conexion.h"
+#include "serializacion.h"
+
 typedef struct config_cpu {
 	int entradas_tlb;
 	char* reemplazo_tlb;
 	int retardo_instruccion;
 	char* ip_memoria;
-	int puerto_memoria;
-	int puerto_escucha_dispatch;
-	int puerto_escucha_interrupt;
+	char* puerto_memoria;
+	char* puerto_escucha_dispatch;
+	char* puerto_escucha_interrupt;
 } config_cpu;
 
 void cargar_configuracion();
