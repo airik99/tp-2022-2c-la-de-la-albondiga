@@ -4,7 +4,7 @@
 #include <shared_utils.h>
 #include <conexion.h>
 
-
+//estructuras
 typedef enum
 {
 	MENSAJE,
@@ -13,7 +13,7 @@ typedef enum
 
 typedef struct
 {
-	int size;
+	uint32_t size;
 	void *stream;
 } t_buffer;
 
@@ -23,6 +23,21 @@ typedef struct
 	t_buffer *buffer;
 } t_paquete;
 
+typedef struct
+{
+    uint32_t tamanio_proceso;
+    t_list* instrucciones;
+} t_paquete_deserializado;
+
+typedef struct {
+    char* codigo ;
+    uint32_t* parametros;
+}instruccion;
+
+
+char** codigo_instrucciones = {"SET", "ADD", "MOV_IN", "MOV_OUT", "I/O DISCO", "EXIT"};
+
+//funciones
 /**
  * @DESC: Crea un paquete con el codigo de operacion indicado
  *

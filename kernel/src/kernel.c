@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "serializacion.h"
 
 config_kernel config_valores;
 t_config *config;
@@ -45,4 +46,25 @@ void cargar_configuracion()
 
     log_info(logger, "Termino de leer el archivo de configuracion");
     //log_destroy(logger);
+}
+
+t_list *deserializar_instrucciones(t_list *stream_datos, uint32_t size_stream_datos) {
+	
+    t_list *instrucciones = list_create();
+
+  	for(int i = 0; i < size_stream_datos; i++) {
+    //aca deberia iterar sobre el stream de datos e ir llenando la lista de instrucciones
+  	}
+  	return instrucciones;
+}
+
+
+t_paquete_deserializado *deserializar_consola(int  socket_cliente) {
+
+	t_paquete *paquete = recibir_paquete(socket_cliente);
+  	t_paquete_deserializado *paquete_deserializado = malloc(sizeof(t_paquete_deserializado));
+    //verificar la estructura de t_paquete para deserializarlo
+  	paquete_deserializado->tamanio_proceso = *(uint32_t *)list_remove(paquete->buffer->size, 0);
+  	paquete_deserializado->instrucciones = deserializar_instrucciones(paquete->buffer->stream, list_size(paquete->buffer->stream));
+  	return paquete_deserializado;
 }

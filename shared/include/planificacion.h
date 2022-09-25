@@ -3,7 +3,7 @@
 
 #include <shared_utils.h>
 #include <conexion.h>
-#include <serialiacion.h>
+#include <serializacion.h>
 
 //funciones
 /**
@@ -14,20 +14,17 @@
  *
  * @RETURN: Un pcb.
  */
-pcb *crear_nuevo_pcb(t_paquete) ;
+pcb *crear_nuevo_pcb(t_paquete);
 
 /**
  * @DESC: Arranca el planificador de largo plazo, crea las colas de new y la de exit
  *
- * @PARAMS:
- *     -
- *
  * @RETURN: void.
  */
-void iniciar_planificador_largo_plazo(void)
+void iniciar_planificador_largo_plazo(void);
 
 //variables
-uint32_t generador_de_id;
+u_int32_t contador_id;
 t_list* colaNew;
 t_list *colaExit;
 
