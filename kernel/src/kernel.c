@@ -3,15 +3,17 @@
 config_kernel config_valores;
 t_config *config;
 t_log *logger;
+char* ip;
 
 int main(int argc, char **argv)
 {
     logger = log_create("cfg/kernel.log", "KERNEL", true, LOG_LEVEL_INFO);
 
-    //PRUEBAS
     cargar_configuracion();
+    ip = "127.0.0.1";
 
-    int socket_servidor = iniciar_servidor("127.0.0.1", config_valores.puerto_escucha);
+    //CONEXION CON CONSOLAS
+    int socket_servidor = iniciar_servidor(ip, config_valores.puerto_escucha);
 
     if (socket_servidor == -1)
     {
@@ -19,8 +21,37 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
     log_info(logger, "Kernel listo para recibir consolas");
+
     int socket_cliente = esperar_cliente(socket_servidor);
+
     log_info(logger, "Consola conectada. Cerrando programa");
+
+    //CONEXION CON MEMORIA
+	log_info(logger, "Kernel iniciado. Intentando conectarse con la memoria");
+
+	int conexion_memoria = conectarse_a_servidor(ip, config_valores.puerto_memoria);
+
+	if (conexion_memoria == -1) {
+		log_info(logger, "Error en la conexion al servidor. Terminando kernel");
+		return EXIT_FAILURE;
+	}
+
+	log_info(logger, "Conexion con memoria exitosa");
+
+    //CONEXION CON CPU
+    int conexion_cpu = conectarse_a_servidor(ip, config_valores.puerto_cpu_dispatch);
+
+	if (conexion_cpu == -1) {
+		log_info(logger, "Error en la conexion al servidor. Terminando kernel");
+		return EXIT_FAILURE;
+	}
+
+	log_info(logger, "Conexion con cpu dispatch exitosa");
+
+    liberar_conexion(conexion_cpu);
+    liberar_conexion(conexion_memoria);
+	config_destroy(config);
+	log_destroy(logger);
     
     return EXIT_SUCCESS;
 }

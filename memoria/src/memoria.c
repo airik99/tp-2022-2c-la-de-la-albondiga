@@ -11,14 +11,32 @@ int main(int argc, char ** argv){
     logger = log_create("cfg/memoria.log", "MEMORIA", true, LOG_LEVEL_INFO);
 	ip = "127.0.0.1";
 
-    //PRUEBAS
     cargar_configuracion(); 
 
-	conectar_con_clientes();
+	int socket_servidor = iniciar_servidor(ip, config_valores.puerto);
+
+    if (socket_servidor == -1)
+    {
+        log_info(logger, "Error al iniciar el servidor");
+        return EXIT_FAILURE;
+    }
+
+    log_info(logger, "Memoria lista para recibir clientes");
+
+    socket_cpu = esperar_cliente(socket_servidor);
+
+    log_info(logger, "CPU conectada. Cerrando programa");
+
+	socket_kernel = esperar_cliente(socket_servidor);
+
+	log_info(logger, "Kernel conectado. Cerrando programa");
+
 	//escuchar_clientes();
 
+	liberar_conexion(socket_cpu);
+	config_destroy(config);
+	log_destroy(logger);
 	return EXIT_SUCCESS;
-
 }
 
 void cargar_configuracion() {
@@ -41,8 +59,6 @@ void cargar_configuracion() {
 }
 
 int escuchar_clientes(){
-
-	t_list* paquete;
 		while(1){
 			int cod_op = recibir_operacion(socket_servidor);
 			switch (cod_op) {
@@ -71,6 +87,8 @@ void conectar_con_clientes() {
 	log_info(logger, "Iniciando servidor...");
 
 	socket_servidor = iniciar_servidor(ip, config_valores.puerto);
+
+	sleep(5);
 
 	log_info(logger, "Memoria lista para recibir un cliente\n");
 

@@ -69,3 +69,85 @@
 [INFO] 19:45:06:504 MEMORIA/(6649:6649): Memoria lista para recibir un cliente
 
 [ERROR] 19:45:08:601 MEMORIA/(6649:6649): El cliente se desconecto. Terminando servidor
+[INFO] 18:56:20:658 MEMORIA/(7613:7613): Arranco a leer el archivo de configuracion
+[INFO] 18:56:20:658 MEMORIA/(7613:7613): Termino de leer el archivo de configuracion
+[INFO] 18:56:20:658 MEMORIA/(7613:7613): Iniciando servidor...
+[INFO] 18:56:25:659 MEMORIA/(7613:7613): Memoria lista para recibir un cliente
+
+[INFO] 18:57:08:680 MEMORIA/(7655:7655): Arranco a leer el archivo de configuracion
+[INFO] 18:57:08:680 MEMORIA/(7655:7655): Termino de leer el archivo de configuracion
+[INFO] 18:57:08:680 MEMORIA/(7655:7655): Iniciando servidor...
+[INFO] 18:57:13:681 MEMORIA/(7655:7655): Memoria lista para recibir un cliente
+
+[ERROR] 18:57:20:422 MEMORIA/(7655:7655): El cliente se desconecto. Terminando servidor
+[INFO] 20:02:09:975 MEMORIA/(9042:9042): Arranco a leer el archivo de configuracion
+[INFO] 20:02:09:976 MEMORIA/(9042:9042): Termino de leer el archivo de configuracion
+[INFO] 20:02:09:976 MEMORIA/(9042:9042): Memoria lista para recibir clientes
+[INFO] 20:02:17:584 MEMORIA/(9042:9042): Consola conectada. Cerrando programa
+[ERROR] 20:02:17:584 MEMORIA/(9042:9042): El cliente se desconecto. Terminando servidor
+[INFO] 20:07:31:649 MEMORIA/(9186:9186): Arranco a leer el archivo de configuracion
+[INFO] 20:07:31:649 MEMORIA/(9186:9186): Termino de leer el archivo de configuracion
+[INFO] 20:07:31:650 MEMORIA/(9186:9186): Memoria lista para recibir clientes
+[INFO] 20:07:40:485 MEMORIA/(9186:9186): Consola conectada. Cerrando programa
+[INFO] 20:10:55:399 MEMORIA/(9254:9254): Arranco a leer el archivo de configuracion
+[INFO] 20:10:55:399 MEMORIA/(9254:9254): Termino de leer el archivo de configuracion
+[INFO] 20:10:55:399 MEMORIA/(9254:9254): Memoria lista para recibir clientes
+[INFO] 20:10:58:511 MEMORIA/(9254:9254): Consola conectada. Cerrando programa
+[INFO] 20:11:42:955 MEMORIA/(9299:9299): Arranco a leer el archivo de configuracion
+[INFO] 20:11:42:956 MEMORIA/(9299:9299): Termino de leer el archivo de configuracion
+[INFO] 20:11:42:956 MEMORIA/(9299:9299): Memoria lista para recibir clientes
+[INFO] 20:11:42:956 MEMORIA/(9299:9299): Consola conectada. Cerrando programa
+[ERROR] 20:11:42:956 MEMORIA/(9299:9299): El cliente se desconecto. Terminando servidor
+[INFO] 20:12:11:840 MEMORIA/(9333:9333): Arranco a leer el archivo de configuracion
+[INFO] 20:12:11:840 MEMORIA/(9333:9333): Termino de leer el archivo de configuracion
+[INFO] 20:12:11:840 MEMORIA/(9333:9333): Memoria lista para recibir clientes
+[INFO] 20:12:21:578 MEMORIA/(9333:9333): Consola conectada. Cerrando programa
+[INFO] 20:12:56:506 MEMORIA/(9369:9369): Arranco a leer el archivo de configuracion
+[INFO] 20:12:56:508 MEMORIA/(9369:9369): Termino de leer el archivo de configuracion
+[INFO] 20:12:56:508 MEMORIA/(9369:9369): Memoria lista para recibir clientes
+[INFO] 20:12:58:647 MEMORIA/(9369:9369): Consola conectada. Cerrando programa
+[INFO] 20:34:42:401 MEMORIA/(10043:10043): Arranco a leer el archivo de configuracion
+[INFO] 20:34:42:401 MEMORIA/(10043:10043): Termino de leer el archivo de configuracion
+[INFO] 20:34:42:402 MEMORIA/(10043:10043): Memoria lista para recibir clientes
+[INFO] 20:34:50:815 MEMORIA/(10043:10043): Consola conectada. Cerrando programa
+[INFO] 21:01:45:768 MEMORIA/(10658:10658): Arranco a leer el archivo de configuracion
+[INFO] 21:01:45:768 MEMORIA/(10658:10658): Termino de leer el archivo de configuracion
+[INFO] 21:01:45:769 MEMORIA/(10658:10658): Memoria lista para recibir clientes
+[INFO] 21:01:49:799 MEMORIA/(10658:10658): CPU conectada. Cerrando programa
+[INFO] 21:02:14:642 MEMORIA/(10658:10658): Kernel conectado. Cerrando programa
+[INFO] 21:09:27:737 MEMORIA/(10848:10848): Arranco a leer el archivo de configuracion
+[INFO] 21:09:27:737 MEMORIA/(10848:10848): Termino de leer el archivo de configuracion
+[INFO] 21:09:27:738 MEMORIA/(10848:10848): Memoria lista para recibir clientes
+[INFO] 21:09:30:246 MEMORIA/(10848:10848): CPU conectada. Cerrando programa
+[INFO] 21:09:37:025 MEMORIA/(10848:10848): Kernel conectado. Cerrando programa
+[INFO] 21:10:26:699 MEMORIA/(10890:10890): Arranco a leer el archivo de configuracion
+[INFO] 21:10:26:699 MEMORIA/(10890:10890): Termino de leer el archivo de configuracion
+[INFO] 21:10:26:700 MEMORIA/(10890:10890): Error al iniciar el servidor
+[INFO] 21:10:41:697 MEMORIA/(10917:10917): Arranco a leer el archivo de configuracion
+[INFO] 21:10:41:697 MEMORIA/(10917:10917): Termino de leer el archivo de configuracion
+[INFO] 21:10:41:697 MEMORIA/(10917:10917): Memoria lista para recibir clientes
+[INFO] 21:10:45:588 MEMORIA/(10917:10917): CPU conectada. Cerrando programa
+[INFO] 21:10:55:277 MEMORIA/(10917:10917): Kernel conectado. Cerrando programa
+[INFO] 21:11:08:155 MEMORIA/(10963:10963): Arranco a leer el archivo de configuracion
+[INFO] 21:11:08:155 MEMORIA/(10963:10963): Termino de leer el archivo de configuracion
+[INFO] 21:11:08:155 MEMORIA/(10963:10963): Error al iniciar el servidor
+[INFO] 21:11:12:415 MEMORIA/(10972:10972): Arranco a leer el archivo de configuracion
+[INFO] 21:11:12:418 MEMORIA/(10972:10972): Termino de leer el archivo de configuracion
+[INFO] 21:11:12:420 MEMORIA/(10972:10972): Error al iniciar el servidor
+[INFO] 21:11:16:754 MEMORIA/(10981:10981): Arranco a leer el archivo de configuracion
+[INFO] 21:11:16:754 MEMORIA/(10981:10981): Termino de leer el archivo de configuracion
+[INFO] 21:11:16:754 MEMORIA/(10981:10981): Error al iniciar el servidor
+[INFO] 21:11:20:244 MEMORIA/(10988:10988): Arranco a leer el archivo de configuracion
+[INFO] 21:11:20:244 MEMORIA/(10988:10988): Termino de leer el archivo de configuracion
+[INFO] 21:11:20:244 MEMORIA/(10988:10988): Error al iniciar el servidor
+[INFO] 21:11:26:337 MEMORIA/(10998:10998): Arranco a leer el archivo de configuracion
+[INFO] 21:11:26:339 MEMORIA/(10998:10998): Termino de leer el archivo de configuracion
+[INFO] 21:11:26:339 MEMORIA/(10998:10998): Error al iniciar el servidor
+[INFO] 21:11:35:191 MEMORIA/(11007:11007): Arranco a leer el archivo de configuracion
+[INFO] 21:11:35:192 MEMORIA/(11007:11007): Termino de leer el archivo de configuracion
+[INFO] 21:11:35:193 MEMORIA/(11007:11007): Error al iniciar el servidor
+[INFO] 21:12:01:042 MEMORIA/(11021:11021): Arranco a leer el archivo de configuracion
+[INFO] 21:12:01:042 MEMORIA/(11021:11021): Termino de leer el archivo de configuracion
+[INFO] 21:12:01:043 MEMORIA/(11021:11021): Memoria lista para recibir clientes
+[INFO] 21:12:06:558 MEMORIA/(11021:11021): CPU conectada. Cerrando programa
+[INFO] 21:12:15:454 MEMORIA/(11021:11021): Kernel conectado. Cerrando programa
