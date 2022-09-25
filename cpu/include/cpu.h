@@ -16,6 +16,13 @@ typedef struct config_cpu {
 	char* puerto_escucha_interrupt;
 } config_cpu;
 
+typedef enum registro_cpu{
+	AX,
+	BX,
+	CX,
+	DX
+} registro_cpu;
+
 void cargar_configuracion();
 
 #endif

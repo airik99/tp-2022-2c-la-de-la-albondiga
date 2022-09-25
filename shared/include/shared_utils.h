@@ -18,6 +18,17 @@ typedef struct
 	t_list *params;
 } t_instruccion;
 
+typedef struct 
+{
+	u_int32_t id;
+	t_instruccion* instrucciones; 
+	u_int32_t program_counter;
+	u_int32_t* registros_cpu;
+	// tabla_de_segmentos
+} pcb;
+
+
+
 void print_instruccion(t_instruccion *);
 void destructor_instrucciones(t_list *);
 void destructor_instruccion(t_instruccion *);

@@ -69,3 +69,8 @@
 [INFO] 19:45:06:504 MEMORIA/(6649:6649): Memoria lista para recibir un cliente
 
 [ERROR] 19:45:08:601 MEMORIA/(6649:6649): El cliente se desconecto. Terminando servidor
+[INFO] 19:29:26:210 MEMORIA/(3776:3776): Arranco a leer el archivo de configuracion
+[INFO] 19:29:26:210 MEMORIA/(3776:3776): Termino de leer el archivo de configuracion
+[INFO] 19:29:26:210 MEMORIA/(3776:3776): Iniciando servidor...
+[INFO] 19:29:26:210 MEMORIA/(3776:3776): Memoria lista para recibir un cliente
+
