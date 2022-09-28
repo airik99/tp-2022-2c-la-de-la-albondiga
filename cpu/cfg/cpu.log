@@ -21,3 +21,58 @@
 [INFO] 19:45:08:601 CPU/(6658:6658): Termino de leer el archivo de configuracion
 [INFO] 19:45:08:601 CPU/(6658:6658): Cpu iniciado. Intentando conectarse con la memoria
 [INFO] 19:45:08:602 CPU/(6658:6658): Conexion correcta. Enviando mensaje
+[INFO] 18:56:27:941 CPU/(7622:7622): Arranco a leer el archivo de configuracion
+[INFO] 18:56:32:941 CPU/(7622:7622): Termino de leer el archivo de configuracion
+[INFO] 18:56:32:942 CPU/(7622:7622): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 18:56:37:943 CPU/(7622:7622): Conexion correcta. Enviando mensaje
+[INFO] 18:57:15:421 CPU/(7660:7660): Arranco a leer el archivo de configuracion
+[INFO] 18:57:20:421 CPU/(7660:7660): Termino de leer el archivo de configuracion
+[INFO] 18:57:20:422 CPU/(7660:7660): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 18:57:25:422 CPU/(7660:7660): Conexion correcta. Enviando mensaje
+[INFO] 20:02:12:582 CPU/(9052:9052): Arranco a leer el archivo de configuracion
+[INFO] 20:02:17:583 CPU/(9052:9052): Termino de leer el archivo de configuracion
+[INFO] 20:02:17:583 CPU/(9052:9052): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 20:02:17:583 CPU/(9052:9052): Conexion correcta. Enviando mensaje (todavia no esta hecho)
+[INFO] 20:07:35:484 CPU/(9189:9189): Arranco a leer el archivo de configuracion
+[INFO] 20:07:40:485 CPU/(9189:9189): Termino de leer el archivo de configuracion
+[INFO] 20:07:40:485 CPU/(9189:9189): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 20:07:40:485 CPU/(9189:9189): Conexion correcta. Enviando mensaje (todavia no esta hecho)
+[INFO] 20:10:58:511 CPU/(9263:9263): Arranco a leer el archivo de configuracion
+[INFO] 20:10:58:511 CPU/(9263:9263): Termino de leer el archivo de configuracion
+[INFO] 20:10:58:511 CPU/(9263:9263): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 20:10:58:512 CPU/(9263:9263): Conexion correcta. Enviando mensaje (todavia no esta hecho)
+[INFO] 20:12:21:577 CPU/(9336:9336): Arranco a leer el archivo de configuracion
+[INFO] 20:12:21:577 CPU/(9336:9336): Termino de leer el archivo de configuracion
+[INFO] 20:12:21:578 CPU/(9336:9336): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 20:12:21:578 CPU/(9336:9336): Conexion correcta. Enviando mensaje (todavia no esta hecho)
+[INFO] 20:12:58:646 CPU/(9378:9378): Arranco a leer el archivo de configuracion
+[INFO] 20:12:58:646 CPU/(9378:9378): Termino de leer el archivo de configuracion
+[INFO] 20:12:58:646 CPU/(9378:9378): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 20:12:58:647 CPU/(9378:9378): Conexion correcta. Enviando mensaje (todavia no esta hecho)
+[INFO] 20:34:50:814 CPU/(10047:10047): Arranco a leer el archivo de configuracion
+[INFO] 20:34:50:814 CPU/(10047:10047): Termino de leer el archivo de configuracion
+[INFO] 20:34:50:815 CPU/(10047:10047): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 20:34:50:815 CPU/(10047:10047): Conexion correcta. Enviando mensaje (todavia no esta hecho)
+[INFO] 21:01:49:799 CPU/(10667:10667): Arranco a leer el archivo de configuracion
+[INFO] 21:01:49:799 CPU/(10667:10667): Termino de leer el archivo de configuracion
+[INFO] 21:01:49:799 CPU/(10667:10667): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 21:01:49:799 CPU/(10667:10667): Conexion correcta. Enviando mensaje (todavia no esta hecho)
+[INFO] 21:09:30:245 CPU/(10863:10863): Arranco a leer el archivo de configuracion
+[INFO] 21:09:30:245 CPU/(10863:10863): Termino de leer el archivo de configuracion
+[INFO] 21:09:30:245 CPU/(10863:10863): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 21:09:30:246 CPU/(10863:10863): Conexion con memoria exitosa
+[INFO] 21:09:37:025 CPU/(10863:10863): Conexion con kernel exitosa
+[INFO] 21:10:29:125 CPU/(10901:10901): Arranco a leer el archivo de configuracion
+[INFO] 21:10:29:125 CPU/(10901:10901): Termino de leer el archivo de configuracion
+[INFO] 21:10:29:125 CPU/(10901:10901): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 21:10:29:126 CPU/(10901:10901): Error en la conexion al servidor. Terminando consola
+[INFO] 21:10:45:587 CPU/(10936:10936): Arranco a leer el archivo de configuracion
+[INFO] 21:10:45:587 CPU/(10936:10936): Termino de leer el archivo de configuracion
+[INFO] 21:10:45:587 CPU/(10936:10936): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 21:10:45:588 CPU/(10936:10936): Conexion con memoria exitosa
+[INFO] 21:10:55:277 CPU/(10936:10936): Conexion con kernel exitosa
+[INFO] 21:12:06:558 CPU/(11030:11030): Arranco a leer el archivo de configuracion
+[INFO] 21:12:06:558 CPU/(11030:11030): Termino de leer el archivo de configuracion
+[INFO] 21:12:06:558 CPU/(11030:11030): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 21:12:06:558 CPU/(11030:11030): Conexion con memoria exitosa
+[INFO] 21:12:15:454 CPU/(11030:11030): Conexion con kernel exitosa

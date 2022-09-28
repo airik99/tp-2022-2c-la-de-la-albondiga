@@ -4,22 +4,47 @@ config_cpu config_valores;
 t_config* config;
 t_log* logger;
 char* ip;
+int socket_kernel;
 
 int main(int argc, char ** argv){
-
-    logger = log_create("cfg/cpu.log", "CPU", true, LOG_LEVEL_INFO);
-    ip = "127.0.0.1";
-	//Conexion a memoria - cliente
 	
+	logger = log_create("cfg/cpu.log", "CPU", true, LOG_LEVEL_INFO);
+
+    ip = "127.0.0.1";
+
     cargar_configuracion(); 
 
-    log_info(logger, "Cpu iniciado. Intentando conectarse con la memoria");
+    //CONEXION CON MEMORIA
+	log_info(logger, "Cpu iniciado. Intentando conectarse con la memoria");
 
-    int conexion = conectarse_a_servidor(ip, config_valores.puerto_memoria);
+	int conexion_memoria = conectarse_a_servidor(ip, config_valores.puerto_memoria);
 
-    log_info(logger, "Conexion correcta. Enviando mensaje");
-	enviar_mensaje("PRUEBA CONEXION CON MEMORIA", conexion);
+	if (conexion_memoria == -1) {
+		log_info(logger, "Error en la conexion al servidor. Terminando consola");
+		return EXIT_FAILURE;
+	}
 
+	log_info(logger, "Conexion con memoria exitosa");
+
+    //CONEXION CON KERNEL
+    int socket_servidor = iniciar_servidor(ip, config_valores.puerto_escucha_dispatch);
+
+    if (socket_servidor == -1)
+    {
+        log_info(logger, "Error al iniciar el servidor");
+        return EXIT_FAILURE;
+    }
+
+	socket_kernel = esperar_cliente(socket_servidor);
+
+	log_info(logger, "Conexion con kernel exitosa");
+
+	//enviar_mensaje("PRUEBA CONEXION CON MEMORIA", conexion);
+
+	liberar_conexion(conexion_memoria);
+	config_destroy(config);
+	log_destroy(logger);
+	return EXIT_SUCCESS;
 }
 
 void cargar_configuracion() {
