@@ -11,6 +11,7 @@
 #include <commons/string.h>
 #include <commons/txt.h>
 #include <commons/config.h>
+#include <pthread.h>
 
 typedef struct
 {

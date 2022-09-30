@@ -40,16 +40,19 @@ int main(int argc, char **argv)
 	log_info(logger, "Conexion con memoria exitosa");
 
     //CONEXION CON CPU
-    int conexion_cpu = conectarse_a_servidor(ip, config_valores.puerto_cpu_dispatch);
+    int conexion_cpu_dispatch = conectarse_a_servidor(ip, config_valores.puerto_cpu_dispatch);
+    log_info(logger, "Conexion con cpu dispatch exitosa");
+    
+    // int conexion_cpu_interrupt = conectarse_a_servidor(ip, config_valores.puerto_cpu_interrupt);
+    // log_info(logger, "Conexion con cpu interrupt exitosa");
 
-	if (conexion_cpu == -1) {
+	if (conexion_cpu_dispatch == -1 /*|| conexion_cpu_interrupt == -1*/) {
 		log_info(logger, "Error en la conexion al servidor. Terminando kernel");
 		return EXIT_FAILURE;
 	}
-
-	log_info(logger, "Conexion con cpu dispatch exitosa");
-
-    liberar_conexion(conexion_cpu);
+ 
+    liberar_conexion(conexion_cpu_dispatch);
+    // liberar_conexion(conexion_cpu_interrupt);
     liberar_conexion(conexion_memoria);
 	config_destroy(config);
 	log_destroy(logger);
@@ -82,20 +85,24 @@ void cargar_configuracion()
 t_list *deserializar_instrucciones(t_list *stream_datos, uint32_t size_stream_datos) {
 	
     t_list *instrucciones = list_create();
+    void *magic = malloc(size_stream_datos);
+    int desplazamiento = 0;
 
   	for(int i = 0; i < size_stream_datos; i++) {
-    //aca deberia iterar sobre el stream de datos e ir llenando la lista de instrucciones
+    //aca deberia iterar sobre el stream de datos e ir llenando a la lista de instrucciones
+    	memcpy(magic + desplazamiento, stream_datos, size_stream_datos);
+	    desplazamiento += size_stream_datos;
   	}
-  	return instrucciones;
+  	return instrucciones; 
 }
 
 
 t_paquete_deserializado *deserializar_consola(int  socket_cliente) {
 
-	t_paquete *paquete = recibir_paquete(socket_cliente);
-  	t_paquete_deserializado *paquete_deserializado = malloc(sizeof(t_paquete_deserializado));
-    //verificar la estructura de t_paquete para deserializarlo
-  	paquete_deserializado->tamanio_proceso = *(uint32_t *)list_remove(paquete->buffer->size, 0);
-  	paquete_deserializado->instrucciones = deserializar_instrucciones(paquete->buffer->stream, list_size(paquete->buffer->stream));
-  	return paquete_deserializado;
+	// t_paquete *paquete = recibir_paquete(socket_cliente);
+  	// t_paquete_deserializado *paquete_deserializado = malloc(sizeof(t_paquete_deserializado));
+    // //verificar la estructura de t_paquete para deserializarlo
+  	// paquete_deserializado->tamanio_proceso = (uint32_t)paquete->buffer->size;
+  	// paquete_deserializado->instrucciones = deserializar_instrucciones(paquete->buffer->stream, paquete->buffer->size);
+  	// return paquete_deserializado;
 }

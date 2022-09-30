@@ -37,3 +37,96 @@
 [INFO] 21:12:15:454 KERNEL/(11039:11039): Kernel iniciado. Intentando conectarse con la memoria
 [INFO] 21:12:15:454 KERNEL/(11039:11039): Conexion con memoria exitosa
 [INFO] 21:12:15:454 KERNEL/(11039:11039): Conexion con cpu dispatch exitosa
+[INFO] 22:16:28:911 KERNEL/(4169:4169): Arranco a leer el archivo de configuracion
+[INFO] 22:16:28:913 KERNEL/(4169:4169): Termino de leer el archivo de configuracion
+[INFO] 22:16:28:913 KERNEL/(4169:4169): Kernel listo para recibir consolas
+[INFO] 22:16:47:814 KERNEL/(4169:4169): Consola conectada. Cerrando programa
+[INFO] 22:16:47:814 KERNEL/(4169:4169): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:16:47:814 KERNEL/(4169:4169): Conexion con memoria exitosa
+[INFO] 22:16:47:814 KERNEL/(4169:4169): Conexion con cpu dispatch exitosa
+[INFO] 22:19:49:875 KERNEL/(4285:4285): Arranco a leer el archivo de configuracion
+[INFO] 22:19:49:877 KERNEL/(4285:4285): Termino de leer el archivo de configuracion
+[INFO] 22:19:49:877 KERNEL/(4285:4285): Kernel listo para recibir consolas
+[INFO] 22:19:53:873 KERNEL/(4285:4285): Consola conectada. Cerrando programa
+[INFO] 22:19:53:873 KERNEL/(4285:4285): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:19:53:873 KERNEL/(4285:4285): Conexion con memoria exitosa
+[INFO] 22:19:53:873 KERNEL/(4285:4285): Conexion con cpu dispatch exitosa
+[INFO] 22:24:10:491 KERNEL/(4352:4352): Arranco a leer el archivo de configuracion
+[INFO] 22:24:10:491 KERNEL/(4352:4352): Termino de leer el archivo de configuracion
+[INFO] 22:24:10:491 KERNEL/(4352:4352): Kernel listo para recibir consolas
+[INFO] 22:24:13:242 KERNEL/(4352:4352): Consola conectada. Cerrando programa
+[INFO] 22:24:13:242 KERNEL/(4352:4352): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:24:13:242 KERNEL/(4352:4352): Conexion con memoria exitosa
+[INFO] 22:24:13:242 KERNEL/(4352:4352): Conexion con cpu dispatch exitosa
+[INFO] 22:27:59:639 KERNEL/(4495:4495): Arranco a leer el archivo de configuracion
+[INFO] 22:27:59:640 KERNEL/(4495:4495): Termino de leer el archivo de configuracion
+[INFO] 22:27:59:640 KERNEL/(4495:4495): Kernel listo para recibir consolas
+[INFO] 22:28:03:026 KERNEL/(4495:4495): Consola conectada. Cerrando programa
+[INFO] 22:28:03:026 KERNEL/(4495:4495): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:28:03:026 KERNEL/(4495:4495): Conexion con memoria exitosa
+[INFO] 22:28:03:026 KERNEL/(4495:4495): Conexion con cpu dispatch exitosa
+[INFO] 22:28:03:026 KERNEL/(4495:4495): Conexion con cpu interrupt exitosa
+[INFO] 22:29:46:682 KERNEL/(4521:4521): Arranco a leer el archivo de configuracion
+[INFO] 22:29:46:682 KERNEL/(4521:4521): Termino de leer el archivo de configuracion
+[INFO] 22:29:46:682 KERNEL/(4521:4521): Kernel listo para recibir consolas
+[INFO] 22:29:48:588 KERNEL/(4521:4521): Consola conectada. Cerrando programa
+[INFO] 22:29:48:588 KERNEL/(4521:4521): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:29:48:588 KERNEL/(4521:4521): Conexion con memoria exitosa
+[INFO] 22:29:48:588 KERNEL/(4521:4521): Conexion con cpu dispatch exitosa
+[INFO] 22:29:48:588 KERNEL/(4521:4521): Conexion con cpu interrupt exitosa
+[INFO] 22:33:25:235 KERNEL/(4620:4620): Arranco a leer el archivo de configuracion
+[INFO] 22:33:25:235 KERNEL/(4620:4620): Termino de leer el archivo de configuracion
+[INFO] 22:33:25:235 KERNEL/(4620:4620): Kernel listo para recibir consolas
+[INFO] 22:33:27:528 KERNEL/(4620:4620): Consola conectada. Cerrando programa
+[INFO] 22:33:27:528 KERNEL/(4620:4620): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:33:27:528 KERNEL/(4620:4620): Conexion con memoria exitosa
+[INFO] 22:33:27:528 KERNEL/(4620:4620): Conexion con cpu dispatch exitosa
+[INFO] 22:33:27:528 KERNEL/(4620:4620): Conexion con cpu interrupt exitosa
+[INFO] 22:42:03:723 KERNEL/(4934:4934): Arranco a leer el archivo de configuracion
+[INFO] 22:42:03:723 KERNEL/(4934:4934): Termino de leer el archivo de configuracion
+[INFO] 22:42:03:723 KERNEL/(4934:4934): Kernel listo para recibir consolas
+[INFO] 22:42:05:881 KERNEL/(4934:4934): Consola conectada. Cerrando programa
+[INFO] 22:42:05:881 KERNEL/(4934:4934): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:42:05:881 KERNEL/(4934:4934): Conexion con memoria exitosa
+[INFO] 22:42:05:881 KERNEL/(4934:4934): Conexion con cpu dispatch exitosa
+[INFO] 22:42:05:881 KERNEL/(4934:4934): Conexion con cpu interrupt exitosa
+[INFO] 22:52:57:663 KERNEL/(5140:5140): Arranco a leer el archivo de configuracion
+[INFO] 22:52:57:664 KERNEL/(5140:5140): Termino de leer el archivo de configuracion
+[INFO] 22:52:57:664 KERNEL/(5140:5140): Kernel listo para recibir consolas
+[INFO] 22:52:59:385 KERNEL/(5140:5140): Consola conectada. Cerrando programa
+[INFO] 22:52:59:385 KERNEL/(5140:5140): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:52:59:385 KERNEL/(5140:5140): Conexion con memoria exitosa
+[INFO] 22:52:59:385 KERNEL/(5140:5140): Conexion con cpu dispatch exitosa
+[INFO] 22:52:59:385 KERNEL/(5140:5140): Conexion con cpu interrupt exitosa
+[INFO] 22:52:59:385 KERNEL/(5140:5140): Error en la conexion al servidor. Terminando kernel
+[INFO] 22:56:57:713 KERNEL/(5256:5256): Arranco a leer el archivo de configuracion
+[INFO] 22:56:57:713 KERNEL/(5256:5256): Termino de leer el archivo de configuracion
+[INFO] 22:56:57:713 KERNEL/(5256:5256): Kernel listo para recibir consolas
+[INFO] 22:57:00:270 KERNEL/(5256:5256): Consola conectada. Cerrando programa
+[INFO] 22:57:00:270 KERNEL/(5256:5256): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:57:00:270 KERNEL/(5256:5256): Conexion con memoria exitosa
+[INFO] 22:57:00:270 KERNEL/(5256:5256): Conexion con cpu dispatch exitosa
+[INFO] 22:57:00:270 KERNEL/(5256:5256): Conexion con cpu interrupt exitosa
+[INFO] 22:58:29:292 KERNEL/(5312:5312): Arranco a leer el archivo de configuracion
+[INFO] 22:58:29:292 KERNEL/(5312:5312): Termino de leer el archivo de configuracion
+[INFO] 22:58:29:292 KERNEL/(5312:5312): Kernel listo para recibir consolas
+[INFO] 22:58:30:966 KERNEL/(5312:5312): Consola conectada. Cerrando programa
+[INFO] 22:58:30:966 KERNEL/(5312:5312): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 22:58:30:966 KERNEL/(5312:5312): Conexion con memoria exitosa
+[INFO] 22:58:30:966 KERNEL/(5312:5312): Conexion con cpu dispatch exitosa
+[INFO] 22:58:30:966 KERNEL/(5312:5312): Conexion con cpu interrupt exitosa
+[INFO] 23:07:37:241 KERNEL/(5493:5493): Arranco a leer el archivo de configuracion
+[INFO] 23:07:37:241 KERNEL/(5493:5493): Termino de leer el archivo de configuracion
+[INFO] 23:07:37:242 KERNEL/(5493:5493): Kernel listo para recibir consolas
+[INFO] 23:07:38:877 KERNEL/(5493:5493): Consola conectada. Cerrando programa
+[INFO] 23:07:38:877 KERNEL/(5493:5493): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 23:07:38:877 KERNEL/(5493:5493): Conexion con memoria exitosa
+[INFO] 23:07:38:877 KERNEL/(5493:5493): Conexion con cpu dispatch exitosa
+[INFO] 23:07:38:877 KERNEL/(5493:5493): Conexion con cpu interrupt exitosa
+[INFO] 23:09:17:615 KERNEL/(5569:5569): Arranco a leer el archivo de configuracion
+[INFO] 23:09:17:615 KERNEL/(5569:5569): Termino de leer el archivo de configuracion
+[INFO] 23:09:17:615 KERNEL/(5569:5569): Kernel listo para recibir consolas
+[INFO] 23:09:19:127 KERNEL/(5569:5569): Consola conectada. Cerrando programa
+[INFO] 23:09:19:127 KERNEL/(5569:5569): Kernel iniciado. Intentando conectarse con la memoria
+[INFO] 23:09:19:127 KERNEL/(5569:5569): Conexion con memoria exitosa
+[INFO] 23:09:19:127 KERNEL/(5569:5569): Conexion con cpu dispatch exitosa

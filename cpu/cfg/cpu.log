@@ -76,3 +76,81 @@
 [INFO] 21:12:06:558 CPU/(11030:11030): Cpu iniciado. Intentando conectarse con la memoria
 [INFO] 21:12:06:558 CPU/(11030:11030): Conexion con memoria exitosa
 [INFO] 21:12:15:454 CPU/(11030:11030): Conexion con kernel exitosa
+[INFO] 22:16:04:259 CPU/(4153:4153): Arranco a leer el archivo de configuracion
+[INFO] 22:16:04:260 CPU/(4153:4153): Termino de leer el archivo de configuracion
+[INFO] 22:16:04:260 CPU/(4153:4153): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:16:04:260 CPU/(4153:4153): Conexion con memoria exitosa
+[INFO] 22:16:47:814 CPU/(4153:4153): Conexion con kernel exitosa
+[INFO] 22:19:46:394 CPU/(4269:4269): Arranco a leer el archivo de configuracion
+[INFO] 22:19:46:394 CPU/(4269:4269): Termino de leer el archivo de configuracion
+[INFO] 22:19:46:394 CPU/(4269:4269): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:19:46:394 CPU/(4269:4269): Conexion con memoria exitosa
+[INFO] 22:19:53:873 CPU/(4269:4269): Conexion con kernel por dispatch exitosa
+[INFO] 22:24:08:128 CPU/(4347:4347): Arranco a leer el archivo de configuracion
+[INFO] 22:24:08:128 CPU/(4347:4347): Termino de leer el archivo de configuracion
+[INFO] 22:24:08:128 CPU/(4347:4347): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:24:08:128 CPU/(4347:4347): Conexion con memoria exitosa
+[INFO] 22:24:13:242 CPU/(4347:4347): Conexion con kernel por dispatch exitosa
+[INFO] 22:26:29:195 CPU/(4399:4399): Arranco a leer el archivo de configuracion
+[INFO] 22:26:29:196 CPU/(4399:4399): Termino de leer el archivo de configuracion
+[INFO] 22:26:29:196 CPU/(4399:4399): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:26:29:196 CPU/(4399:4399): Conexion con memoria exitosa
+[INFO] 22:27:57:531 CPU/(4486:4486): Arranco a leer el archivo de configuracion
+[INFO] 22:27:57:531 CPU/(4486:4486): Termino de leer el archivo de configuracion
+[INFO] 22:27:57:531 CPU/(4486:4486): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:27:57:531 CPU/(4486:4486): Conexion con memoria exitosa
+[INFO] 22:28:03:027 CPU/(4486:4486): Conexion con kernel por dispatch exitosa
+[INFO] 22:29:44:962 CPU/(4518:4518): Arranco a leer el archivo de configuracion
+[INFO] 22:29:44:962 CPU/(4518:4518): Termino de leer el archivo de configuracion
+[INFO] 22:29:44:962 CPU/(4518:4518): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:29:44:962 CPU/(4518:4518): Conexion con memoria exitosa
+[INFO] 22:29:48:588 CPU/(4518:4518): Conexion con kernel por dispatch exitosa
+[INFO] 22:33:21:196 CPU/(4603:4603): Arranco a leer el archivo de configuracion
+[INFO] 22:33:21:196 CPU/(4603:4603): Termino de leer el archivo de configuracion
+[INFO] 22:33:21:196 CPU/(4603:4603): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:33:21:196 CPU/(4603:4603): Conexion con memoria exitosa
+[INFO] 22:33:27:528 CPU/(4603:4603): Conexion con kernel por dispatch exitosa
+[INFO] 22:42:01:473 CPU/(4925:4925): Arranco a leer el archivo de configuracion
+[INFO] 22:42:01:473 CPU/(4925:4925): Termino de leer el archivo de configuracion
+[INFO] 22:42:01:473 CPU/(4925:4925): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:42:01:473 CPU/(4925:4925): Conexion con memoria exitosa
+[INFO] 22:42:05:881 CPU/(4925:4925): Conexion con kernel por dispatch exitosa
+[INFO] 22:52:39:885 CPU/(5135:5135): Arranco a leer el archivo de configuracion
+[INFO] 22:52:39:885 CPU/(5135:5135): Termino de leer el archivo de configuracion
+[INFO] 22:52:39:885 CPU/(5135:5135): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:52:39:886 CPU/(5135:5135): Conexion con memoria exitosa
+[INFO] 22:52:39:886 CPU/(5135:5135): Conexion con kernel por dispatch exitosa
+[INFO] 22:52:39:886 CPU/(5135:5135): Conexion con kernel por interrupt exitosa
+[INFO] 22:53:12:307 CPU/(5149:5149): Arranco a leer el archivo de configuracion
+[INFO] 22:53:12:307 CPU/(5149:5149): Termino de leer el archivo de configuracion
+[INFO] 22:53:12:307 CPU/(5149:5149): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:53:12:307 CPU/(5149:5149): Conexion con memoria exitosa
+[INFO] 22:53:12:307 CPU/(5149:5149): Conexion con kernel por dispatch exitosa
+[INFO] 22:53:12:308 CPU/(5149:5149): Conexion con kernel por interrupt exitosa
+[INFO] 22:53:47:733 CPU/(5193:5193): Arranco a leer el archivo de configuracion
+[INFO] 22:53:47:733 CPU/(5193:5193): Termino de leer el archivo de configuracion
+[INFO] 22:53:47:733 CPU/(5193:5193): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:53:47:734 CPU/(5193:5193): Conexion con memoria exitosa
+[INFO] 22:53:47:734 CPU/(5193:5193): Conexion con kernel por dispatch exitosa
+[INFO] 22:53:47:734 CPU/(5193:5193): Conexion con kernel por interrupt exitosa
+[INFO] 22:56:53:336 CPU/(5247:5247): Arranco a leer el archivo de configuracion
+[INFO] 22:56:53:337 CPU/(5247:5247): Termino de leer el archivo de configuracion
+[INFO] 22:56:53:337 CPU/(5247:5247): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:56:53:337 CPU/(5247:5247): Conexion con memoria exitosa
+[INFO] 22:57:00:271 CPU/(5247:5247): Conexion con kernel por dispatch exitosa
+[INFO] 22:58:26:166 CPU/(5307:5307): Arranco a leer el archivo de configuracion
+[INFO] 22:58:26:166 CPU/(5307:5307): Termino de leer el archivo de configuracion
+[INFO] 22:58:26:166 CPU/(5307:5307): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 22:58:26:167 CPU/(5307:5307): Conexion con memoria exitosa
+[INFO] 22:58:26:167 CPU/(5307:5307): Conexion con kernel por dispatch exitosa
+[INFO] 22:58:26:167 CPU/(5307:5307): Conexion con kernel por interrupt exitosa
+[INFO] 23:07:35:233 CPU/(5489:5489): Arranco a leer el archivo de configuracion
+[INFO] 23:07:35:234 CPU/(5489:5489): Termino de leer el archivo de configuracion
+[INFO] 23:07:35:234 CPU/(5489:5489): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 23:07:35:234 CPU/(5489:5489): Conexion con memoria exitosa
+[INFO] 23:07:35:234 CPU/(5489:5489): Conexion con kernel por dispatch exitosa
+[INFO] 23:09:15:769 CPU/(5559:5559): Arranco a leer el archivo de configuracion
+[INFO] 23:09:15:769 CPU/(5559:5559): Termino de leer el archivo de configuracion
+[INFO] 23:09:15:769 CPU/(5559:5559): Cpu iniciado. Intentando conectarse con la memoria
+[INFO] 23:09:15:769 CPU/(5559:5559): Conexion con memoria exitosa
+[INFO] 23:09:15:769 CPU/(5559:5559): Conexion con kernel por dispatch exitosa

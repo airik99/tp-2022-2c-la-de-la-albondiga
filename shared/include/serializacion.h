@@ -35,7 +35,7 @@ typedef struct {
 }instruccion;
 
 
-char** codigo_instrucciones = {"SET", "ADD", "MOV_IN", "MOV_OUT", "I/O DISCO", "EXIT"};
+// char** codigo_instrucciones = ["SET", "ADD", "MOV_IN", "MOV_OUT", "I/O DISCO", "EXIT"];
 
 //funciones
 /**
