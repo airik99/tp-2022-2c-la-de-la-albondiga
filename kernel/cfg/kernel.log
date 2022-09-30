@@ -130,3 +130,7 @@
 [INFO] 23:09:19:127 KERNEL/(5569:5569): Kernel iniciado. Intentando conectarse con la memoria
 [INFO] 23:09:19:127 KERNEL/(5569:5569): Conexion con memoria exitosa
 [INFO] 23:09:19:127 KERNEL/(5569:5569): Conexion con cpu dispatch exitosa
+[INFO] 23:22:47:564 KERNEL/(6149:6149): Arranco a leer el archivo de configuracion
+[INFO] 23:22:47:564 KERNEL/(6149:6149): Termino de leer el archivo de configuracion
+[INFO] 23:22:47:564 KERNEL/(6149:6149): Kernel listo para recibir consolas
+[INFO] 23:22:49:420 KERNEL/(6149:6149): Se conecto una consola

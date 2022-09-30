@@ -70,3 +70,32 @@
 [INFO] 23:09:14:277 MEMORIA/(5550:5550): Memoria lista para recibir clientes
 [INFO] 23:09:15:769 MEMORIA/(5550:5550): CPU conectada. Cerrando programa
 [INFO] 23:09:19:127 MEMORIA/(5550:5550): Kernel conectado. Cerrando programa
+[INFO] 23:22:41:252 MEMORIA/(6133:6133): Arranco a leer el archivo de configuracion
+[INFO] 23:22:41:252 MEMORIA/(6133:6133): Termino de leer el archivo de configuracion
+[INFO] 23:22:41:252 MEMORIA/(6133:6133): Memoria lista para recibir clientes
+[INFO] 23:22:43:412 MEMORIA/(6133:6133): CPU conectada. Cerrando programa
+[INFO] 23:24:39:304 MEMORIA/(6428:6428): Arranco a leer el archivo de configuracion
+[INFO] 23:24:39:304 MEMORIA/(6428:6428): Termino de leer el archivo de configuracion
+[INFO] 23:24:39:305 MEMORIA/(6428:6428): Error al iniciar el servidor
+[INFO] 23:24:52:972 MEMORIA/(6431:6431): Arranco a leer el archivo de configuracion
+[INFO] 23:24:52:972 MEMORIA/(6431:6431): Termino de leer el archivo de configuracion
+[INFO] 23:24:52:972 MEMORIA/(6431:6431): Error al iniciar el servidor
+[INFO] 23:24:59:289 MEMORIA/(6434:6434): Arranco a leer el archivo de configuracion
+[INFO] 23:24:59:290 MEMORIA/(6434:6434): Termino de leer el archivo de configuracion
+[INFO] 23:24:59:290 MEMORIA/(6434:6434): Error al iniciar el servidor
+[INFO] 23:25:19:605 MEMORIA/(6438:6438): Arranco a leer el archivo de configuracion
+[INFO] 23:25:19:606 MEMORIA/(6438:6438): Termino de leer el archivo de configuracion
+[INFO] 23:25:19:606 MEMORIA/(6438:6438): Error al iniciar el servidor
+[INFO] 23:25:32:150 MEMORIA/(6441:6441): Arranco a leer el archivo de configuracion
+[INFO] 23:25:32:150 MEMORIA/(6441:6441): Termino de leer el archivo de configuracion
+[INFO] 23:25:32:150 MEMORIA/(6441:6441): Error al iniciar el servidor
+[INFO] 23:25:53:808 MEMORIA/(6501:6501): Arranco a leer el archivo de configuracion
+[INFO] 23:25:53:808 MEMORIA/(6501:6501): Termino de leer el archivo de configuracion
+[INFO] 23:25:53:808 MEMORIA/(6501:6501): Memoria lista para recibir clientes
+[INFO] 23:26:00:304 MEMORIA/(6501:6501): CPU conectada. Cerrando programa
+[INFO] 23:34:20:355 MEMORIA/(7177:7177): Arranco a leer el archivo de configuracion
+[INFO] 23:34:20:355 MEMORIA/(7177:7177): Termino de leer el archivo de configuracion
+[INFO] 23:34:20:355 MEMORIA/(7177:7177): Memoria lista para recibir clientes
+[INFO] 23:34:36:023 MEMORIA/(7194:7194): Arranco a leer el archivo de configuracion
+[INFO] 23:34:36:024 MEMORIA/(7194:7194): Termino de leer el archivo de configuracion
+[INFO] 23:34:36:024 MEMORIA/(7194:7194): Error al iniciar el servidor

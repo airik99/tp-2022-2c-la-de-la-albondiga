@@ -24,8 +24,18 @@ int main(int argc, char **argv)
     log_info(logger, "Kernel listo para recibir consolas");
 
     int socket_cliente = esperar_cliente(socket_servidor);
+    log_info(logger, "Se conecto una consola");
+    op_code cod_op = recibir_operacion(socket_cliente);
+    t_list* instrucciones;
+	switch(cod_op){
+		case INSTRUCCIONES:
+            instrucciones = recibir_instrucciones(socket_cliente);
+            list_iterate(instrucciones, (void *)print_instruccion);
+		default:
+			log_error(logger, "operacion no valida");
+			break;
+	}
 
-    log_info(logger, "Consola conectada. Cerrando programa");
 
     //CONEXION CON MEMORIA
 	log_info(logger, "Kernel iniciado. Intentando conectarse con la memoria");
@@ -50,6 +60,8 @@ int main(int argc, char **argv)
 		log_info(logger, "Error en la conexion al servidor. Terminando kernel");
 		return EXIT_FAILURE;
 	}
+
+    
  
     liberar_conexion(conexion_cpu_dispatch);
     // liberar_conexion(conexion_cpu_interrupt);
@@ -58,6 +70,7 @@ int main(int argc, char **argv)
 	log_destroy(logger);
     
     return EXIT_SUCCESS;
+
 }
 
 void cargar_configuracion()
@@ -106,3 +119,4 @@ t_paquete_deserializado *deserializar_consola(int  socket_cliente) {
   	// paquete_deserializado->instrucciones = deserializar_instrucciones(paquete->buffer->stream, paquete->buffer->size);
   	// return paquete_deserializado;
 }
+

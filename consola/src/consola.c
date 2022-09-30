@@ -25,15 +25,16 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	log_info(logger, "Conexion correcta. Enviando instrucciones(todavia no esta hecho)");
-	t_paquete *paquete_instrucciones = crear_paquete(INSTRUCCIONES);
-	list_iterate(instrucciones, (void *)print_instruccion);
 
 	/*recv(socket_cliente,&respuesta,sizeof(uint32_t),MSG_WAITALL);
 		if(respuesta == 0)log_info(logger, "Finalizacion exitosa");
 		else			  log_error(logger, "Ocurrio un error con la ejecucion del proceso");
 	*/
-
+	t_paquete *paquete_instrucciones = crear_paquete(INSTRUCCIONES);
+	serializar_instrucciones(paquete_instrucciones, instrucciones/*,segmentos*/);
+	log_info(logger, "Conexion correcta. Enviando instrucciones");
+	enviar_paquete(paquete_instrucciones, socket_cliente);
+	list_iterate(instrucciones, (void *)print_instruccion);
 
 	liberar_conexion(socket_cliente);
 	string_array_destroy(segmentos);
@@ -107,3 +108,4 @@ t_instruccion *crear_instruccion(char *nombre, t_list *params)
 	instruccion->params = params;
 	return instruccion;
 }
+

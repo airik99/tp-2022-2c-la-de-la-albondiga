@@ -85,7 +85,7 @@ void eliminar_paquete(t_paquete *paquete);
  * 			+instrucciones: Lista de instrucciones a serializar
  * 			+segmentos: Array de segmentos
  */
-void serializar_instrucciones(t_paquete *paquete, t_list *instrucciones, char **segmentos);
+void serializar_instrucciones(t_paquete *paquete, t_list *instrucciones/*, char **segmentos*/);
 
 void crear_buffer(t_paquete *paquete);
 
