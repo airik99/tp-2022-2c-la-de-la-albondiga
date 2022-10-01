@@ -25,8 +25,18 @@ typedef struct
 	t_instruccion* instrucciones; 
 	u_int32_t program_counter;
 	u_int32_t* registros_cpu;
+	estado estado_actual;
+	estado estado_anterior;
 	// tabla_de_segmentos
 } pcb;
+
+typedef enum estado {
+	NEW,
+	READY,
+	EXEC,
+	BLOCKED,
+	EXIT
+} estado;
 
 
 

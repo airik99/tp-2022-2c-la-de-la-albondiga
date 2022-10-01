@@ -5,6 +5,7 @@
 #include <conexion.h>
 #include <serializacion.h>
 #include "tests.h"
+#include <planificacion.h>
 
 //estructuras
 typedef struct config_kernel
