@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 
 	char *ip = config_get_string_value(config, "IP_KERNEL");
 	char *puerto = config_get_string_value(config, "PUERTO_KERNEL");
-	 char **segmentos = config_get_array_value(config, "SEGMENTOS");
+	char **segmentos = config_get_array_value(config, "SEGMENTOS");
 
 	log_info(logger, "Consola iniciada. Intentando conectarse al kernel");
 
@@ -30,12 +30,15 @@ int main(int argc, char **argv)
 		if(respuesta == 0)log_info(logger, "Finalizacion exitosa");
 		else			  log_error(logger, "Ocurrio un error con la ejecucion del proceso");
 	*/
-	t_paquete *paquete_instrucciones = crear_paquete(INSTRUCCIONES);
-	serializar_instrucciones(paquete_instrucciones, instrucciones/*,segmentos*/);
-	log_info(logger, "Conexion correcta. Enviando instrucciones");
-	enviar_paquete(paquete_instrucciones, socket_cliente);
-	list_iterate(instrucciones, (void *)print_instruccion);
 
+	t_paquete *paquete_instrucciones = crear_paquete(INSTRUCCIONES);
+	serializar_instrucciones(paquete_instrucciones, instrucciones);
+	serializar_segmentos(paquete_instrucciones, segmentos);
+	
+	log_info(logger, "Conexion correcta. Enviando instrucciones");
+	list_iterate(instrucciones, (void *)print_instruccion);
+	enviar_paquete(paquete_instrucciones, socket_cliente);
+	
 	liberar_conexion(socket_cliente);
 	string_array_destroy(segmentos);
 	destructor_instrucciones(instrucciones);
@@ -104,8 +107,11 @@ char *leer_linea(FILE *puntero)
 t_instruccion *crear_instruccion(char *nombre, t_list *params)
 {
 	t_instruccion *instruccion = malloc(sizeof(t_instruccion));
+	instruccion->largo_nombre = strlen(nombre) + 1;
 	instruccion->nombre = nombre;
+	instruccion->cant_params = list_size(params);
 	instruccion->params = params;
 	return instruccion;
 }
 
+ 

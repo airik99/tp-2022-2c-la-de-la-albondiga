@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "preLaunchTask": "Make",
-            "program": "${workspaceFolder}/proceso2",
+            "program": "${workspaceFolder}/kernel",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

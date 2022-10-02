@@ -24,19 +24,22 @@ int main(int argc, char **argv)
     log_info(logger, "Kernel listo para recibir consolas");
 
     int socket_cliente = esperar_cliente(socket_servidor);
-    log_info(logger, "Se conecto una consola");
-    op_code cod_op = recibir_operacion(socket_cliente);
-    t_list* instrucciones;
+    
+    log_info(logger, "Se conecto una consola"); 
+    int cod_op = recibir_operacion(socket_cliente);
+    t_proceso* proceso;
 	switch(cod_op){
 		case INSTRUCCIONES:
-            instrucciones = recibir_instrucciones(socket_cliente);
-            list_iterate(instrucciones, (void *)print_instruccion);
+            proceso = recibir_proceso(socket_cliente);
+            log_info(logger, "Conexion con consola exitosa");
+            break;
 		default:
 			log_error(logger, "operacion no valida");
 			break;
 	}
 
-
+    list_iterate(proceso->instrucciones, destructor_instrucciones);
+/*
     //CONEXION CON MEMORIA
 	log_info(logger, "Kernel iniciado. Intentando conectarse con la memoria");
 
@@ -56,7 +59,7 @@ int main(int argc, char **argv)
     // int conexion_cpu_interrupt = conectarse_a_servidor(ip, config_valores.puerto_cpu_interrupt);
     // log_info(logger, "Conexion con cpu interrupt exitosa");
 
-	if (conexion_cpu_dispatch == -1 /*|| conexion_cpu_interrupt == -1*/) {
+	if (conexion_cpu_dispatch == -1 || conexion_cpu_interrupt == -1) {
 		log_info(logger, "Error en la conexion al servidor. Terminando kernel");
 		return EXIT_FAILURE;
 	}
@@ -65,7 +68,7 @@ int main(int argc, char **argv)
  
     liberar_conexion(conexion_cpu_dispatch);
     // liberar_conexion(conexion_cpu_interrupt);
-    liberar_conexion(conexion_memoria);
+    liberar_conexion(conexion_memoria);*/
 	config_destroy(config);
 	log_destroy(logger);
     
@@ -94,7 +97,7 @@ void cargar_configuracion()
     log_info(logger, "Termino de leer el archivo de configuracion");
     //log_destroy(logger);
 }
-
+/*
 t_list *deserializar_instrucciones(t_list *stream_datos, uint32_t size_stream_datos) {
 	
     t_list *instrucciones = list_create();
@@ -108,9 +111,9 @@ t_list *deserializar_instrucciones(t_list *stream_datos, uint32_t size_stream_da
   	}
   	return instrucciones; 
 }
+*/
 
-
-t_paquete_deserializado *deserializar_consola(int  socket_cliente) {
+//t_paquete_deserializado *deserializar_consola(int  socket_cliente) {
 
 	// t_paquete *paquete = recibir_paquete(socket_cliente);
   	// t_paquete_deserializado *paquete_deserializado = malloc(sizeof(t_paquete_deserializado));
@@ -118,5 +121,5 @@ t_paquete_deserializado *deserializar_consola(int  socket_cliente) {
   	// paquete_deserializado->tamanio_proceso = (uint32_t)paquete->buffer->size;
   	// paquete_deserializado->instrucciones = deserializar_instrucciones(paquete->buffer->stream, paquete->buffer->size);
   	// return paquete_deserializado;
-}
+//}
 

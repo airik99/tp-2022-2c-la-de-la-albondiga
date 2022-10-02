@@ -13,7 +13,7 @@ typedef enum
 
 typedef struct
 {
-	uint32_t size;
+	u_int32_t size;
 	void *stream;
 } t_buffer;
 
@@ -25,13 +25,13 @@ typedef struct
 
 typedef struct
 {
-    uint32_t tamanio_proceso;
+    u_int32_t tamanio_proceso;
     t_list* instrucciones;
 } t_paquete_deserializado;
 
 typedef struct {
     char* codigo ;
-    uint32_t* parametros;
+    u_int32_t* parametros;
 }instruccion;
 
 
@@ -69,6 +69,8 @@ void agregar_a_paquete(t_paquete *paquete, void *valor, int tamanio);
  */
 void *serializar_paquete(t_paquete *paquete, int bytes);
 
+void enviar_paquete(t_paquete *paquete, int socket_cliente);
+
 /**
  * @DESC:Elimina un paquete.
  *
@@ -85,15 +87,22 @@ void eliminar_paquete(t_paquete *paquete);
  * 			+instrucciones: Lista de instrucciones a serializar
  * 			+segmentos: Array de segmentos
  */
-void serializar_instrucciones(t_paquete *paquete, t_list *instrucciones/*, char **segmentos*/);
+
+void serializar_segmentos(t_paquete *paquete_instrucciones, char** segmentos);
+
+void serializar_instrucciones(t_paquete *paquete, t_list *instrucciones);
 
 void crear_buffer(t_paquete *paquete);
+
+t_instruccion* deserializar_instruccion(void *buffer, int *desplazamiento);
 
 int recibir_operacion(int socket_cliente);
 
 void *recibir_buffer(int *size, int socket_cliente);
 
 t_list *recibir_paquete(int socket_cliente);
+
+t_proceso* recibir_proceso(int socket_cliente);
 
 void enviar_mensaje(char* mensaje, int socket_cliente);
 

@@ -134,3 +134,361 @@
 [INFO] 23:22:47:564 KERNEL/(6149:6149): Termino de leer el archivo de configuracion
 [INFO] 23:22:47:564 KERNEL/(6149:6149): Kernel listo para recibir consolas
 [INFO] 23:22:49:420 KERNEL/(6149:6149): Se conecto una consola
+[INFO] 21:18:19:250 KERNEL/(9083:9083): Arranco a leer el archivo de configuracion
+[INFO] 21:18:19:250 KERNEL/(9083:9083): Termino de leer el archivo de configuracion
+[INFO] 21:18:19:250 KERNEL/(9083:9083): Kernel listo para recibir consolas
+[INFO] 21:19:23:626 KERNEL/(9083:9083): Se conecto una consola
+[INFO] 21:19:49:582 KERNEL/(9191:9191): Arranco a leer el archivo de configuracion
+[INFO] 21:19:49:583 KERNEL/(9191:9191): Termino de leer el archivo de configuracion
+[INFO] 21:19:49:583 KERNEL/(9191:9191): Kernel listo para recibir consolas
+[INFO] 21:19:51:206 KERNEL/(9191:9191): Se conecto una consola
+[INFO] 21:20:13:599 KERNEL/(9206:9206): Arranco a leer el archivo de configuracion
+[INFO] 21:20:13:599 KERNEL/(9206:9206): Termino de leer el archivo de configuracion
+[INFO] 21:20:13:599 KERNEL/(9206:9206): Kernel listo para recibir consolas
+[INFO] 21:20:16:812 KERNEL/(9206:9206): Se conecto una consola
+[INFO] 21:20:34:971 KERNEL/(9223:9223): Arranco a leer el archivo de configuracion
+[INFO] 21:20:34:971 KERNEL/(9223:9223): Termino de leer el archivo de configuracion
+[INFO] 21:20:34:971 KERNEL/(9223:9223): Kernel listo para recibir consolas
+[INFO] 21:20:36:481 KERNEL/(9223:9223): Se conecto una consola
+[INFO] 21:20:44:323 KERNEL/(9234:9234): Arranco a leer el archivo de configuracion
+[INFO] 21:20:44:324 KERNEL/(9234:9234): Termino de leer el archivo de configuracion
+[INFO] 21:20:44:324 KERNEL/(9234:9234): Kernel listo para recibir consolas
+[INFO] 21:20:45:144 KERNEL/(9234:9234): Se conecto una consola
+[INFO] 21:20:54:418 KERNEL/(9247:9247): Arranco a leer el archivo de configuracion
+[INFO] 21:20:54:418 KERNEL/(9247:9247): Termino de leer el archivo de configuracion
+[INFO] 21:20:54:418 KERNEL/(9247:9247): Kernel listo para recibir consolas
+[INFO] 21:20:56:011 KERNEL/(9247:9247): Se conecto una consola
+[INFO] 21:21:03:592 KERNEL/(9250:9250): Arranco a leer el archivo de configuracion
+[INFO] 21:21:03:592 KERNEL/(9250:9250): Termino de leer el archivo de configuracion
+[INFO] 21:21:03:592 KERNEL/(9250:9250): Kernel listo para recibir consolas
+[INFO] 21:21:05:208 KERNEL/(9250:9250): Se conecto una consola
+[INFO] 21:21:18:874 KERNEL/(9253:9253): Arranco a leer el archivo de configuracion
+[INFO] 21:21:18:874 KERNEL/(9253:9253): Termino de leer el archivo de configuracion
+[INFO] 21:21:18:874 KERNEL/(9253:9253): Kernel listo para recibir consolas
+[INFO] 21:21:20:235 KERNEL/(9253:9253): Se conecto una consola
+[INFO] 21:21:26:893 KERNEL/(9269:9269): Arranco a leer el archivo de configuracion
+[INFO] 21:21:26:894 KERNEL/(9269:9269): Termino de leer el archivo de configuracion
+[INFO] 21:21:26:894 KERNEL/(9269:9269): Kernel listo para recibir consolas
+[INFO] 21:21:27:874 KERNEL/(9269:9269): Se conecto una consola
+[INFO] 21:24:11:521 KERNEL/(9327:9327): Arranco a leer el archivo de configuracion
+[INFO] 21:24:11:522 KERNEL/(9327:9327): Termino de leer el archivo de configuracion
+[INFO] 21:24:11:522 KERNEL/(9327:9327): Kernel listo para recibir consolas
+[INFO] 21:24:12:146 KERNEL/(9327:9327): Se conecto una consola
+[INFO] 21:24:17:139 KERNEL/(9340:9340): Arranco a leer el archivo de configuracion
+[INFO] 21:24:17:140 KERNEL/(9340:9340): Termino de leer el archivo de configuracion
+[INFO] 21:24:17:140 KERNEL/(9340:9340): Kernel listo para recibir consolas
+[INFO] 21:24:18:213 KERNEL/(9340:9340): Se conecto una consola
+[INFO] 21:32:08:380 KERNEL/(9516:9516): Arranco a leer el archivo de configuracion
+[INFO] 21:32:08:380 KERNEL/(9516:9516): Termino de leer el archivo de configuracion
+[INFO] 21:32:08:381 KERNEL/(9516:9516): Kernel listo para recibir consolas
+[INFO] 21:32:10:358 KERNEL/(9516:9516): Se conecto una consola
+[INFO] 21:32:24:843 KERNEL/(9531:9531): Arranco a leer el archivo de configuracion
+[INFO] 21:32:24:844 KERNEL/(9531:9531): Termino de leer el archivo de configuracion
+[INFO] 21:32:24:844 KERNEL/(9531:9531): Kernel listo para recibir consolas
+[INFO] 21:32:26:281 KERNEL/(9531:9531): Se conecto una consola
+[INFO] 21:32:41:721 KERNEL/(9555:9555): Arranco a leer el archivo de configuracion
+[INFO] 21:32:41:722 KERNEL/(9555:9555): Termino de leer el archivo de configuracion
+[INFO] 21:32:41:722 KERNEL/(9555:9555): Kernel listo para recibir consolas
+[INFO] 21:32:46:325 KERNEL/(9568:9568): Arranco a leer el archivo de configuracion
+[INFO] 21:32:46:325 KERNEL/(9568:9568): Termino de leer el archivo de configuracion
+[INFO] 21:32:46:326 KERNEL/(9568:9568): Kernel listo para recibir consolas
+[INFO] 21:32:47:398 KERNEL/(9568:9568): Se conecto una consola
+[INFO] 21:33:06:487 KERNEL/(9581:9581): Arranco a leer el archivo de configuracion
+[INFO] 21:33:06:488 KERNEL/(9581:9581): Termino de leer el archivo de configuracion
+[INFO] 21:33:06:488 KERNEL/(9581:9581): Kernel listo para recibir consolas
+[INFO] 21:33:13:430 KERNEL/(9581:9581): Se conecto una consola
+[INFO] 21:34:54:580 KERNEL/(9639:9639): Arranco a leer el archivo de configuracion
+[INFO] 21:34:54:580 KERNEL/(9639:9639): Termino de leer el archivo de configuracion
+[INFO] 21:34:54:581 KERNEL/(9639:9639): Kernel listo para recibir consolas
+[INFO] 21:34:55:494 KERNEL/(9639:9639): Se conecto una consola
+[INFO] 21:38:21:919 KERNEL/(10457:10457): Arranco a leer el archivo de configuracion
+[INFO] 21:38:21:919 KERNEL/(10457:10457): Termino de leer el archivo de configuracion
+[INFO] 21:38:21:920 KERNEL/(10457:10457): Kernel listo para recibir consolas
+[INFO] 21:44:20:689 KERNEL/(10585:10585): Arranco a leer el archivo de configuracion
+[INFO] 21:44:20:690 KERNEL/(10585:10585): Termino de leer el archivo de configuracion
+[INFO] 21:44:20:690 KERNEL/(10585:10585): Kernel listo para recibir consolas
+[INFO] 21:44:42:223 KERNEL/(10645:10645): Arranco a leer el archivo de configuracion
+[INFO] 21:44:42:223 KERNEL/(10645:10645): Termino de leer el archivo de configuracion
+[INFO] 21:47:33:578 KERNEL/(10645:10645): Kernel listo para recibir consolas
+[INFO] 21:48:02:684 KERNEL/(10645:10645): Se conecto una consola
+[INFO] 22:02:37:279 KERNEL/(11144:11144): Arranco a leer el archivo de configuracion
+[INFO] 22:02:37:279 KERNEL/(11144:11144): Termino de leer el archivo de configuracion
+[INFO] 22:02:37:279 KERNEL/(11144:11144): Kernel listo para recibir consolas
+[INFO] 22:03:23:243 KERNEL/(11156:11156): Arranco a leer el archivo de configuracion
+[INFO] 22:03:23:243 KERNEL/(11156:11156): Termino de leer el archivo de configuracion
+[INFO] 22:03:23:243 KERNEL/(11156:11156): Kernel listo para recibir consolas
+[INFO] 22:05:32:111 KERNEL/(11231:11231): Arranco a leer el archivo de configuracion
+[INFO] 22:05:32:112 KERNEL/(11231:11231): Termino de leer el archivo de configuracion
+[INFO] 22:05:32:112 KERNEL/(11231:11231): Kernel listo para recibir consolas
+[INFO] 22:05:33:987 KERNEL/(11231:11231): Se conecto una consola
+[INFO] 22:05:47:230 KERNEL/(11242:11242): Arranco a leer el archivo de configuracion
+[INFO] 22:05:47:231 KERNEL/(11242:11242): Termino de leer el archivo de configuracion
+[INFO] 22:05:47:232 KERNEL/(11242:11242): Kernel listo para recibir consolas
+[INFO] 22:05:48:456 KERNEL/(11242:11242): Se conecto una consola
+[INFO] 22:56:41:651 KERNEL/(11748:11748): Arranco a leer el archivo de configuracion
+[INFO] 22:56:41:651 KERNEL/(11748:11748): Termino de leer el archivo de configuracion
+[INFO] 22:56:41:651 KERNEL/(11748:11748): Kernel listo para recibir consolas
+[INFO] 22:56:54:932 KERNEL/(11748:11748): Se conecto una consola
+[INFO] 22:58:40:726 KERNEL/(11949:11949): Arranco a leer el archivo de configuracion
+[INFO] 22:58:40:727 KERNEL/(11949:11949): Termino de leer el archivo de configuracion
+[INFO] 22:58:40:727 KERNEL/(11949:11949): Error al iniciar el servidor
+[INFO] 23:00:58:749 KERNEL/(12023:12023): Arranco a leer el archivo de configuracion
+[INFO] 23:00:58:749 KERNEL/(12023:12023): Termino de leer el archivo de configuracion
+[INFO] 23:01:01:484 KERNEL/(12023:12023): Kernel listo para recibir consolas
+[INFO] 23:01:41:239 KERNEL/(12088:12088): Arranco a leer el archivo de configuracion
+[INFO] 23:01:41:240 KERNEL/(12088:12088): Termino de leer el archivo de configuracion
+[INFO] 23:01:41:240 KERNEL/(12088:12088): Kernel listo para recibir consolas
+[INFO] 23:01:52:373 KERNEL/(12088:12088): Se conecto una consola
+[ERROR] 23:07:12:628 KERNEL/(12088:12088): operacion no valida
+[INFO] 23:07:31:447 KERNEL/(12170:12170): Arranco a leer el archivo de configuracion
+[INFO] 23:07:31:447 KERNEL/(12170:12170): Termino de leer el archivo de configuracion
+[INFO] 23:07:31:447 KERNEL/(12170:12170): Kernel listo para recibir consolas
+[INFO] 23:07:32:545 KERNEL/(12170:12170): Se conecto una consola
+[ERROR] 23:07:32:546 KERNEL/(12170:12170): operacion no valida
+[INFO] 23:07:35:646 KERNEL/(12175:12175): Arranco a leer el archivo de configuracion
+[INFO] 23:07:35:647 KERNEL/(12175:12175): Termino de leer el archivo de configuracion
+[INFO] 23:07:35:647 KERNEL/(12175:12175): Error al iniciar el servidor
+[INFO] 23:08:38:546 KERNEL/(12179:12179): Arranco a leer el archivo de configuracion
+[INFO] 23:08:38:546 KERNEL/(12179:12179): Termino de leer el archivo de configuracion
+[INFO] 23:08:38:547 KERNEL/(12179:12179): Kernel listo para recibir consolas
+[INFO] 23:08:43:505 KERNEL/(12179:12179): Se conecto una consola
+[ERROR] 23:08:43:506 KERNEL/(12179:12179): operacion no valida
+[INFO] 23:09:55:773 KERNEL/(12217:12217): Arranco a leer el archivo de configuracion
+[INFO] 23:09:55:774 KERNEL/(12217:12217): Termino de leer el archivo de configuracion
+[INFO] 23:09:55:774 KERNEL/(12217:12217): Kernel listo para recibir consolas
+[INFO] 23:09:57:404 KERNEL/(12217:12217): Se conecto una consola
+[ERROR] 23:09:57:405 KERNEL/(12217:12217): operacion no valida
+[INFO] 23:11:04:864 KERNEL/(12280:12280): Arranco a leer el archivo de configuracion
+[INFO] 23:11:04:864 KERNEL/(12280:12280): Termino de leer el archivo de configuracion
+[INFO] 23:11:04:864 KERNEL/(12280:12280): Kernel listo para recibir consolas
+[INFO] 23:11:11:203 KERNEL/(12295:12295): Arranco a leer el archivo de configuracion
+[INFO] 23:11:11:203 KERNEL/(12295:12295): Termino de leer el archivo de configuracion
+[INFO] 23:11:11:203 KERNEL/(12295:12295): Kernel listo para recibir consolas
+[INFO] 23:11:16:908 KERNEL/(12295:12295): Se conecto una consola
+[ERROR] 23:11:16:910 KERNEL/(12295:12295): operacion no valida
+[INFO] 23:11:33:492 KERNEL/(12318:12318): Arranco a leer el archivo de configuracion
+[INFO] 23:11:33:492 KERNEL/(12318:12318): Termino de leer el archivo de configuracion
+[INFO] 23:11:33:492 KERNEL/(12318:12318): Error al iniciar el servidor
+[INFO] 23:11:35:665 KERNEL/(12319:12319): Arranco a leer el archivo de configuracion
+[INFO] 23:11:35:666 KERNEL/(12319:12319): Termino de leer el archivo de configuracion
+[INFO] 23:11:35:666 KERNEL/(12319:12319): Error al iniciar el servidor
+[INFO] 23:11:36:241 KERNEL/(12320:12320): Arranco a leer el archivo de configuracion
+[INFO] 23:11:36:241 KERNEL/(12320:12320): Termino de leer el archivo de configuracion
+[INFO] 23:11:36:241 KERNEL/(12320:12320): Error al iniciar el servidor
+[INFO] 23:11:36:790 KERNEL/(12321:12321): Arranco a leer el archivo de configuracion
+[INFO] 23:11:36:790 KERNEL/(12321:12321): Termino de leer el archivo de configuracion
+[INFO] 23:11:36:790 KERNEL/(12321:12321): Error al iniciar el servidor
+[INFO] 23:11:47:946 KERNEL/(12323:12323): Arranco a leer el archivo de configuracion
+[INFO] 23:11:47:947 KERNEL/(12323:12323): Termino de leer el archivo de configuracion
+[INFO] 23:11:47:947 KERNEL/(12323:12323): Error al iniciar el servidor
+[INFO] 23:12:17:557 KERNEL/(12328:12328): Arranco a leer el archivo de configuracion
+[INFO] 23:12:17:557 KERNEL/(12328:12328): Termino de leer el archivo de configuracion
+[INFO] 23:12:17:558 KERNEL/(12328:12328): Kernel listo para recibir consolas
+[INFO] 23:12:19:797 KERNEL/(12328:12328): Se conecto una consola
+[ERROR] 23:12:19:798 KERNEL/(12328:12328): operacion no valida
+[INFO] 23:37:58:360 KERNEL/(12731:12731): Arranco a leer el archivo de configuracion
+[INFO] 23:37:58:360 KERNEL/(12731:12731): Termino de leer el archivo de configuracion
+[INFO] 23:37:58:361 KERNEL/(12731:12731): Kernel listo para recibir consolas
+[INFO] 23:38:01:667 KERNEL/(12731:12731): Se conecto una consola
+[ERROR] 23:38:01:667 KERNEL/(12731:12731): operacion no valida
+[INFO] 06:43:03:060 KERNEL/(4641:4641): Arranco a leer el archivo de configuracion
+[INFO] 06:43:03:061 KERNEL/(4641:4641): Termino de leer el archivo de configuracion
+[INFO] 06:43:03:062 KERNEL/(4641:4641): Kernel listo para recibir consolas
+[INFO] 07:01:08:585 KERNEL/(5778:5778): Arranco a leer el archivo de configuracion
+[INFO] 07:01:08:585 KERNEL/(5778:5778): Termino de leer el archivo de configuracion
+[INFO] 07:01:08:585 KERNEL/(5778:5778): Kernel listo para recibir consolas
+[INFO] 07:08:03:274 KERNEL/(6243:6243): Arranco a leer el archivo de configuracion
+[INFO] 07:08:03:275 KERNEL/(6243:6243): Termino de leer el archivo de configuracion
+[INFO] 07:08:03:275 KERNEL/(6243:6243): Kernel listo para recibir consolas
+[INFO] 07:08:09:822 KERNEL/(6243:6243): Se conecto una consola
+[ERROR] 07:08:09:823 KERNEL/(6243:6243): operacion no valida
+[INFO] 07:13:14:738 KERNEL/(6618:6618): Arranco a leer el archivo de configuracion
+[INFO] 07:13:14:738 KERNEL/(6618:6618): Termino de leer el archivo de configuracion
+[INFO] 07:13:14:738 KERNEL/(6618:6618): Kernel listo para recibir consolas
+[INFO] 07:13:17:291 KERNEL/(6618:6618): Se conecto una consola
+[ERROR] 07:13:17:291 KERNEL/(6618:6618): operacion no valida
+[INFO] 07:14:18:500 KERNEL/(6704:6704): Arranco a leer el archivo de configuracion
+[INFO] 07:14:18:500 KERNEL/(6704:6704): Termino de leer el archivo de configuracion
+[INFO] 07:14:18:500 KERNEL/(6704:6704): Kernel listo para recibir consolas
+[INFO] 07:14:52:464 KERNEL/(6753:6753): Arranco a leer el archivo de configuracion
+[INFO] 07:14:52:464 KERNEL/(6753:6753): Termino de leer el archivo de configuracion
+[INFO] 07:14:52:464 KERNEL/(6753:6753): Kernel listo para recibir consolas
+[INFO] 07:14:55:468 KERNEL/(6753:6753): Se conecto una consola
+[ERROR] 07:14:55:469 KERNEL/(6753:6753): operacion no valida
+[INFO] 07:15:17:170 KERNEL/(6802:6802): Arranco a leer el archivo de configuracion
+[INFO] 07:15:17:170 KERNEL/(6802:6802): Termino de leer el archivo de configuracion
+[INFO] 07:15:17:170 KERNEL/(6802:6802): Error al iniciar el servidor
+[INFO] 07:17:00:265 KERNEL/(6826:6826): Arranco a leer el archivo de configuracion
+[INFO] 07:17:00:266 KERNEL/(6826:6826): Termino de leer el archivo de configuracion
+[INFO] 07:17:00:266 KERNEL/(6826:6826): Kernel listo para recibir consolas
+[INFO] 07:25:55:365 KERNEL/(6826:6826): Se conecto una consola
+[ERROR] 07:27:23:229 KERNEL/(6826:6826): operacion no valida
+[INFO] 07:32:34:462 KERNEL/(7241:7241): Arranco a leer el archivo de configuracion
+[INFO] 07:32:34:463 KERNEL/(7241:7241): Termino de leer el archivo de configuracion
+[INFO] 07:32:34:463 KERNEL/(7241:7241): Kernel listo para recibir consolas
+[INFO] 07:32:56:484 KERNEL/(7241:7241): Se conecto una consola
+[INFO] 07:35:50:492 KERNEL/(7677:7677): Arranco a leer el archivo de configuracion
+[INFO] 07:35:50:492 KERNEL/(7677:7677): Termino de leer el archivo de configuracion
+[INFO] 07:35:50:492 KERNEL/(7677:7677): Kernel listo para recibir consolas
+[INFO] 07:35:55:699 KERNEL/(7677:7677): Se conecto una consola
+[ERROR] 07:35:55:699 KERNEL/(7677:7677): operacion no valida
+[INFO] 07:36:03:119 KERNEL/(7697:7697): Arranco a leer el archivo de configuracion
+[INFO] 07:36:03:119 KERNEL/(7697:7697): Termino de leer el archivo de configuracion
+[INFO] 07:36:03:119 KERNEL/(7697:7697): Error al iniciar el servidor
+[INFO] 07:36:04:530 KERNEL/(7699:7699): Arranco a leer el archivo de configuracion
+[INFO] 07:36:04:531 KERNEL/(7699:7699): Termino de leer el archivo de configuracion
+[INFO] 07:36:04:531 KERNEL/(7699:7699): Error al iniciar el servidor
+[INFO] 07:37:10:227 KERNEL/(7723:7723): Arranco a leer el archivo de configuracion
+[INFO] 07:37:10:228 KERNEL/(7723:7723): Termino de leer el archivo de configuracion
+[INFO] 07:37:10:228 KERNEL/(7723:7723): Kernel listo para recibir consolas
+[INFO] 07:37:20:347 KERNEL/(7723:7723): Se conecto una consola
+[ERROR] 07:37:20:349 KERNEL/(7723:7723): operacion no valida
+[INFO] 08:25:38:942 KERNEL/(4320:4320): Arranco a leer el archivo de configuracion
+[INFO] 08:25:38:943 KERNEL/(4320:4320): Termino de leer el archivo de configuracion
+[INFO] 08:25:38:943 KERNEL/(4320:4320): Kernel listo para recibir consolas
+[INFO] 08:25:49:284 KERNEL/(4320:4320): Se conecto una consola
+[ERROR] 08:25:49:284 KERNEL/(4320:4320): operacion no valida
+[INFO] 08:27:22:699 KERNEL/(4450:4450): Arranco a leer el archivo de configuracion
+[INFO] 08:27:22:699 KERNEL/(4450:4450): Termino de leer el archivo de configuracion
+[INFO] 08:27:22:699 KERNEL/(4450:4450): Kernel listo para recibir consolas
+[INFO] 08:27:27:998 KERNEL/(4450:4450): Se conecto una consola
+[INFO] 08:29:30:595 KERNEL/(4524:4524): Arranco a leer el archivo de configuracion
+[INFO] 08:29:30:595 KERNEL/(4524:4524): Termino de leer el archivo de configuracion
+[INFO] 08:29:30:595 KERNEL/(4524:4524): Kernel listo para recibir consolas
+[INFO] 08:29:31:793 KERNEL/(4524:4524): Se conecto una consola
+[ERROR] 08:29:31:794 KERNEL/(4524:4524): operacion no valida
+[INFO] 08:33:22:082 KERNEL/(4703:4703): Arranco a leer el archivo de configuracion
+[INFO] 08:33:22:082 KERNEL/(4703:4703): Termino de leer el archivo de configuracion
+[INFO] 08:33:22:082 KERNEL/(4703:4703): Kernel listo para recibir consolas
+[INFO] 08:33:23:744 KERNEL/(4703:4703): Se conecto una consola
+[ERROR] 08:33:23:744 KERNEL/(4703:4703): operacion no valida
+[INFO] 08:33:31:948 KERNEL/(4736:4736): Arranco a leer el archivo de configuracion
+[INFO] 08:33:31:948 KERNEL/(4736:4736): Termino de leer el archivo de configuracion
+[INFO] 08:33:31:948 KERNEL/(4736:4736): Error al iniciar el servidor
+[INFO] 08:33:33:183 KERNEL/(4740:4740): Arranco a leer el archivo de configuracion
+[INFO] 08:33:33:183 KERNEL/(4740:4740): Termino de leer el archivo de configuracion
+[INFO] 08:33:33:183 KERNEL/(4740:4740): Error al iniciar el servidor
+[INFO] 08:33:33:547 KERNEL/(4744:4744): Arranco a leer el archivo de configuracion
+[INFO] 08:33:33:547 KERNEL/(4744:4744): Termino de leer el archivo de configuracion
+[INFO] 08:33:33:547 KERNEL/(4744:4744): Error al iniciar el servidor
+[INFO] 08:33:33:791 KERNEL/(4748:4748): Arranco a leer el archivo de configuracion
+[INFO] 08:33:33:792 KERNEL/(4748:4748): Termino de leer el archivo de configuracion
+[INFO] 08:33:33:792 KERNEL/(4748:4748): Error al iniciar el servidor
+[INFO] 08:33:33:977 KERNEL/(4751:4751): Arranco a leer el archivo de configuracion
+[INFO] 08:33:33:977 KERNEL/(4751:4751): Termino de leer el archivo de configuracion
+[INFO] 08:33:33:978 KERNEL/(4751:4751): Error al iniciar el servidor
+[INFO] 08:33:34:166 KERNEL/(4754:4754): Arranco a leer el archivo de configuracion
+[INFO] 08:33:34:166 KERNEL/(4754:4754): Termino de leer el archivo de configuracion
+[INFO] 08:33:34:167 KERNEL/(4754:4754): Error al iniciar el servidor
+[INFO] 08:33:34:377 KERNEL/(4758:4758): Arranco a leer el archivo de configuracion
+[INFO] 08:33:34:378 KERNEL/(4758:4758): Termino de leer el archivo de configuracion
+[INFO] 08:33:34:378 KERNEL/(4758:4758): Error al iniciar el servidor
+[INFO] 08:33:34:561 KERNEL/(4761:4761): Arranco a leer el archivo de configuracion
+[INFO] 08:33:34:561 KERNEL/(4761:4761): Termino de leer el archivo de configuracion
+[INFO] 08:33:34:561 KERNEL/(4761:4761): Error al iniciar el servidor
+[INFO] 08:33:34:779 KERNEL/(4767:4767): Arranco a leer el archivo de configuracion
+[INFO] 08:33:34:779 KERNEL/(4767:4767): Termino de leer el archivo de configuracion
+[INFO] 08:33:34:780 KERNEL/(4767:4767): Error al iniciar el servidor
+[INFO] 08:33:47:763 KERNEL/(4790:4790): Arranco a leer el archivo de configuracion
+[INFO] 08:33:47:764 KERNEL/(4790:4790): Termino de leer el archivo de configuracion
+[INFO] 08:33:47:764 KERNEL/(4790:4790): Error al iniciar el servidor
+[INFO] 08:40:24:356 KERNEL/(5133:5133): Arranco a leer el archivo de configuracion
+[INFO] 08:40:24:356 KERNEL/(5133:5133): Termino de leer el archivo de configuracion
+[INFO] 08:40:24:356 KERNEL/(5133:5133): Kernel listo para recibir consolas
+[INFO] 08:40:26:228 KERNEL/(5133:5133): Se conecto una consola
+[ERROR] 08:40:26:229 KERNEL/(5133:5133): operacion no valida
+[INFO] 08:40:49:259 KERNEL/(5169:5169): Arranco a leer el archivo de configuracion
+[INFO] 08:40:49:260 KERNEL/(5169:5169): Termino de leer el archivo de configuracion
+[INFO] 08:40:49:260 KERNEL/(5169:5169): Error al iniciar el servidor
+[INFO] 08:41:20:385 KERNEL/(5218:5218): Arranco a leer el archivo de configuracion
+[INFO] 08:41:20:386 KERNEL/(5218:5218): Termino de leer el archivo de configuracion
+[INFO] 08:41:20:386 KERNEL/(5218:5218): Error al iniciar el servidor
+[INFO] 08:41:21:289 KERNEL/(5223:5223): Arranco a leer el archivo de configuracion
+[INFO] 08:41:21:289 KERNEL/(5223:5223): Termino de leer el archivo de configuracion
+[INFO] 08:41:21:289 KERNEL/(5223:5223): Error al iniciar el servidor
+[INFO] 08:41:42:584 KERNEL/(5231:5231): Arranco a leer el archivo de configuracion
+[INFO] 08:41:42:584 KERNEL/(5231:5231): Termino de leer el archivo de configuracion
+[INFO] 08:41:42:584 KERNEL/(5231:5231): Kernel listo para recibir consolas
+[INFO] 08:41:46:220 KERNEL/(5231:5231): Se conecto una consola
+[ERROR] 08:41:46:221 KERNEL/(5231:5231): operacion no valida
+[INFO] 08:42:24:861 KERNEL/(5301:5301): Arranco a leer el archivo de configuracion
+[INFO] 08:42:24:862 KERNEL/(5301:5301): Termino de leer el archivo de configuracion
+[INFO] 08:42:24:862 KERNEL/(5301:5301): Error al iniciar el servidor
+[INFO] 08:42:26:476 KERNEL/(5305:5305): Arranco a leer el archivo de configuracion
+[INFO] 08:42:26:476 KERNEL/(5305:5305): Termino de leer el archivo de configuracion
+[INFO] 08:42:26:476 KERNEL/(5305:5305): Error al iniciar el servidor
+[INFO] 08:42:26:842 KERNEL/(5309:5309): Arranco a leer el archivo de configuracion
+[INFO] 08:42:26:842 KERNEL/(5309:5309): Termino de leer el archivo de configuracion
+[INFO] 08:42:26:842 KERNEL/(5309:5309): Error al iniciar el servidor
+[INFO] 08:42:27:117 KERNEL/(5313:5313): Arranco a leer el archivo de configuracion
+[INFO] 08:42:27:118 KERNEL/(5313:5313): Termino de leer el archivo de configuracion
+[INFO] 08:42:27:118 KERNEL/(5313:5313): Error al iniciar el servidor
+[INFO] 08:42:27:337 KERNEL/(5316:5316): Arranco a leer el archivo de configuracion
+[INFO] 08:42:27:337 KERNEL/(5316:5316): Termino de leer el archivo de configuracion
+[INFO] 08:42:27:337 KERNEL/(5316:5316): Error al iniciar el servidor
+[INFO] 08:42:27:553 KERNEL/(5320:5320): Arranco a leer el archivo de configuracion
+[INFO] 08:42:27:553 KERNEL/(5320:5320): Termino de leer el archivo de configuracion
+[INFO] 08:42:27:553 KERNEL/(5320:5320): Error al iniciar el servidor
+[INFO] 08:42:27:742 KERNEL/(5323:5323): Arranco a leer el archivo de configuracion
+[INFO] 08:42:27:743 KERNEL/(5323:5323): Termino de leer el archivo de configuracion
+[INFO] 08:42:27:743 KERNEL/(5323:5323): Error al iniciar el servidor
+[INFO] 08:42:27:934 KERNEL/(5326:5326): Arranco a leer el archivo de configuracion
+[INFO] 08:42:27:934 KERNEL/(5326:5326): Termino de leer el archivo de configuracion
+[INFO] 08:42:27:934 KERNEL/(5326:5326): Error al iniciar el servidor
+[INFO] 08:42:28:148 KERNEL/(5330:5330): Arranco a leer el archivo de configuracion
+[INFO] 08:42:28:148 KERNEL/(5330:5330): Termino de leer el archivo de configuracion
+[INFO] 08:42:28:148 KERNEL/(5330:5330): Error al iniciar el servidor
+[INFO] 08:42:29:661 KERNEL/(5334:5334): Arranco a leer el archivo de configuracion
+[INFO] 08:42:29:661 KERNEL/(5334:5334): Termino de leer el archivo de configuracion
+[INFO] 08:42:29:661 KERNEL/(5334:5334): Error al iniciar el servidor
+[INFO] 08:43:11:135 KERNEL/(5352:5352): Arranco a leer el archivo de configuracion
+[INFO] 08:43:11:136 KERNEL/(5352:5352): Termino de leer el archivo de configuracion
+[INFO] 08:43:11:136 KERNEL/(5352:5352): Kernel listo para recibir consolas
+[INFO] 08:43:12:855 KERNEL/(5352:5352): Se conecto una consola
+[ERROR] 08:43:12:856 KERNEL/(5352:5352): operacion no valida
+[INFO] 08:47:14:238 KERNEL/(5488:5488): Arranco a leer el archivo de configuracion
+[INFO] 08:47:14:313 KERNEL/(5488:5488): Termino de leer el archivo de configuracion
+[INFO] 08:47:14:325 KERNEL/(5488:5488): Kernel listo para recibir consolas
+[INFO] 08:47:16:059 KERNEL/(5488:5488): Se conecto una consola
+[ERROR] 08:47:16:085 KERNEL/(5488:5488): operacion no valida
+[INFO] 08:48:22:778 KERNEL/(5621:5621): Arranco a leer el archivo de configuracion
+[INFO] 08:48:22:778 KERNEL/(5621:5621): Termino de leer el archivo de configuracion
+[INFO] 08:48:22:778 KERNEL/(5621:5621): Kernel listo para recibir consolas
+[INFO] 08:48:42:470 KERNEL/(5671:5671): Arranco a leer el archivo de configuracion
+[INFO] 08:48:42:470 KERNEL/(5671:5671): Termino de leer el archivo de configuracion
+[INFO] 08:48:42:471 KERNEL/(5671:5671): Kernel listo para recibir consolas
+[INFO] 08:48:44:462 KERNEL/(5671:5671): Se conecto una consola
+[ERROR] 08:48:44:463 KERNEL/(5671:5671): operacion no valida
+[INFO] 08:51:38:259 KERNEL/(5848:5848): Arranco a leer el archivo de configuracion
+[INFO] 08:51:38:260 KERNEL/(5848:5848): Termino de leer el archivo de configuracion
+[INFO] 08:51:38:260 KERNEL/(5848:5848): Kernel listo para recibir consolas
+[INFO] 08:51:40:514 KERNEL/(5848:5848): Se conecto una consola
+[ERROR] 08:51:40:515 KERNEL/(5848:5848): operacion no valida
+[INFO] 08:51:51:009 KERNEL/(5860:5860): Arranco a leer el archivo de configuracion
+[INFO] 08:51:51:078 KERNEL/(5860:5860): Termino de leer el archivo de configuracion
+[INFO] 08:51:51:090 KERNEL/(5860:5860): Error al iniciar el servidor
+[INFO] 08:53:40:206 KERNEL/(5969:5969): Arranco a leer el archivo de configuracion
+[INFO] 08:53:40:297 KERNEL/(5969:5969): Termino de leer el archivo de configuracion
+[INFO] 08:53:40:311 KERNEL/(5969:5969): Kernel listo para recibir consolas
+[INFO] 08:53:42:635 KERNEL/(5969:5969): Se conecto una consola
+[ERROR] 08:53:42:689 KERNEL/(5969:5969): operacion no valida
+[INFO] 08:54:44:431 KERNEL/(6035:6035): Arranco a leer el archivo de configuracion
+[INFO] 08:54:44:508 KERNEL/(6035:6035): Termino de leer el archivo de configuracion
+[INFO] 08:54:44:521 KERNEL/(6035:6035): Kernel listo para recibir consolas
+[INFO] 08:54:46:600 KERNEL/(6035:6035): Se conecto una consola
+[ERROR] 08:54:46:664 KERNEL/(6035:6035): operacion no valida
+[INFO] 08:55:04:884 KERNEL/(6074:6074): Arranco a leer el archivo de configuracion
+[INFO] 08:55:04:961 KERNEL/(6074:6074): Termino de leer el archivo de configuracion
+[INFO] 08:55:04:976 KERNEL/(6074:6074): Kernel listo para recibir consolas
+[INFO] 08:55:07:260 KERNEL/(6074:6074): Se conecto una consola
+[ERROR] 08:55:07:315 KERNEL/(6074:6074): operacion no valida
+[INFO] 17:39:43:137 KERNEL/(4709:4709): Arranco a leer el archivo de configuracion
+[INFO] 17:39:43:139 KERNEL/(4709:4709): Termino de leer el archivo de configuracion
+[INFO] 17:39:43:139 KERNEL/(4709:4709): Kernel listo para recibir consolas
+[INFO] 17:39:58:513 KERNEL/(4709:4709): Se conecto una consola
+[ERROR] 17:39:58:514 KERNEL/(4709:4709): operacion no valida
+[INFO] 17:54:28:048 KERNEL/(6417:6417): Arranco a leer el archivo de configuracion
+[INFO] 17:54:28:048 KERNEL/(6417:6417): Termino de leer el archivo de configuracion
+[INFO] 17:54:28:049 KERNEL/(6417:6417): Kernel listo para recibir consolas
+[INFO] 17:54:30:956 KERNEL/(6417:6417): Se conecto una consola
+[ERROR] 17:54:30:958 KERNEL/(6417:6417): operacion no valida

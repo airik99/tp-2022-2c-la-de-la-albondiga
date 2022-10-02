@@ -15,9 +15,24 @@
 
 typedef struct
 {
+	int largo_nombre;
 	char *nombre;
+	int cant_params;
 	t_list *params;
 } t_instruccion;
+
+typedef struct{
+	t_list* espacios_memoria;
+	t_list* instrucciones;
+} t_proceso;
+
+typedef enum estado {
+	NEW,
+	READY,
+	EXEC,
+	BLOCKED,
+	EXIT
+} estado;
 
 typedef struct 
 {
@@ -30,18 +45,11 @@ typedef struct
 	// tabla_de_segmentos
 } pcb;
 
-typedef enum estado {
-	NEW,
-	READY,
-	EXEC,
-	BLOCKED,
-	EXIT
-} estado;
-
-
-
-void print_instruccion(t_instruccion *);
+void print_valores(int valor);
 void destructor_instrucciones(t_list *);
-void destructor_instruccion(t_instruccion *);
-
+void destructor_instruccion(t_instruccion*);
+void print_instruccion(t_instruccion* );
 #endif
+
+
+

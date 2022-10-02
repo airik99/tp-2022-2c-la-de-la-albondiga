@@ -45,6 +45,6 @@ t_paquete_deserializado *deserializar_consola(int);
  *
  * @RETURN: una lista con las instrucciones.
  */
-t_list *deserializar_instrucciones(t_list *, uint32_t );
+t_list *deserializar_instrucciones(t_list *, u_int32_t );
 
 #endif
