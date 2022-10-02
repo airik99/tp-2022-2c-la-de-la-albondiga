@@ -34,7 +34,7 @@ void cargar_configuracion();
  *
  * @RETURN: Un paquete deserializado.
  */
-t_paquete_deserializado *deserializar_consola(int);
+t_proceso* deserializar_consola(int);
 
 /**
  * @DESC: Crea un paquete con el codigo de operacion indicado

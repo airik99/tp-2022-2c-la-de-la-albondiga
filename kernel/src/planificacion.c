@@ -10,7 +10,7 @@ void iniciar_planificador_largo_plazo(void) {
 	colaExit = list_create();
 }
 
-void planificar_largo(t_paquete_deserializado paquete) {
+void planificar_largo(t_proceso paquete) {
 	pcb* pcb_a_planificar=crear_nuevo_pcb(paquete);
 	list_add(colaNew, pcb_a_planificar);
 	log_info(logger, "Se agrego el pcb a la cola de new");
@@ -45,7 +45,7 @@ pcb* algoritmo_fifo(){
 	return primer_pcb_ready;
 }
 
-pcb* crear_nuevo_pcb(t_paquete_deserializado paquete_consola) {
+pcb* crear_nuevo_pcb(t_proceso paquete_consola) {
 	pcb *nuevo_pcb = malloc(sizeof(pcb));
 	nuevo_pcb->id = contador_id;
 	contador_id++;
@@ -55,6 +55,11 @@ pcb* crear_nuevo_pcb(t_paquete_deserializado paquete_consola) {
 	nuevo_pcb->estado_actual = NEW;
 	nuevo_pcb->estado_anterior = NULL;
 	return nuevo_pcb;
+}
+
+void escuchar_mensaje_cpu(){
+	//TODO Cuando reciba un mensaje del cpu para finalizar el proceso, llama a finalizar_pcb()
+	//finalizar_pcb(pcb_recibido);
 }
 
 void finalizar_pcb(pcb* pcb) {

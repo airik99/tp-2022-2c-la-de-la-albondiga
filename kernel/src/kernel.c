@@ -113,10 +113,10 @@ t_list *deserializar_instrucciones(t_list *stream_datos, uint32_t size_stream_da
 }
 */
 
-//t_paquete_deserializado *deserializar_consola(int  socket_cliente) {
+//t_proceso *deserializar_consola(int  socket_cliente) {
 
 	// t_paquete *paquete = recibir_paquete(socket_cliente);
-  	// t_paquete_deserializado *paquete_deserializado = malloc(sizeof(t_paquete_deserializado));
+  	// t_proceso *paquete_deserializado = malloc(sizeof(t_proceso));
     // //verificar la estructura de t_paquete para deserializarlo
   	// paquete_deserializado->tamanio_proceso = (uint32_t)paquete->buffer->size;
   	// paquete_deserializado->instrucciones = deserializar_instrucciones(paquete->buffer->stream, paquete->buffer->size);

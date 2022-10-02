@@ -14,7 +14,7 @@
  *
  * @RETURN: Un pcb.
  */
-pcb *crear_nuevo_pcb(t_paquete_deserializado);
+pcb *crear_nuevo_pcb(t_proceso);
 
 /**
  * @DESC: Arranca el planificador de largo plazo, crea las colas de new y la de exit
