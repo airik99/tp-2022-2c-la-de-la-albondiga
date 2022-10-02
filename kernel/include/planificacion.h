@@ -14,7 +14,7 @@
  *
  * @RETURN: Un pcb.
  */
-pcb *crear_nuevo_pcb(t_paquete);
+pcb *crear_nuevo_pcb(t_paquete_deserializado);
 
 /**
  * @DESC: Arranca el planificador de largo plazo, crea las colas de new y la de exit
@@ -27,5 +27,8 @@ void iniciar_planificador_largo_plazo(void);
 u_int32_t contador_id;
 t_list* colaNew;
 t_list *colaExit;
+t_list *colaReady;
+t_list *colaExec;
+t_list *colaBlock;
 
 #endif
