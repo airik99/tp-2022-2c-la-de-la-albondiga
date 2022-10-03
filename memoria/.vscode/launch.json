@@ -6,16 +6,16 @@
     "configurations": [
 
         {
-            "name": "Proceso1",
+            "name": "Memoria",
             "type": "cppdbg",
             "request": "launch",
             "preLaunchTask": "Make",
-            "program": "${workspaceFolder}/proceso1",
+            "program": "${workspaceFolder}/memoria",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
                 {

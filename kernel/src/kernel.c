@@ -1,125 +1,108 @@
 #include "kernel.h"
+
+#include <signal.h>
+
+#include "kernel_utils.h"
+#include "planificacion.h"
 #include "serializacion.h"
 
-config_kernel config_valores;
-t_config *config;
-t_log *logger;
-char* ip;
+char *ip;
+pthread_t t_manejo_consola;
 
-int main(int argc, char **argv)
-{
-    logger = log_create("cfg/kernel.log", "KERNEL", true, LOG_LEVEL_INFO);
+void manejador_seniales(int senial) {
+    switch (senial) {
+        case SIGINT:
+            log_info(logger, "Cerrando hilos");
+            pthread_cancel(t_manejo_consola);
+            break;
+    }
+}
 
+#include "tests.h"
+
+int main(int argc, char **argv) {
+    signal(SIGINT, manejador_seniales);
+    iniciar_logger();
     cargar_configuracion();
+    iniciar_planificador_largo_plazo();
+    iniciar_planificador_corto_plazo();
+
     ip = "127.0.0.1";
 
-    //CONEXION CON CONSOLAS
+    // CONEXION CON CONSOLAS
     int socket_servidor = iniciar_servidor(ip, config_valores.puerto_escucha);
 
-    if (socket_servidor == -1)
-    {
+    if (socket_servidor == -1) {
         log_info(logger, "Error al iniciar el servidor");
         return EXIT_FAILURE;
     }
     log_info(logger, "Kernel listo para recibir consolas");
 
-    int socket_cliente = esperar_cliente(socket_servidor);
-    
-    log_info(logger, "Se conecto una consola"); 
-    int cod_op = recibir_operacion(socket_cliente);
-    t_proceso* proceso;
-	switch(cod_op){
-		case INSTRUCCIONES:
-            proceso = recibir_proceso(socket_cliente);
-            log_info(logger, "Conexion con consola exitosa");
-            break;
-		default:
-			log_error(logger, "operacion no valida");
-			break;
-	}
+    pthread_create(&t_manejo_consola, NULL, (void *)manejar_consolas, (void *)socket_servidor);
+    pthread_join(t_manejo_consola, NULL);
+    /*
+    // CONEXION CON MEMORIA
+    log_info(logger, "Kernel iniciado. Intentando conectarse con la memoria");
 
-    list_iterate(proceso->instrucciones, destructor_instrucciones);
-/*
-    //CONEXION CON MEMORIA
-	log_info(logger, "Kernel iniciado. Intentando conectarse con la memoria");
+    int conexion_memoria = conectarse_a_servidor(ip, config_valores.puerto_memoria);
 
-	int conexion_memoria = conectarse_a_servidor(ip, config_valores.puerto_memoria);
+    if (conexion_memoria == -1) {
+        log_info(logger, "Error en la conexion al servidor. Terminando kernel");
+        return EXIT_FAILURE;
+    }
 
-	if (conexion_memoria == -1) {
-		log_info(logger, "Error en la conexion al servidor. Terminando kernel");
-		return EXIT_FAILURE;
-	}
+    log_info(logger, "Conexion con memoria exitosa");
 
-	log_info(logger, "Conexion con memoria exitosa");
-
-    //CONEXION CON CPU
+    // CONEXION CON CPU
     int conexion_cpu_dispatch = conectarse_a_servidor(ip, config_valores.puerto_cpu_dispatch);
     log_info(logger, "Conexion con cpu dispatch exitosa");
-    
+
     // int conexion_cpu_interrupt = conectarse_a_servidor(ip, config_valores.puerto_cpu_interrupt);
     // log_info(logger, "Conexion con cpu interrupt exitosa");
 
-	if (conexion_cpu_dispatch == -1 || conexion_cpu_interrupt == -1) {
-		log_info(logger, "Error en la conexion al servidor. Terminando kernel");
-		return EXIT_FAILURE;
-	}
+    if (conexion_cpu_dispatch == -1 || conexion_cpu_interrupt == -1) {
+        log_info(logger, "Error en la conexion al servidor. Terminando kernel");
+        return EXIT_FAILURE;
+    }
 
-    
- 
     liberar_conexion(conexion_cpu_dispatch);
-    // liberar_conexion(conexion_cpu_interrupt);
-    liberar_conexion(conexion_memoria);*/
-	config_destroy(config);
-	log_destroy(logger);
-    
+    liberar_conexion(conexion_cpu_interrupt);
+    liberar_conexion(conexion_memoria);
+    */
+    liberar_colas();
+    destruir_estructuras();
     return EXIT_SUCCESS;
-
 }
 
-void cargar_configuracion()
-{
-
-    config = config_create("cfg/Kernel.config");
-    log_info(logger, "Arranco a leer el archivo de configuracion");
-
-    config_valores.ip_memoria = config_get_string_value(config, "IP_MEMORIA");
-    config_valores.puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
-    config_valores.ip_cpu = config_get_string_value(config, "IP_CPU");
-    config_valores.puerto_cpu_dispatch = config_get_string_value(config, "PUERTO_CPU_DISPATCH");
-    config_valores.puerto_cpu_interrupt = config_get_string_value(config, "PUERTO_CPU_INTERRUPT");
-    config_valores.puerto_escucha = config_get_string_value(config, "PUERTO_ESCUCHA");
-    config_valores.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
-    config_valores.grado_max_multiprogramacion = config_get_int_value(config, "GRADO_MAX_MULTIPROGRAMACION");
-    config_valores.dispositivos_io = config_get_array_value(config, "DISPOSITIVOS_IO");
-    config_valores.tiempos_io = config_get_array_value(config, "TIEMPOS_IO");
-    config_valores.quantum_rr = config_get_int_value(config, "QUANTUM_RR");
-
-    log_info(logger, "Termino de leer el archivo de configuracion");
-    //log_destroy(logger);
+void manejar_consolas(int socket_servidor) {
+    while (1) {
+        int socket_cliente = esperar_cliente(socket_servidor);
+        // se crea thread por cada consola
+        pthread_t t;
+        pthread_create(&t, NULL, (void *)escuchar_consola, (void *)socket_cliente);
+        pthread_join(t, NULL);
+    }
 }
-/*
-t_list *deserializar_instrucciones(t_list *stream_datos, uint32_t size_stream_datos) {
-	
-    t_list *instrucciones = list_create();
-    void *magic = malloc(size_stream_datos);
-    int desplazamiento = 0;
 
-  	for(int i = 0; i < size_stream_datos; i++) {
-    //aca deberia iterar sobre el stream de datos e ir llenando a la lista de instrucciones
-    	memcpy(magic + desplazamiento, stream_datos, size_stream_datos);
-	    desplazamiento += size_stream_datos;
-  	}
-  	return instrucciones; 
+void escuchar_consola(int socket_cliente) {
+    log_info(logger, "Se conecto una consola");
+    int cod_op = recibir_operacion(socket_cliente);
+    t_proceso *proceso;
+    uint32_t respuesta;
+    switch (cod_op) {
+        case INSTRUCCIONES:
+            proceso = recibir_proceso(socket_cliente);
+            t_pcb *pcb = crear_nuevo_pcb(proceso);
+            // planificar_largo(pcb);
+            // Por ahora borro estas cosas para que no salten MemLeaks con Valgrind despues hay
+            eliminar_pcb(pcb);
+            list_destroy(proceso->espacios_memoria);
+            free(proceso);
+            break;
+        default:
+            respuesta = 1;
+            send(socket_cliente, &respuesta, sizeof(uint32_t), 0);
+            log_error(logger, "operacion no valida");
+            break;
+    }
 }
-*/
-
-//t_proceso *deserializar_consola(int  socket_cliente) {
-
-	// t_paquete *paquete = recibir_paquete(socket_cliente);
-  	// t_proceso *paquete_deserializado = malloc(sizeof(t_proceso));
-    // //verificar la estructura de t_paquete para deserializarlo
-  	// paquete_deserializado->tamanio_proceso = (uint32_t)paquete->buffer->size;
-  	// paquete_deserializado->instrucciones = deserializar_instrucciones(paquete->buffer->stream, paquete->buffer->size);
-  	// return paquete_deserializado;
-//}
-

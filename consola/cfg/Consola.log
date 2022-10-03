@@ -180,3 +180,465 @@
 [INFO] 17:54:09:928 Consola/(6302:6302): Error en la conexion al servidor. Terminando consola
 [INFO] 17:54:30:956 Consola/(6419:6419): Consola iniciada. Intentando conectarse al kernel
 [INFO] 17:54:30:957 Consola/(6419:6419): Conexion correcta. Enviando instrucciones
+[INFO] 22:55:47:402 Consola/(3279:3279): Consola iniciada. Intentando conectarse al kernel
+[INFO] 22:55:47:402 Consola/(3279:3279): Error en la conexion al servidor. Terminando consola
+[INFO] 22:56:22:575 Consola/(3371:3371): Consola iniciada. Intentando conectarse al kernel
+[INFO] 22:56:26:759 Consola/(3371:3371): Error en la conexion al servidor. Terminando consola
+[INFO] 00:49:37:505 Consola/(2247:2247): Consola iniciada. Intentando conectarse al kernel
+[INFO] 00:49:37:506 Consola/(2247:2247): Conexion correcta. Enviando instrucciones
+[INFO] 00:57:42:046 Consola/(2818:2818): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:03:07:829 Consola/(3419:3419): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:03:07:834 Consola/(3419:3419): Conexion correcta. Enviando instrucciones
+[INFO] 01:03:35:125 Consola/(3525:3525): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:03:35:126 Consola/(3525:3525): Conexion correcta. Enviando instrucciones
+[INFO] 01:04:08:077 Consola/(3681:3681): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:04:08:079 Consola/(3681:3681): Conexion correcta. Enviando instrucciones
+[INFO] 01:05:42:035 Consola/(3871:3871): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:05:42:038 Consola/(3871:3871): Conexion correcta. Enviando instrucciones
+[INFO] 01:07:13:635 Consola/(4085:4085): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:07:13:636 Consola/(4085:4085): Conexion correcta. Enviando instrucciones
+[INFO] 01:28:23:024 Consola/(5751:5751): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:28:23:026 Consola/(5751:5751): Conexion correcta. Enviando instrucciones
+[INFO] 01:30:53:922 Consola/(6047:6047): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:30:53:924 Consola/(6047:6047): Conexion correcta. Enviando instrucciones
+[INFO] 01:33:21:817 Consola/(6326:6326): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:33:21:818 Consola/(6326:6326): Conexion correcta. Enviando instrucciones
+[INFO] 01:33:41:936 Consola/(6420:6420): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:33:41:936 Consola/(6420:6420): Conexion correcta. Enviando instrucciones
+[INFO] 01:35:11:104 Consola/(6646:6646): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:35:11:105 Consola/(6646:6646): Conexion correcta. Enviando instrucciones
+[INFO] 01:38:03:256 Consola/(6989:6989): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:38:03:257 Consola/(6989:6989): Conexion correcta. Enviando instrucciones
+[INFO] 01:38:25:618 Consola/(7139:7139): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:38:25:618 Consola/(7139:7139): Conexion correcta. Enviando instrucciones
+[INFO] 01:40:38:347 Consola/(7286:7286): Consola iniciada. Intentando conectarse al kernel
+[INFO] 01:40:38:349 Consola/(7286:7286): Conexion correcta. Enviando instrucciones
+[INFO] 02:08:49:533 Consola/(7859:7859): Consola iniciada. Intentando conectarse al kernel
+[INFO] 02:10:00:223 Consola/(8270:8270): Consola iniciada. Intentando conectarse al kernel
+[INFO] 02:20:05:854 Consola/(8744:8744): Consola iniciada. Intentando conectarse al kernel
+[INFO] 02:21:05:628 Consola/(9079:9079): Consola iniciada. Intentando conectarse al kernel
+[INFO] 02:35:21:235 Consola/(9476:9476): Consola iniciada. Intentando conectarse al kernel
+[INFO] 02:36:45:965 Consola/(9623:9623): Consola iniciada. Intentando conectarse al kernel
+[INFO] 02:39:26:799 Consola/(9802:9802): Consola iniciada. Intentando conectarse al kernel
+[INFO] 02:39:34:198 Consola/(9802:9802): Error en la conexion al servidor. Terminando consola
+[INFO] 03:06:12:154 Consola/(10130:10130): Consola iniciada. Intentando conectarse al kernel
+[INFO] 03:06:19:282 Consola/(10130:10130): Error en la conexion al servidor. Terminando consola
+[INFO] 03:06:44:269 Consola/(10387:10387): Consola iniciada. Intentando conectarse al kernel
+[INFO] 03:06:50:803 Consola/(10387:10387): Error en la conexion al servidor. Terminando consola
+[INFO] 03:08:30:580 Consola/(10764:10764): Consola iniciada. Intentando conectarse al kernel
+[INFO] 03:09:44:760 Consola/(11130:11130): Consola iniciada. Intentando conectarse al kernel
+[INFO] 03:09:44:765 Consola/(11130:11130): Conexion correcta. Enviando instrucciones
+[INFO] 03:10:28:300 Consola/(11294:11294): Consola iniciada. Intentando conectarse al kernel
+[INFO] 03:10:28:303 Consola/(11294:11294): Conexion correcta. Enviando instrucciones
+[INFO] 03:11:02:011 Consola/(11466:11466): Consola iniciada. Intentando conectarse al kernel
+[INFO] 03:11:02:014 Consola/(11466:11466): Conexion correcta. Enviando instrucciones
+[INFO] 03:11:55:547 Consola/(11704:11704): Consola iniciada. Intentando conectarse al kernel
+[INFO] 03:11:55:549 Consola/(11704:11704): Conexion correcta. Enviando instrucciones
+[INFO] 03:12:23:501 Consola/(11826:11826): Consola iniciada. Intentando conectarse al kernel
+[INFO] 03:12:23:501 Consola/(11826:11826): Error en la conexion al servidor. Terminando consola
+[INFO] 03:12:25:756 Consola/(11830:11830): Consola iniciada. Intentando conectarse al kernel
+[INFO] 03:12:25:759 Consola/(11830:11830): Conexion correcta. Enviando instrucciones
+[INFO] 05:16:11:468 Consola/(2075:2075): Consola iniciada. Intentando conectarse al kernel
+[INFO] 05:16:11:473 Consola/(2075:2075): Conexion correcta. Enviando instrucciones
+[INFO] 05:17:24:824 Consola/(2120:2120): Consola iniciada. Intentando conectarse al kernel
+[INFO] 05:17:24:824 Consola/(2120:2120): Error en la conexion al servidor. Terminando consola
+[INFO] 05:17:33:886 Consola/(2167:2167): Consola iniciada. Intentando conectarse al kernel
+[INFO] 05:17:33:886 Consola/(2167:2167): Error en la conexion al servidor. Terminando consola
+[INFO] 05:17:41:409 Consola/(2213:2213): Consola iniciada. Intentando conectarse al kernel
+[INFO] 05:17:41:412 Consola/(2213:2213): Conexion correcta. Enviando instrucciones
+[INFO] 05:18:39:282 Consola/(2371:2371): Consola iniciada. Intentando conectarse al kernel
+[INFO] 05:18:39:285 Consola/(2371:2371): Conexion correcta. Enviando instrucciones
+[INFO] 07:05:25:666 Consola/(2153:2153): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:05:25:667 Consola/(2153:2153): Conexion correcta. Enviando instrucciones
+[INFO] 07:05:27:490 Consola/(2162:2162): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:05:27:490 Consola/(2162:2162): Error en la conexion al servidor. Terminando consola
+[INFO] 07:06:25:884 Consola/(2202:2202): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:25:884 Consola/(2202:2202): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:26:323 Consola/(2205:2205): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:26:323 Consola/(2205:2205): Error en la conexion al servidor. Terminando consola
+[INFO] 07:06:37:821 Consola/(2221:2221): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:37:822 Consola/(2221:2221): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:38:260 Consola/(2223:2223): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:38:260 Consola/(2223:2223): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:42:364 Consola/(2225:2225): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:42:364 Consola/(2225:2225): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:43:370 Consola/(2227:2227): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:43:370 Consola/(2227:2227): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:44:094 Consola/(2229:2229): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:44:094 Consola/(2229:2229): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:44:796 Consola/(2231:2231): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:44:796 Consola/(2231:2231): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:45:499 Consola/(2233:2233): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:45:499 Consola/(2233:2233): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:46:099 Consola/(2235:2235): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:46:099 Consola/(2235:2235): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:46:699 Consola/(2237:2237): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:46:699 Consola/(2237:2237): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:47:299 Consola/(2239:2239): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:47:300 Consola/(2239:2239): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:47:926 Consola/(2241:2241): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:47:927 Consola/(2241:2241): Conexion correcta. Enviando instrucciones
+[INFO] 07:06:48:477 Consola/(2243:2243): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:06:48:478 Consola/(2243:2243): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:32:198 Consola/(2295:2295): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:32:198 Consola/(2295:2295): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:33:127 Consola/(2297:2297): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:33:128 Consola/(2297:2297): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:34:561 Consola/(2299:2299): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:34:561 Consola/(2299:2299): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:35:060 Consola/(2301:2301): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:35:061 Consola/(2301:2301): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:35:818 Consola/(2303:2303): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:35:818 Consola/(2303:2303): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:36:310 Consola/(2305:2305): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:36:311 Consola/(2305:2305): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:36:783 Consola/(2307:2307): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:36:783 Consola/(2307:2307): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:37:334 Consola/(2309:2309): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:37:334 Consola/(2309:2309): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:37:910 Consola/(2311:2311): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:37:911 Consola/(2311:2311): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:38:509 Consola/(2313:2313): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:38:509 Consola/(2313:2313): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:39:009 Consola/(2315:2315): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:39:010 Consola/(2315:2315): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:39:558 Consola/(2317:2317): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:39:558 Consola/(2317:2317): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:40:108 Consola/(2319:2319): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:40:108 Consola/(2319:2319): Conexion correcta. Enviando instrucciones
+[INFO] 07:07:40:633 Consola/(2321:2321): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:07:40:633 Consola/(2321:2321): Conexion correcta. Enviando instrucciones
+[INFO] 07:08:05:377 Consola/(2352:2352): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:08:05:378 Consola/(2352:2352): Conexion correcta. Enviando instrucciones
+[INFO] 07:08:05:995 Consola/(2355:2355): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:08:05:995 Consola/(2355:2355): Error en la conexion al servidor. Terminando consola
+[INFO] 07:09:09:706 Consola/(2409:2409): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:09:09:707 Consola/(2409:2409): Conexion correcta. Enviando instrucciones
+[INFO] 07:09:10:459 Consola/(2411:2411): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:09:10:460 Consola/(2411:2411): Conexion correcta. Enviando instrucciones
+[INFO] 07:09:11:589 Consola/(2413:2413): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:09:11:590 Consola/(2413:2413): Conexion correcta. Enviando instrucciones
+[INFO] 07:09:12:138 Consola/(2415:2415): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:09:12:138 Consola/(2415:2415): Conexion correcta. Enviando instrucciones
+[INFO] 07:09:12:840 Consola/(2417:2417): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:09:12:841 Consola/(2417:2417): Conexion correcta. Enviando instrucciones
+[INFO] 07:09:13:390 Consola/(2419:2419): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:09:13:391 Consola/(2419:2419): Conexion correcta. Enviando instrucciones
+[INFO] 07:10:10:873 Consola/(2483:2483): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:10:10:873 Consola/(2483:2483): Error en la conexion al servidor. Terminando consola
+[INFO] 07:10:14:164 Consola/(2486:2486): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:10:14:164 Consola/(2486:2486): Conexion correcta. Enviando instrucciones
+[INFO] 07:10:51:745 Consola/(2658:2658): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:10:51:745 Consola/(2658:2658): Conexion correcta. Enviando instrucciones
+[INFO] 07:11:31:789 Consola/(2773:2773): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:11:31:789 Consola/(2773:2773): Conexion correcta. Enviando instrucciones
+[INFO] 07:12:06:897 Consola/(2906:2906): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:12:06:900 Consola/(2906:2906): Conexion correcta. Enviando instrucciones
+[INFO] 07:12:37:306 Consola/(3020:3020): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:12:37:306 Consola/(3020:3020): Conexion correcta. Enviando instrucciones
+[INFO] 07:21:28:324 Consola/(3626:3626): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:21:28:324 Consola/(3626:3626): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:13:031 Consola/(3667:3667): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:13:032 Consola/(3667:3667): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:14:444 Consola/(3669:3669): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:14:445 Consola/(3669:3669): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:15:574 Consola/(3671:3671): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:15:574 Consola/(3671:3671): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:16:125 Consola/(3673:3673): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:16:125 Consola/(3673:3673): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:17:511 Consola/(3675:3675): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:17:511 Consola/(3675:3675): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:18:010 Consola/(3677:3677): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:18:011 Consola/(3677:3677): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:18:511 Consola/(3679:3679): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:18:511 Consola/(3679:3679): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:18:982 Consola/(3681:3681): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:18:982 Consola/(3681:3681): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:19:484 Consola/(3683:3683): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:19:484 Consola/(3683:3683): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:19:956 Consola/(3685:3685): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:19:957 Consola/(3685:3685): Conexion correcta. Enviando instrucciones
+[INFO] 07:22:20:429 Consola/(3687:3687): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:22:20:429 Consola/(3687:3687): Conexion correcta. Enviando instrucciones
+[INFO] 07:24:36:705 Consola/(3972:3972): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:24:36:705 Consola/(3972:3972): Conexion correcta. Enviando instrucciones
+[INFO] 07:29:03:687 Consola/(4135:4135): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:29:03:688 Consola/(4135:4135): Conexion correcta. Enviando instrucciones
+[INFO] 07:29:04:946 Consola/(4150:4150): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:29:04:946 Consola/(4150:4150): Conexion correcta. Enviando instrucciones
+[INFO] 07:29:05:749 Consola/(4161:4161): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:29:05:749 Consola/(4161:4161): Conexion correcta. Enviando instrucciones
+[INFO] 07:29:43:899 Consola/(4293:4293): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:29:43:899 Consola/(4293:4293): Conexion correcta. Enviando instrucciones
+[INFO] 07:31:28:407 Consola/(4499:4499): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:31:28:408 Consola/(4499:4499): Conexion correcta. Enviando instrucciones
+[INFO] 07:34:04:409 Consola/(4695:4695): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:34:04:409 Consola/(4695:4695): Conexion correcta. Enviando instrucciones
+[INFO] 07:34:59:966 Consola/(4773:4773): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:34:59:967 Consola/(4773:4773): Conexion correcta. Enviando instrucciones
+[INFO] 07:38:09:172 Consola/(4863:4863): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:38:09:173 Consola/(4863:4863): Conexion correcta. Enviando instrucciones
+[INFO] 07:39:19:332 Consola/(4880:4880): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:39:19:333 Consola/(4880:4880): Conexion correcta. Enviando instrucciones
+[INFO] 07:43:23:607 Consola/(4978:4978): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:43:23:608 Consola/(4978:4978): Conexion correcta. Enviando instrucciones
+[INFO] 07:44:28:364 Consola/(5012:5012): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:44:28:365 Consola/(5012:5012): Conexion correcta. Enviando instrucciones
+[INFO] 07:45:43:803 Consola/(5051:5051): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:45:43:805 Consola/(5051:5051): Conexion correcta. Enviando instrucciones
+[INFO] 07:46:18:996 Consola/(5089:5089): Consola iniciada. Intentando conectarse al kernel
+[INFO] 07:46:18:996 Consola/(5089:5089): Conexion correcta. Enviando instrucciones
+[INFO] 09:55:00:507 Consola/(5399:5399): Consola iniciada. Intentando conectarse al kernel
+[INFO] 09:55:00:507 Consola/(5399:5399): Conexion correcta. Enviando instrucciones
+[INFO] 09:59:26:152 Consola/(5424:5424): Consola iniciada. Intentando conectarse al kernel
+[INFO] 09:59:26:153 Consola/(5424:5424): Conexion correcta. Enviando instrucciones
+[INFO] 10:10:22:547 Consola/(5865:5865): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:10:22:549 Consola/(5865:5865): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:16:360 Consola/(5939:5939): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:16:365 Consola/(5939:5939): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:25:588 Consola/(5953:5953): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:25:589 Consola/(5953:5953): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:26:868 Consola/(5955:5955): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:26:869 Consola/(5955:5955): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:27:367 Consola/(5957:5957): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:27:367 Consola/(5957:5957): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:27:814 Consola/(5959:5959): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:27:814 Consola/(5959:5959): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:28:212 Consola/(5961:5961): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:28:213 Consola/(5961:5961): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:28:634 Consola/(5963:5963): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:28:635 Consola/(5963:5963): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:29:081 Consola/(5965:5965): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:29:082 Consola/(5965:5965): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:29:479 Consola/(5967:5967): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:29:479 Consola/(5967:5967): Conexion correcta. Enviando instrucciones
+[INFO] 10:12:29:826 Consola/(5969:5969): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:12:29:826 Consola/(5969:5969): Conexion correcta. Enviando instrucciones
+[INFO] 10:13:12:572 Consola/(6021:6021): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:13:12:577 Consola/(6021:6021): Conexion correcta. Enviando instrucciones
+[INFO] 10:13:14:415 Consola/(6025:6025): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:13:14:417 Consola/(6025:6025): Conexion correcta. Enviando instrucciones
+[INFO] 10:13:14:736 Consola/(6027:6027): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:13:14:736 Consola/(6027:6027): Conexion correcta. Enviando instrucciones
+[INFO] 10:13:14:928 Consola/(6029:6029): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:13:14:929 Consola/(6029:6029): Conexion correcta. Enviando instrucciones
+[INFO] 10:13:15:118 Consola/(6031:6031): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:13:15:119 Consola/(6031:6031): Conexion correcta. Enviando instrucciones
+[INFO] 10:13:15:308 Consola/(6033:6033): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:13:15:309 Consola/(6033:6033): Conexion correcta. Enviando instrucciones
+[INFO] 10:13:15:469 Consola/(6035:6035): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:13:15:470 Consola/(6035:6035): Conexion correcta. Enviando instrucciones
+[INFO] 10:13:15:639 Consola/(6037:6037): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:13:15:640 Consola/(6037:6037): Conexion correcta. Enviando instrucciones
+[INFO] 10:13:15:807 Consola/(6039:6039): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:13:15:808 Consola/(6039:6039): Conexion correcta. Enviando instrucciones
+[INFO] 10:14:10:628 Consola/(6086:6086): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:14:10:630 Consola/(6086:6086): Conexion correcta. Enviando instrucciones
+[INFO] 10:14:14:729 Consola/(6088:6088): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:14:14:730 Consola/(6088:6088): Conexion correcta. Enviando instrucciones
+[INFO] 10:14:15:430 Consola/(6090:6090): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:14:15:430 Consola/(6090:6090): Conexion correcta. Enviando instrucciones
+[INFO] 10:14:15:570 Consola/(6092:6092): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:14:15:571 Consola/(6092:6092): Conexion correcta. Enviando instrucciones
+[INFO] 10:14:15:741 Consola/(6094:6094): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:14:15:742 Consola/(6094:6094): Conexion correcta. Enviando instrucciones
+[INFO] 10:14:15:907 Consola/(6096:6096): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:14:15:907 Consola/(6096:6096): Conexion correcta. Enviando instrucciones
+[INFO] 10:14:16:040 Consola/(6098:6098): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:14:16:040 Consola/(6098:6098): Conexion correcta. Enviando instrucciones
+[INFO] 10:14:16:206 Consola/(6100:6100): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:14:16:206 Consola/(6100:6100): Conexion correcta. Enviando instrucciones
+[INFO] 10:22:27:470 Consola/(6378:6378): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:22:27:532 Consola/(6378:6378): Conexion correcta. Enviando instrucciones
+[INFO] 10:22:31:191 Consola/(6388:6388): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:22:31:256 Consola/(6388:6388): Conexion correcta. Enviando instrucciones
+[INFO] 10:22:32:652 Consola/(6392:6392): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:22:32:713 Consola/(6392:6392): Conexion correcta. Enviando instrucciones
+[INFO] 10:22:34:030 Consola/(6396:6396): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:22:34:085 Consola/(6396:6396): Conexion correcta. Enviando instrucciones
+[INFO] 10:41:33:416 Consola/(6672:6672): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:41:33:474 Consola/(6672:6672): Error en la conexion al servidor. Terminando consola
+[INFO] 10:41:44:548 Consola/(6696:6696): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:41:44:624 Consola/(6696:6696): Conexion correcta. Enviando instrucciones
+[INFO] 10:41:56:250 Consola/(6707:6707): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:41:56:313 Consola/(6707:6707): Conexion correcta. Enviando instrucciones
+[INFO] 10:41:58:524 Consola/(6717:6717): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:41:58:578 Consola/(6717:6717): Conexion correcta. Enviando instrucciones
+[INFO] 10:41:59:602 Consola/(6721:6721): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:41:59:668 Consola/(6721:6721): Conexion correcta. Enviando instrucciones
+[INFO] 10:42:14:830 Consola/(6747:6747): Consola iniciada. Intentando conectarse al kernel
+[INFO] 10:42:14:895 Consola/(6747:6747): Conexion correcta. Enviando instrucciones
+[INFO] 11:44:55:989 Consola/(8944:8944): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:44:56:064 Consola/(8944:8944): Error en la conexion al servidor. Terminando consola
+[INFO] 11:57:37:467 Consola/(9941:9941): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:37:468 Consola/(9941:9941): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:51:654 Consola/(9957:9957): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:51:767 Consola/(9957:9957): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:52:697 Consola/(9959:9959): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:52:697 Consola/(9959:9959): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:55:189 Consola/(9970:9970): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:55:191 Consola/(9970:9970): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:55:305 Consola/(9969:9969): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:55:384 Consola/(9969:9969): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:55:890 Consola/(9973:9973): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:55:892 Consola/(9973:9973): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:56:591 Consola/(9975:9975): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:56:592 Consola/(9975:9975): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:56:757 Consola/(9977:9977): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:56:759 Consola/(9977:9977): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:56:924 Consola/(9979:9979): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:56:925 Consola/(9979:9979): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:57:085 Consola/(9981:9981): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:57:086 Consola/(9981:9981): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:57:222 Consola/(9983:9983): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:57:223 Consola/(9983:9983): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:57:382 Consola/(9985:9985): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:57:382 Consola/(9985:9985): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:57:547 Consola/(9987:9987): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:57:548 Consola/(9987:9987): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:57:686 Consola/(9989:9989): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:57:686 Consola/(9989:9989): Conexion correcta. Enviando instrucciones
+[INFO] 11:57:57:855 Consola/(9991:9991): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:57:57:856 Consola/(9991:9991): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:00:049 Consola/(9999:9999): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:00:050 Consola/(9999:9999): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:00:423 Consola/(10001:10001): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:00:423 Consola/(10001:10001): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:00:665 Consola/(10003:10003): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:00:665 Consola/(10003:10003): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:00:861 Consola/(10005:10005): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:00:862 Consola/(10005:10005): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:01:076 Consola/(10007:10007): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:01:077 Consola/(10007:10007): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:01:293 Consola/(10009:10009): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:01:294 Consola/(10009:10009): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:01:486 Consola/(10011:10011): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:01:486 Consola/(10011:10011): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:01:676 Consola/(10013:10013): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:01:677 Consola/(10013:10013): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:01:865 Consola/(10015:10015): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:01:867 Consola/(10015:10015): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:02:059 Consola/(10017:10017): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:02:060 Consola/(10017:10017): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:02:271 Consola/(10019:10019): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:02:271 Consola/(10019:10019): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:02:462 Consola/(10021:10021): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:02:462 Consola/(10021:10021): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:02:651 Consola/(10023:10023): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:02:652 Consola/(10023:10023): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:02:840 Consola/(10025:10025): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:02:842 Consola/(10025:10025): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:03:030 Consola/(10027:10027): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:03:031 Consola/(10027:10027): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:03:248 Consola/(10029:10029): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:03:248 Consola/(10029:10029): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:03:389 Consola/(10031:10031): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:03:390 Consola/(10031:10031): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:18:830 Consola/(10055:10055): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:18:835 Consola/(10055:10055): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:19:810 Consola/(10057:10057): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:19:815 Consola/(10057:10057): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:20:206 Consola/(10059:10059): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:20:207 Consola/(10059:10059): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:20:427 Consola/(10061:10061): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:20:428 Consola/(10061:10061): Conexion correcta. Enviando instrucciones
+[INFO] 11:58:20:593 Consola/(10063:10063): Consola iniciada. Intentando conectarse al kernel
+[INFO] 11:58:20:595 Consola/(10063:10063): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:18:018 Consola/(11100:11100): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:18:021 Consola/(11100:11100): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:28:987 Consola/(11108:11108): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:28:989 Consola/(11108:11108): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:29:689 Consola/(11110:11110): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:29:689 Consola/(11110:11110): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:30:187 Consola/(11112:11112): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:30:188 Consola/(11112:11112): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:30:584 Consola/(11114:11114): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:30:584 Consola/(11114:11114): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:31:006 Consola/(11116:11116): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:31:007 Consola/(11116:11116): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:31:429 Consola/(11118:11118): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:31:430 Consola/(11118:11118): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:31:801 Consola/(11120:11120): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:31:802 Consola/(11120:11120): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:32:175 Consola/(11122:11122): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:32:175 Consola/(11122:11122): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:32:568 Consola/(11124:11124): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:32:569 Consola/(11124:11124): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:32:966 Consola/(11126:11126): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:32:966 Consola/(11126:11126): Conexion correcta. Enviando instrucciones
+[INFO] 12:15:33:363 Consola/(11128:11128): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:15:33:363 Consola/(11128:11128): Conexion correcta. Enviando instrucciones
+[INFO] 12:31:30:388 Consola/(11721:11721): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:31:30:393 Consola/(11721:11721): Conexion correcta. Enviando instrucciones
+[INFO] 12:31:33:395 Consola/(11729:11729): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:31:33:397 Consola/(11729:11729): Conexion correcta. Enviando instrucciones
+[INFO] 12:31:34:197 Consola/(11731:11731): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:31:34:197 Consola/(11731:11731): Conexion correcta. Enviando instrucciones
+[INFO] 12:31:34:670 Consola/(11733:11733): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:31:34:670 Consola/(11733:11733): Conexion correcta. Enviando instrucciones
+[INFO] 12:31:34:941 Consola/(11735:11735): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:31:34:941 Consola/(11735:11735): Conexion correcta. Enviando instrucciones
+[INFO] 12:31:35:161 Consola/(11737:11737): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:31:35:161 Consola/(11737:11737): Conexion correcta. Enviando instrucciones
+[INFO] 12:31:35:355 Consola/(11739:11739): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:31:35:355 Consola/(11739:11739): Conexion correcta. Enviando instrucciones
+[INFO] 12:31:35:625 Consola/(11741:11741): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:31:35:625 Consola/(11741:11741): Conexion correcta. Enviando instrucciones
+[INFO] 12:31:36:424 Consola/(11743:11743): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:31:36:424 Consola/(11743:11743): Conexion correcta. Enviando instrucciones
+[INFO] 12:33:46:593 Consola/(11799:11799): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:33:46:597 Consola/(11799:11799): Conexion correcta. Enviando instrucciones
+[INFO] 12:35:49:615 Consola/(11862:11862): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:35:49:617 Consola/(11862:11862): Conexion correcta. Enviando instrucciones
+[INFO] 12:37:22:450 Consola/(11966:11966): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:37:22:453 Consola/(11966:11966): Conexion correcta. Enviando instrucciones
+[INFO] 12:37:24:191 Consola/(11968:11968): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:37:24:193 Consola/(11968:11968): Conexion correcta. Enviando instrucciones
+[INFO] 12:37:24:487 Consola/(11970:11970): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:37:24:488 Consola/(11970:11970): Conexion correcta. Enviando instrucciones
+[INFO] 12:37:26:128 Consola/(11972:11972): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:37:26:128 Consola/(11972:11972): Conexion correcta. Enviando instrucciones
+[INFO] 12:40:06:347 Consola/(12078:12078): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:40:06:349 Consola/(12078:12078): Conexion correcta. Enviando instrucciones
+[INFO] 12:40:07:224 Consola/(12086:12086): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:40:07:227 Consola/(12086:12086): Conexion correcta. Enviando instrucciones
+[INFO] 12:40:07:691 Consola/(12088:12088): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:40:07:692 Consola/(12088:12088): Conexion correcta. Enviando instrucciones
+[INFO] 12:40:08:064 Consola/(12090:12090): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:40:08:065 Consola/(12090:12090): Conexion correcta. Enviando instrucciones
+[INFO] 12:40:08:384 Consola/(12092:12092): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:40:08:385 Consola/(12092:12092): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:17:402 Consola/(12151:12151): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:17:406 Consola/(12151:12151): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:18:492 Consola/(12154:12154): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:18:496 Consola/(12154:12154): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:19:700 Consola/(12162:12162): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:19:701 Consola/(12162:12162): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:20:249 Consola/(12164:12164): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:20:249 Consola/(12164:12164): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:21:073 Consola/(12166:12166): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:21:075 Consola/(12166:12166): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:21:849 Consola/(12168:12168): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:21:850 Consola/(12168:12168): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:22:450 Consola/(12170:12170): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:22:450 Consola/(12170:12170): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:22:948 Consola/(12172:12172): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:22:949 Consola/(12172:12172): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:23:574 Consola/(12174:12174): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:23:574 Consola/(12174:12174): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:24:047 Consola/(12176:12176): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:24:049 Consola/(12176:12176): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:24:647 Consola/(12180:12180): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:24:648 Consola/(12180:12180): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:25:170 Consola/(12182:12182): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:25:171 Consola/(12182:12182): Conexion correcta. Enviando instrucciones
+[INFO] 12:42:25:770 Consola/(12184:12184): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:42:25:771 Consola/(12184:12184): Conexion correcta. Enviando instrucciones
+[INFO] 12:46:02:588 Consola/(12673:12673): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:46:02:671 Consola/(12673:12673): Conexion correcta. Enviando instrucciones
+[INFO] 12:46:06:561 Consola/(12677:12677): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:46:06:626 Consola/(12677:12677): Conexion correcta. Enviando instrucciones
+[INFO] 12:46:08:485 Consola/(12681:12681): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:46:08:551 Consola/(12681:12681): Conexion correcta. Enviando instrucciones
+[INFO] 12:46:11:077 Consola/(12685:12685): Consola iniciada. Intentando conectarse al kernel
+[INFO] 12:46:11:142 Consola/(12685:12685): Conexion correcta. Enviando instrucciones

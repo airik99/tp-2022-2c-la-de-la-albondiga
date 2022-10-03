@@ -1,34 +1,30 @@
 #ifndef PLANIFICACION_H
 #define PLANIFICACION_H
 
-#include <shared_utils.h>
-#include <conexion.h>
 #include <serializacion.h>
+#include <shared_utils.h>
 
-//funciones
-/**
- * @DESC: Crea un pcb
- *
- * @PARAMS:
- *     +consola: recibe un paquete de una consola.
- *
- * @RETURN: Un pcb.
- */
-pcb *crear_nuevo_pcb(t_proceso);
 
+// funciones
 /**
- * @DESC: Arranca el planificador de largo plazo, crea las colas de new y la de exit
+ * @brief  Arranca el planificador de largo plazo, crea las colas de new y la de exit
  *
- * @RETURN: void.
  */
 void iniciar_planificador_largo_plazo(void);
 
-//variables
-u_int32_t contador_id;
-t_list* colaNew;
-t_list *colaExit;
-t_list *colaReady;
-t_list *colaExec;
-t_list *colaBlock;
+void planificar_largo(t_pcb* pcb_a_planificar);
+
+void iniciar_planificador_corto_plazo (void);
+
+void planificador_corto(t_pcb* pcb_nuevo);
+
+t_pcb* algoritmo_fifo();
+
+void escuchar_mensaje_cpu();
+
+void finalizar_pcb(t_pcb* pcb);
+
+void chequear_lista_pcbs(t_list* lista);
+
 
 #endif

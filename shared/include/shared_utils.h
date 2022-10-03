@@ -36,14 +36,14 @@ typedef enum estado {
 
 typedef struct 
 {
-	u_int32_t id;
-	t_instruccion* instrucciones; 
+	u_int32_t pid;
+	t_list* instrucciones; 
 	u_int32_t program_counter;
 	u_int32_t* registros_cpu;
 	estado estado_actual;
 	estado estado_anterior;
 	// tabla_de_segmentos
-} pcb;
+} t_pcb;
 
 void print_valores(int valor);
 void destructor_instrucciones(t_list *);

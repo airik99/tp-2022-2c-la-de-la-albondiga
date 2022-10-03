@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "/usr/include/x86_64-linux-gnu",
                 "/usr/include/i386-linux-gnu"
             ],
             "defines": [],

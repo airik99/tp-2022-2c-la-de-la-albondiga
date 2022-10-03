@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}",
+                "/usr/include/x86_64-linux-gnu",
                 "/usr/include/c++/5",
                 "/usr/include/i386-linux-gnu/c++/5",
                 "/usr/include/c++/5/backward",
@@ -24,6 +25,7 @@
                     "${workspaceFolder}",
                     "${workspaceFolder}/include",
                     "../shared/include",
+                    "/usr/include/x86_64-linux-gnu",
                     "/usr/include/c++/5",
                     "/usr/include/i386-linux-gnu/c++/5",
                     "/usr/include/c++/5/backward",

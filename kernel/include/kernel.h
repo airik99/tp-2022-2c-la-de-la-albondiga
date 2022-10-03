@@ -5,46 +5,34 @@
 #include <conexion.h>
 #include <serializacion.h>
 #include "tests.h"
-#include <planificacion.h>
+//#include <planificacion.h>
 
 //estructuras
-typedef struct config_kernel
-{
-	char *ip_memoria;
-	char *puerto_memoria;
-	char *ip_cpu;
-	char *puerto_cpu_dispatch;
-	char *puerto_cpu_interrupt;
-	char *puerto_escucha;
-	char *algoritmo_planificacion;
-	int grado_max_multiprogramacion;
-	int quantum_rr;
-	char **dispositivos_io;
-	char **tiempos_io;
-} config_kernel;
 
 //funciones
 void cargar_configuracion();
 
 /**
- * @DESC: recibe el socket de la consola, pide el packete y lo deserializa
- *
- * @PARAMS:
- *     +socket_cliente: socket del cliente.
- *
- * @RETURN: Un paquete deserializado.
+ * @brief Funcion que se encarga de esperar la conexion de una consola
+ * 
+ * @param socket_servidor socket del servidor
  */
-t_proceso* deserializar_consola(int);
+void manejar_consolas(int socket_servidor);
+
 
 /**
- * @DESC: Crea un paquete con el codigo de operacion indicado
- *
- * @PARAMS:
- *     +stream_datos: donde se aloja la informacion.
- * 	   +size_stream_datos: El tamaño del stream de datos.
- *
- * @RETURN: una lista con las instrucciones.
+ * @brief Recibe la lista de instrucciones y segmetnos de memoria de una consola y crea el pcb del proceso
+ * 
+ * @param socket_cliente socket de la consola que se conecta
  */
-t_list *deserializar_instrucciones(t_list *, u_int32_t );
+void escuchar_consola(int socket_cliente);
+
+
+/**
+ * @brief Cierra todos los hilos al enviar SIGINT (ctrl+c en la consola) para poder liberar todas las estructuras y conexiones correctamente  
+ * 
+ * @param senial
+ */
+void manejador_seniales(int senial);
 
 #endif

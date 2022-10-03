@@ -4,18 +4,18 @@
     // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
+        
         {
-            "name": "Proceso2",
+            "name": "Kernel",
             "type": "cppdbg",
             "request": "launch",
             "preLaunchTask": "Make",
             "program": "${workspaceFolder}/kernel",
-            "args": [],
+            "args": ["-pthread"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
                 {

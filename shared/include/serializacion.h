@@ -23,74 +23,67 @@ typedef struct
 	t_buffer *buffer;
 } t_paquete;
 
-typedef struct
-{
-    u_int32_t tamanio_proceso;
-    t_list* instrucciones;
-} t_paquete_deserializado;
-
-typedef struct {
-    char* codigo ;
-    u_int32_t* parametros;
-}instruccion;
-
-
 // char** codigo_instrucciones = ["SET", "ADD", "MOV_IN", "MOV_OUT", "I/O DISCO", "EXIT"];
 
 //funciones
 /**
- * @DESC: Crea un paquete con el codigo de operacion indicado
+ * 
+ * @brief Crea un paquete con el codigo de operacion indicado
+ * 
+ * @param codigo_op El Código de operación del paquete.
  *
- * @PARAMS:
- *     +codigo_op: El Código de operación del paquete.
- *
- * @RETURN: Un paquete.
+ * @return Un paquete.
  */
 t_paquete *crear_paquete(op_code codigo_op);
 
 /**
- * @DESC: Agrega un dato a un paquete.
- *
- * @PARAMS:
- *          +paquete: Paquete a modificar.
- *          +valor: Valor a agregar al paquete.
- *          +tamanio: Tamaño del dato a agregar.
+ * @brief hola
+ * 
+ * @param paquete 
+ * @param valor 
+ * @param tamanio 
  */
 void agregar_a_paquete(t_paquete *paquete, void *valor, int tamanio);
 
 /**
- * @DESC: Serializa el paquete antes de enviarlo
+ * @brief Serializa el paquete antes de enviarlo
  *
- * @PARAMS:
- *          +paquete: Paquete a serializar.
- *          +bytes: Tamaño del paquete serializado.
  * 
- * @RETURN: La cadena de bytes del paquete serializada
+ * @param paquete Paquete a serializar.
+ * @param bytes Tamaño del paquete serializado.
+ * 
+ * @return La cadena de bytes del paquete serializada
  */
 void *serializar_paquete(t_paquete *paquete, int bytes);
 
 void enviar_paquete(t_paquete *paquete, int socket_cliente);
 
 /**
- * @DESC:Elimina un paquete.
+ * @brief Elimina un paquete.
  *
- * @PARAMS:
- *          +paquete: Paquete a eliminar.
+ * @param paquete Paquete a eliminar.
  */
 void eliminar_paquete(t_paquete *paquete);
 
 /**
- * @DESC:Serializa una lista de instrucciones y los segmentos donde se puede leer/escribir
+ * @brief Serializa una lista de instrucciones 
  *
- * @PARAMS:
- *          +paquete: Paquete en el que se envian las instrucciones.
- * 			+instrucciones: Lista de instrucciones a serializar
- * 			+segmentos: Array de segmentos
+ * 
+ * @param paquete Paquete en el que se envian las instrucciones.
+ * @param instrucciones Lista de instrucciones a serializar
+ * 
  */
+void serializar_instrucciones(t_paquete *paquete, t_list *instrucciones);
 
+/**
+ * @brief Serializa el array de los segmentos donde se puede leer/escribir
+ * 
+ * @param paquete_instrucciones Paquete donde se agregan los datos
+ * @param segmentos Array de string a serializar 
+ */
 void serializar_segmentos(t_paquete *paquete_instrucciones, char** segmentos);
 
-void serializar_instrucciones(t_paquete *paquete, t_list *instrucciones);
+
 
 void crear_buffer(t_paquete *paquete);
 
