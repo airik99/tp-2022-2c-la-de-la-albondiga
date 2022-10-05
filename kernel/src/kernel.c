@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
     iniciar_planificador_largo_plazo();
     iniciar_planificador_corto_plazo();
 
+
     ip = "127.0.0.1";
 
     // CONEXION CON CONSOLAS
@@ -93,7 +94,7 @@ void escuchar_consola(int socket_cliente) {
         case INSTRUCCIONES:
             proceso = recibir_proceso(socket_cliente);
             t_pcb *pcb = crear_nuevo_pcb(proceso);
-            // planificar_largo(pcb);
+            planificar_largo(pcb);
             // Por ahora borro estas cosas para que no salten MemLeaks con Valgrind despues hay
             eliminar_pcb(pcb);
             list_destroy(proceso->espacios_memoria);

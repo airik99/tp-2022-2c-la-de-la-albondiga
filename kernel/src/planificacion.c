@@ -10,15 +10,16 @@ void iniciar_planificador_largo_plazo(void) {
 
 void planificar_largo(t_pcb* pcb_a_planificar) {
     list_add(colaNew, pcb_a_planificar);
-    log_info(logger, "Se agrego el NULLpcb a la cola de new");
+    log_info(logger, "Se agrego el pcb de pid: %d a la cola de new \n", pcb_a_planificar->pid);
 
     if (list_size(colaReady) < config_valores.grado_max_multiprogramacion) {
         // Obtengo el primer pcb de la cola de new, lo mando al planificador corto y lo elimino de la cola new
-        t_pcb* primer_pcb = list_get(colaNew, 0);
-        planificador_corto(primer_pcb);
-        list_remove(colaNew, 0);
-        log_info(logger, "Se elimino el primer pcb de la cola de new");
+        t_pcb* primer_pcb =algoritmo_fifo(colaNew);
         // TODO Enviar mensaje a memoria para que inicialice sus estructuras necesarias
+        log_info(logger, "Pcb de pid: %d enviado a planificar corto \n", primer_pcb->pid);
+        planificador_corto(primer_pcb);
+    }else{
+        log_info(logger, "No se pudo enviar a planificar corto el pcb de pid: %d porque la cola de ready esta llena \n", pcb_a_planificar->pid);
     }
 }
 
@@ -30,16 +31,17 @@ void iniciar_planificador_corto_plazo(void) {
 
 void planificador_corto(t_pcb* pcb_nuevo) {
     list_add(colaReady, pcb_nuevo);
-    log_info(logger, "Se agrego el pcb a la cola de ready");
-    t_pcb* pcb_a_ejecutar = algoritmo_fifo();
+    log_info(logger, "Se agrego el pcb de pid: %d a la cola de ready \n", pcb_nuevo->pid);
+    t_pcb* pcb_a_ejecutar = algoritmo_fifo(colaReady);
     pcb_a_ejecutar->estado_actual = EXEC;
     // TODO mandar el pcb a ejecutar
 }
 
-t_pcb* algoritmo_fifo() {
-    t_pcb* primer_pcb_ready = list_get(colaReady, 0);
-    list_remove(colaReady, 0);
-    return primer_pcb_ready;
+t_pcb* algoritmo_fifo(t_list* cola) {
+    //t_pcb* primer_pcb_ready= malloc(sizeof(t_pcb*));
+    t_pcb* primer_pcb = list_get(cola, 0);
+    list_remove(cola, 0);
+    return primer_pcb;
 }
 
 void escuchar_mensaje_cpu() {

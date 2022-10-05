@@ -39,11 +39,11 @@ void destruir_estructuras() {
     string_array_destroy(config_valores.tiempos_io);
 }
 
+//esto tiene que hacerlo cuando se conecta una consola al kernel
 t_pcb *crear_nuevo_pcb(t_proceso *proceso_consola) {
     t_pcb *nuevo_pcb = malloc(sizeof(t_pcb));
     nuevo_pcb->pid = contador_pid;
     contador_pid++;
-    // no es una lista el stream
     nuevo_pcb->instrucciones = proceso_consola->instrucciones;
     nuevo_pcb->program_counter = 0;
     nuevo_pcb->estado_actual = NEW;
