@@ -3,6 +3,15 @@
 
 #include <serializacion.h>
 #include <shared_utils.h>
+#include <semaphore.h>
+
+//Semaforos
+sem_t sem_cola_new;
+sem_t sem_cola_ready;
+sem_t sem_cola_exec;
+sem_t sem_cola_block;
+sem_t sem_cola_exit;
+sem_t sem_grado_multiprogramacion;
 
 
 // funciones
