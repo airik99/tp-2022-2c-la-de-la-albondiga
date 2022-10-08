@@ -8,8 +8,16 @@
 typedef enum
 {
 	MENSAJE,
-	INSTRUCCIONES
+	INSTRUCCIONES,
+	HANDSHAKE,
+	PCB,
+	INTERRUPCION
 } op_code;
+
+typedef struct{
+	uint32_t tam_pagina;
+	uint32_t entradas;
+} t_handshake;
 
 typedef struct
 {
@@ -98,5 +106,9 @@ t_list *recibir_paquete(int socket_cliente);
 t_proceso* recibir_proceso(int socket_cliente);
 
 void enviar_mensaje(char* mensaje, int socket_cliente);
+
+int enviar_datos(int socket_fd, void *source, uint32_t size);
+
+int recibir_datos(int socket_fd, void *dest, uint32_t size);
 
 #endif

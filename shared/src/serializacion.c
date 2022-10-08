@@ -1,5 +1,13 @@
 #include <serializacion.h>
 
+int enviar_datos(int socket_fd, void *source, uint32_t size) {
+	return send(socket_fd, source, size, 0);
+}
+
+int recibir_datos(int socket_fd, void *dest, uint32_t size) {
+	return recv(socket_fd, dest, size, 0); // cuantos bytes a recibir y a donde los quiero recibir
+}
+
 t_paquete *crear_paquete(op_code codigo_op) {
     t_paquete *paquete = malloc(sizeof(t_paquete));
     paquete->codigo_operacion = codigo_op;
