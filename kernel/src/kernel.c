@@ -1,11 +1,5 @@
 #include "kernel.h"
 
-#include <signal.h>
-
-#include "kernel_utils.h"
-#include "planificacion.h"
-#include "serializacion.h"
-
 char *ip;
 pthread_t t_manejo_consola;
 
@@ -18,8 +12,6 @@ void manejador_seniales(int senial) {
     }
 }
 
-#include "tests.h"
-
 int main(int argc, char **argv) {
     signal(SIGINT, manejador_seniales);
     iniciar_logger();
@@ -27,8 +19,7 @@ int main(int argc, char **argv) {
     iniciar_planificador_largo_plazo();
     iniciar_planificador_corto_plazo();
 
-
-    ip = "127.0.0.1";
+    ip = "127.0.0.1"; //esto no debería estar hardcodeado
 
     // CONEXION CON CONSOLAS
     int socket_servidor = iniciar_servidor(ip, config_valores.puerto_escucha);

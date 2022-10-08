@@ -3,9 +3,11 @@
 
 #include <shared_utils.h>
 #include <conexion.h>
-#include <serializacion.h>
+#include "kernel_utils.h"
+#include "planificacion.h"
+#include "serializacion.h"
 #include "tests.h"
-//#include <planificacion.h>
+#include <signal.h>
 
 //estructuras
 
