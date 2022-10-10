@@ -45,7 +45,7 @@ typedef struct
 t_paquete *crear_paquete(op_code codigo_op);
 
 /**
- * @brief hola
+ * @brief Agrega un dato al paquete
  * 
  * @param paquete 
  * @param valor 
@@ -58,11 +58,11 @@ void agregar_a_paquete(t_paquete *paquete, void *valor, int tamanio);
  *
  * 
  * @param paquete Paquete a serializar.
- * @param bytes Tamaño del paquete serializado.
+ * @param tamanio Tamaño del paquete serializado.
  * 
  * @return La cadena de bytes del paquete serializada
  */
-void *serializar_paquete(t_paquete *paquete, int bytes);
+void *serializar_paquete(t_paquete *paquete, int tamanio);
 
 void enviar_paquete(t_paquete *paquete, int socket_cliente);
 
@@ -83,19 +83,44 @@ void eliminar_paquete(t_paquete *paquete);
  */
 void serializar_instrucciones(t_paquete *paquete, t_list *instrucciones);
 
+
+/**
+ * @brief Crea una lista de instrucciones a partir de los datos del buffer
+ * 
+ * @param buffer buffer de datos
+ * @param desplazamiento puntero a un int con el desplazamiento del buffer
+ *
+ * @return t_list* 
+ */
+t_list *deserializar_instrucciones(void *buffer, int *desplazamiento);
+
 /**
  * @brief Serializa el array de los segmentos donde se puede leer/escribir
  * 
- * @param paquete_instrucciones Paquete donde se agregan los datos
+ * @param paquete Paquete donde se agregan los datos
  * @param segmentos Array de string a serializar 
  */
-void serializar_segmentos(t_paquete *paquete_instrucciones, char** segmentos);
+void serializar_segmentos(t_paquete *paquete, char** segmentos);
 
+
+/**
+ * @brief Serializa un pcb 
+ * @param paquete Paquete donde se agregan los datos
+ * @param pcb Pcb a serializar 
+ */
+void serializar_pcb(t_paquete *paquete, t_pcb* pcb);
+
+
+/**
+ * @brief Recibe un pcb
+ * 
+ * @param socket_cliente
+ * 
+ */
+t_pcb *recibir_pcb(int socket_cliente) ;
 
 
 void crear_buffer(t_paquete *paquete);
-
-t_instruccion* deserializar_instruccion(void *buffer, int *desplazamiento);
 
 int recibir_operacion(int socket_cliente);
 

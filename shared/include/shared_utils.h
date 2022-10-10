@@ -32,16 +32,16 @@ typedef enum estado {
 	EXEC,
 	BLOCKED,
 	EXIT
-} estado;
+} t_estado;
 
 typedef struct 
 {
 	u_int32_t pid;
 	t_list* instrucciones; 
 	u_int32_t program_counter;
-	u_int32_t* registros_cpu;
-	estado estado_actual;
-	estado estado_anterior;
+	//u_int32_t* registros_cpu;
+	t_estado estado_actual;
+	t_estado estado_anterior;
 	// tabla_de_segmentos
 } t_pcb;
 

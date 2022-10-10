@@ -2,6 +2,7 @@
 
 char *ip;
 pthread_t t_manejo_consola;
+int conexion_cpu_dispatch;
 
 void manejador_seniales(int senial) {
     switch (senial) {
@@ -19,7 +20,7 @@ int main(int argc, char **argv) {
     iniciar_planificador_largo_plazo();
     iniciar_planificador_corto_plazo();
 
-    ip = "127.0.0.1"; //esto no debería estar hardcodeado
+    ip = "127.0.0.1";  // esto no debería estar hardcodeado
 
     // CONEXION CON CONSOLAS
     int socket_servidor = iniciar_servidor(ip, config_valores.puerto_escucha);
@@ -30,8 +31,6 @@ int main(int argc, char **argv) {
     }
     log_info(logger, "Kernel listo para recibir consolas");
 
-    pthread_create(&t_manejo_consola, NULL, (void *)manejar_consolas, (void *)socket_servidor);
-    pthread_join(t_manejo_consola, NULL);
     /*
     // CONEXION CON MEMORIA
     log_info(logger, "Kernel iniciado. Intentando conectarse con la memoria");
@@ -43,26 +42,30 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    log_info(logger, "Conexion con memoria exitosa");
-
-    // CONEXION CON CPU
-    int conexion_cpu_dispatch = conectarse_a_servidor(ip, config_valores.puerto_cpu_dispatch);
-    log_info(logger, "Conexion con cpu dispatch exitosa");
+    log_info(logger, "Conexion con memoria exitosa");*/
 
     // int conexion_cpu_interrupt = conectarse_a_servidor(ip, config_valores.puerto_cpu_interrupt);
     // log_info(logger, "Conexion con cpu interrupt exitosa");
-
-    if (conexion_cpu_dispatch == -1 || conexion_cpu_interrupt == -1) {
-        log_info(logger, "Error en la conexion al servidor. Terminando kernel");
-        return EXIT_FAILURE;
-    }
-
-    liberar_conexion(conexion_cpu_dispatch);
-    liberar_conexion(conexion_cpu_interrupt);
-    liberar_conexion(conexion_memoria);
+    /*
+        if (conexion_cpu_dispatch == -1 || conexion_cpu_interrupt == -1) {
+            log_info(logger, "Error en la conexion al servidor. Terminando kernel");
+            return EXIT_FAILURE;
+        }
     */
+    // CONEXION CON CPU
+    conexion_cpu_dispatch = conectarse_a_servidor(ip, config_valores.puerto_cpu_dispatch);
+    log_info(logger, "Conexion con cpu dispatch exitosa");
+
+    /* pthread_create(&t_manejo_consola, NULL, (void *)manejar_consolas, (void *)socket_servidor);
+       pthread_join(t_manejo_consola, NULL);
+   */
+    liberar_conexion(conexion_cpu_dispatch);
+    // liberar_conexion(conexion_cpu_interrupt);
+    // liberar_conexion(conexion_memoria);
+    
     liberar_colas();
     destruir_estructuras();
+    eliminar_paquete(paquete);
     return EXIT_SUCCESS;
 }
 
@@ -85,9 +88,11 @@ void escuchar_consola(int socket_cliente) {
         case INSTRUCCIONES:
             proceso = recibir_proceso(socket_cliente);
             t_pcb *pcb = crear_nuevo_pcb(proceso);
+            t_paquete *paquete = crear_paquete(PCB);
+            serializar_pcb(paquete, pcb);
+            enviar_paquete(paquete, conexion_cpu_dispatch);
             planificar_largo(pcb);
-            // Por ahora borro estas cosas para que no salten MemLeaks con Valgrind despues hay
-            eliminar_pcb(pcb);
+            //  Por ahora borro estas cosas para que no salten MemLeaks con Valgrind despues hay
             list_destroy(proceso->espacios_memoria);
             free(proceso);
             break;

@@ -1,11 +1,11 @@
 #include <serializacion.h>
 
 int enviar_datos(int socket_fd, void *source, uint32_t size) {
-	return send(socket_fd, source, size, 0);
+    return send(socket_fd, source, size, 0);
 }
 
 int recibir_datos(int socket_fd, void *dest, uint32_t size) {
-	return recv(socket_fd, dest, size, 0); // cuantos bytes a recibir y a donde los quiero recibir
+    return recv(socket_fd, dest, size, 0);  // cuantos bytes a recibir y a donde los quiero recibir
 }
 
 t_paquete *crear_paquete(op_code codigo_op) {
@@ -126,51 +126,56 @@ void serializar_instrucciones(t_paquete *paquete, t_list *instrucciones) {
     }
 }
 
-t_instruccion *deserializar_instruccion(void *buffer, int *desplazamiento) {
-    t_instruccion *instruccion = malloc(sizeof(t_instruccion));
-    instruccion->params = list_create();
+t_list *deserializar_instrucciones(void *buffer, int *desplazamiento) {
+    t_list *instrucciones = list_create();
+    int contador = 0;
+    int cantidad_instrucciones;
 
-    memcpy(&(instruccion->largo_nombre), buffer + *desplazamiento, sizeof(int));
+    memcpy(&cantidad_instrucciones, buffer + *desplazamiento, sizeof(int));
     *desplazamiento += sizeof(int);
 
-    instruccion->nombre = malloc(instruccion->largo_nombre);
-    memcpy(instruccion->nombre, buffer + *desplazamiento, instruccion->largo_nombre);
-    *desplazamiento += instruccion->largo_nombre;
+    while (contador < cantidad_instrucciones) {
+        t_instruccion *instruccion = malloc(sizeof(t_instruccion));
+        instruccion->params = list_create();
 
-    memcpy(&(instruccion->cant_params), buffer + *desplazamiento, sizeof(int));
-    *desplazamiento += sizeof(int);
-
-    for (int i = 0; i < (instruccion->cant_params); i++) {
-        int largo_param;
-        memcpy(&largo_param, buffer + *desplazamiento, sizeof(int));
+        memcpy(&(instruccion->largo_nombre), buffer + *desplazamiento, sizeof(int));
         *desplazamiento += sizeof(int);
 
-        char *param = malloc(largo_param);
-        memcpy(param, buffer + *desplazamiento, largo_param);
-        *desplazamiento += largo_param;
-        list_add(instruccion->params, param);
+        instruccion->nombre = malloc(instruccion->largo_nombre);
+        memcpy(instruccion->nombre, buffer + *desplazamiento, instruccion->largo_nombre);
+        *desplazamiento += instruccion->largo_nombre;
+
+        memcpy(&(instruccion->cant_params), buffer + *desplazamiento, sizeof(int));
+        *desplazamiento += sizeof(int);
+
+        for (int i = 0; i < (instruccion->cant_params); i++) {
+            int largo_param;
+            memcpy(&largo_param, buffer + *desplazamiento, sizeof(int));
+            *desplazamiento += sizeof(int);
+
+            char *param = malloc(largo_param);
+            memcpy(param, buffer + *desplazamiento, largo_param);
+            *desplazamiento += largo_param;
+            list_add(instruccion->params, param);
+        }
+        list_add(instrucciones, instruccion);
+        contador++;
     }
-    return instruccion;
+    return instrucciones;
 }
 
 t_proceso *recibir_proceso(int socket_cliente) {
     int size;
     int desplazamiento = 0;
-    int cantidad_instruccciones;
+    u_int32_t cantidad_instrucciones;
     void *buffer;
 
     t_proceso *proceso_consola = malloc(sizeof(t_proceso));
-    proceso_consola->instrucciones = list_create();
     proceso_consola->espacios_memoria = list_create();
     buffer = recibir_buffer(&size, socket_cliente);
 
-    memcpy(&cantidad_instruccciones, buffer + desplazamiento, sizeof(int));
-    desplazamiento += sizeof(int);
+    proceso_consola->instrucciones = deserializar_instrucciones(buffer, &desplazamiento);
 
-    for (int i = 0; i < cantidad_instruccciones; i++) {
-        t_instruccion *instruccion = deserializar_instruccion(buffer, &desplazamiento);
-        list_add(proceso_consola->instrucciones, instruccion);
-    }
     while (desplazamiento < size) {
         int valor;
         memcpy(&valor, buffer + desplazamiento, sizeof(int));
@@ -179,4 +184,37 @@ t_proceso *recibir_proceso(int socket_cliente) {
     }
     free(buffer);
     return proceso_consola;
+}
+
+void serializar_pcb(t_paquete *paquete, t_pcb *pcb) {
+    agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
+    serializar_instrucciones(paquete, pcb->instrucciones);
+    agregar_a_paquete(paquete, &(pcb->program_counter), sizeof(u_int32_t));
+    //agregar_a_paquete(paquete, &(pcb->registros_cpu), sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &(pcb->estado_actual), sizeof(t_estado));
+    agregar_a_paquete(paquete, &(pcb->estado_anterior), sizeof(t_estado));
+    // TODO: Tabla de segmentos
+}
+
+t_pcb *recibir_pcb(int socket_cliente) {
+    int size;
+    int desplazamiento = 0;
+    void *buffer;
+
+    t_pcb *pcb = malloc(sizeof(t_pcb));
+    buffer = recibir_buffer(&size, socket_cliente);
+
+    memcpy(&(pcb->pid), buffer + desplazamiento, sizeof(int));
+    desplazamiento += sizeof(u_int32_t);
+    pcb->instrucciones = deserializar_instrucciones(buffer, &desplazamiento);
+    memcpy(&(pcb->program_counter), buffer + desplazamiento, sizeof(u_int32_t));
+    desplazamiento += sizeof(u_int32_t);
+    //memcpy(&(pcb->registros_cpu), buffer + desplazamiento, sizeof(u_int32_t));
+    //desplazamiento += sizeof(u_int32_t);
+    memcpy(&(pcb->estado_actual), buffer + desplazamiento, sizeof(t_estado));
+    desplazamiento += sizeof(t_estado);
+    memcpy(&(pcb->estado_anterior), buffer + desplazamiento, sizeof(t_estado));
+    desplazamiento += sizeof(t_estado);
+    free(buffer);
+    return pcb;
 }

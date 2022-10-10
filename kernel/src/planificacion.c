@@ -2,6 +2,13 @@
 
 #include "kernel_utils.h"
 
+sem_t sem_cola_new;
+sem_t sem_cola_ready;
+sem_t sem_cola_exec;
+sem_t sem_cola_block;
+sem_t sem_cola_exit;
+sem_t sem_grado_multiprogramacion;
+
 void iniciar_planificador_largo_plazo(void) {
     contador_pid = 0;
     colaNew = list_create();
