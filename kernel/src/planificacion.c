@@ -8,6 +8,7 @@ sem_t sem_cola_exec;
 sem_t sem_cola_block;
 sem_t sem_cola_exit;
 sem_t sem_grado_multiprogramacion;
+pthread_t hilo_proceso;
 
 void iniciar_planificador_largo_plazo(void) {
     contador_pid = 0;
@@ -34,7 +35,6 @@ void planificar_largo(t_pcb* pcb_a_planificar) {
     }else{
         log_info(logger, "No se pudo enviar a planificar corto el pcb de pid: %d porque la cola de ready esta llena \n", pcb_a_planificar->pid);
     }
-
 }
 
 void iniciar_planificador_corto_plazo(void) {
@@ -65,6 +65,21 @@ t_pcb* algoritmo_fifo(t_list* cola, sem_t  sem_cola) {
 	//sem_post(sem_cola)
     return primer_pcb;
 }
+
+t_pcb* algoritmo_rr(t_list* cola, sem_t* sem_cola){
+    pthread_create(hilo_proceso, NULL, esperar_quantum, (cola, sem_cola));
+}
+
+void * esperar_quantum(t_list* cola, sem_t sem_cola){
+    usleep(config_valores.quantum_rr);
+    //TODO ENVIAR A CPU POR EL PUERTO INTERRUPT
+    t_pcb* primer_pcb = list_get(cola, 0);
+    //sem_wait(sem_cola)
+    list_remove(cola, 0);
+    list_add(cola, primer_pcb);
+    //sem_post(sem_cola)
+}
+
 
 void escuchar_mensaje_cpu() {
     // TODO Cuando reciba un mensaje del cpu para finalizar el proceso, llama a finalizar_pcb()
