@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "log.h": "c",
-        "planificacion.h": "c"
+        "planificacion.h": "c",
+        "kernel.h": "c"
     }
 }

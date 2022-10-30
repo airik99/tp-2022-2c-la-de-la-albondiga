@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     
     liberar_colas();
     destruir_estructuras();
-    eliminar_paquete(paquete);
+    //eliminar_paquete(paquete);
     return EXIT_SUCCESS;
 }
 

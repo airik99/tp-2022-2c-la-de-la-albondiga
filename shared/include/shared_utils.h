@@ -50,6 +50,7 @@ void print_valores(int valor);
 void destructor_instrucciones(t_list *);
 void destructor_instruccion(t_instruccion*);
 void print_instruccion(t_instruccion* );
+void actualizar_estado(t_pcb*,t_estado);
 #endif
 
 

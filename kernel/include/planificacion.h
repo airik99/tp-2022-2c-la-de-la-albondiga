@@ -27,7 +27,11 @@ void iniciar_planificador_corto_plazo (void);
 
 void planificador_corto(t_pcb* pcb_nuevo);
 
+t_pcb* algoritmo_feedback();
+
 t_pcb* algoritmo_fifo();
+
+t_pcb* algoritmo_rr();
 
 void escuchar_mensaje_cpu();
 

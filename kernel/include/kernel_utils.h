@@ -7,12 +7,18 @@ typedef struct config_kernel {
     char *puerto_cpu_dispatch;
     char *puerto_cpu_interrupt;
     char *puerto_escucha;
-    char *algoritmo_planificacion;
+    algoritmo_planificacion algoritmo_planificacion;
     int grado_max_multiprogramacion;
     int quantum_rr;
     char **dispositivos_io;
     char **tiempos_io;
 } config_kernel;
+
+typedef enum algoritmo_planificacion{
+    RR,
+    FIFO,
+    FEEDBACK
+} algoritmo_planificacion;
 
 /**
  * @brief Crea el logger del kernel
@@ -61,6 +67,7 @@ extern t_log *logger;
 extern int contador_pid;
 extern t_list *colaNew;
 extern t_list *colaExit;
-extern t_list *colaReady;
+extern t_list *colaReadyFifo;
+extern t_list *colaReadyRoundRobin;
 extern t_list *colaExec;
 extern t_list *colaBlock;
