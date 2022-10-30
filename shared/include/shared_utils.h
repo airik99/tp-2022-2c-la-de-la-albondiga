@@ -31,7 +31,8 @@ typedef enum estado {
 	READY,
 	EXEC,
 	BLOCKED,
-	EXIT
+	EXIT,
+	PAGE_FAULT
 } t_estado;
 
 typedef struct 

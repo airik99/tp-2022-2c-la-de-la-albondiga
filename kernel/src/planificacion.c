@@ -8,7 +8,9 @@ sem_t sem_cola_exec;
 sem_t sem_cola_block;
 sem_t sem_cola_exit;
 sem_t sem_grado_multiprogramacion;
+sem_t sem_page_fault;
 pthread_t hilo_proceso;
+pthread_t hilo_page_fault;
 
 void iniciar_planificador_largo_plazo(void) {
     contador_pid = 0;
@@ -20,23 +22,33 @@ void iniciar_planificador_largo_plazo(void) {
 }
 
 void planificar_largo(t_pcb* pcb_a_planificar) {
-	//sem_wait(sem_cola_new)
-    list_add(colaNew, pcb_a_planificar);
-	//sem_post(sem_cola_new)
-    log_info(logger, "Se agrego el pcb de pid: %d a la cola de new \n", pcb_a_planificar->pid);
-	
-	//sem_wait(sem_grado_multiprogramacion)
-    if (list_size(colaReady) < config_valores.grado_max_multiprogramacion) {
-        // Obtengo el primer pcb de la cola de new, lo mando al planificador corto y lo elimino de la cola new
-        t_pcb* primer_pcb =algoritmo_fifo(colaNew, sem_cola_new);
-        // TODO Enviar mensaje a memoria para que inicialice sus estructuras necesarias
-        log_info(logger, "Pcb de pid: %d enviado a planificar corto \n", primer_pcb->pid);
-        planificador_corto(primer_pcb);
-    }else{
-        log_info(logger, "No se pudo enviar a planificar corto el pcb de pid: %d porque la cola de ready esta llena \n", pcb_a_planificar->pid);
+    if(pcb_a_planificar->estado_actual==EXIT){
+        free(pcb_a_planificar);
+        //dar aviso al módulo Memoria para que éste libere sus estructuras. Una vez liberadas, se dará aviso a la Consola de la finalización del proceso.
+    }
+    else if(pcb_a_planificar->estado_actual==PAGE_FAULT){
+        //obtener la pagina "la misma será obtenida desde el mensaje recibido de la CPU." se puede meter en el pcb como "pag_necesaria"
+        log_info(logger, "page fault pid: %d - segmento:<segmento> - pagina: <pagina>  \n", pcb_a_planificar->pid);
+        //page_fault(pcb_a_planificar,pagina)
+    }
+    else{
+        //sem_wait(sem_cola_new)
+        list_add(colaNew, pcb_a_planificar);
+        //sem_post(sem_cola_new)
+        log_info(logger, "Se agrego el pcb de pid: %d a la cola de new \n", pcb_a_planificar->pid);
+        
+        //sem_wait(sem_grado_multiprogramacion)
+        if (list_size(colaReady) < config_valores.grado_max_multiprogramacion) {
+            // Obtengo el primer pcb de la cola de new, lo mando al planificador corto y lo elimino de la cola new
+            t_pcb* primer_pcb =algoritmo_fifo(colaNew, sem_cola_new);
+            // TODO Enviar mensaje a memoria para que inicialice sus estructuras necesarias y obtenga el índice/identificador de la tabla de páginas de cada segmento que deberán estar almacenados en la tabla de segmentos del PCB
+            log_info(logger, "Pcb de pid: %d enviado a planificar corto \n", primer_pcb->pid);
+            planificador_corto(primer_pcb);
+        }else{
+            log_info(logger, "No se pudo enviar a planificar corto el pcb de pid: %d porque la cola de ready esta llena \n", pcb_a_planificar->pid);
+        }
     }
 }
-
 void iniciar_planificador_corto_plazo(void) {
     colaReady = list_create();
     colaExec = list_create();
@@ -80,6 +92,25 @@ void * esperar_quantum(t_list* cola, sem_t sem_cola){
     //sem_post(sem_cola)
 }
 
+t_pcb* page_fault(t_pcb* pcb_pf,int nro_pagina){
+    ptheard_create(hilo_page_fault,NULL,atender_page_fault,(pcb_pf,nro_pagina));
+}
+
+void* atender_page_fault(t_pcb* pcb_pf,int nro_pagina){
+    sem_init(&sem_page_fault, 0, 1);
+    pcb_pf->estado_actual=BLOCKED;
+    //sem_wait(sem_page_fault);
+    solicitar_pagina_a_memoria(nro_pagina);
+    // Al recibir la respuesta del módulo memoria, desbloquear el proceso y colocarlo en la cola de ready correspondiente.
+    pcb_pf->estado_actual=READY;
+    planificador_corto(pcb_pf);
+}
+
+void* solicitar_pagina_a_memoria(int nro_pagina){
+
+    //Solicitar al módulo memoria que se cargue en memoria principal la página correspondiente, la misma será obtenida desde el mensaje recibido de la CPU
+    //sem_post(sem_page_fault);
+}
 
 void escuchar_mensaje_cpu() {
     // TODO Cuando reciba un mensaje del cpu para finalizar el proceso, llama a finalizar_pcb()
