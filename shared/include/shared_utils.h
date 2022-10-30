@@ -53,6 +53,14 @@ typedef struct
 	u_int32_t valor;
 } t_parametros;
 
+//TODO Puede ser que se cambie
+typedef enum registro_cpu{
+	AX,
+	BX,
+	CX,
+	DX
+} registro_cpu;
+
 void print_valores(int valor);
 void destructor_instrucciones(t_list *);
 void destructor_instruccion(t_instruccion*);
