@@ -6,7 +6,9 @@ t_log* logger;
 char* ip;
 t_pcb* pcb_recibido;
 int conexion_memoria, parar_proceso, cliente_servidor_dispatch, socket_servidor_dispatch;
-pthread_t conexion_memoria_i, hilo_interrupciones;
+pthread_t conexion_memoria_i, hilo_interrupciones, pedidofin;
+int ultimo_pid = -1; //no se para que es esto pero se usa
+int registros[] = {0, 0, 0, 0};
 
 int main(int argc, char ** argv){
 	
@@ -69,14 +71,14 @@ void recibir_codigo_operacion_por_dispatch(int cliente) {
 void evaluar_cod_op(int cod_op) {
 	switch (cod_op) {
 		case PCB:
-			//parar_proceso = 0 ;//INICIA EL CONTADOR DE PARAR PROCESO
+			parar_proceso = 0 ;//INICIA EL CONTADOR DE PARAR PROCESO
 			//pcb_recibido = recibir_pcb(cliente); //aca recibo el pcb pero espero a la funcion de maxi xd
 			log_info(logger, "Recibi PCB de Id: %d \n", pcb_recibido->pid);
 			/*if(ultimo_pid != pcb_recibido->pid && list_size(tlb->lista) != 0){
 				//vaciarTlb();
 				log_info(logger,"Se vacio TLB\n");
 			}*/
-			//ciclo_de_instruccion(pcb_recibido,cliente); //INICIA EL CICLO DE INSTRUCCION
+			ciclo_de_instruccion(pcb_recibido); //INICIA EL CICLO DE INSTRUCCION
 			break;
 		case HANDSHAKE:
 			log_info(logger, "Se recibio la configuracion por handshake \n");
@@ -85,11 +87,108 @@ void evaluar_cod_op(int cod_op) {
 			break;
 		case INTERRUPCION:
 			log_info(logger,"Peticion de interrupcion recibida \n");
-			//parar_proceso++;
+			parar_proceso++;
 			break;
 		casos_de_error(cod_op);
 	}
 	return EXIT_SUCCESS;
+}
+
+void* ciclo_de_instruccion(t_pcb* pcb) {
+	t_instruccion* instruccionProxima;
+	parar_proceso = 0;
+
+	log_info(logger, "Se creo hilo para recibir interrupciones \n");
+
+	while(pcb->program_counter < list_size(pcb->instrucciones)) {
+
+		instruccionProxima = list_get(pcb->instrucciones, pcb->program_counter); //FETCH
+		decode(instruccionProxima, pcb); //DECODE (CON EXECUTE INCLUIDO)
+		pcb->program_counter++;
+
+		if(checkInterrupt() == 1) { //SE FIJA QUE NO HAYA PEDIDO DE PARAR EL PROCESO ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
+			ultimo_pid = pcb->pid;
+			//enviarPcb(socket_kernel, pcb);
+			log_info(logger,"Envio pcb devuelta al kernel \n");
+			return NULL;
+		}
+	}
+	return NULL;
+}
+
+void decode(t_instruccion* instruccion, t_pcb* pcb) {
+
+	if(strcmp(instruccion->nombre, "SET") == 0) {
+		registro_cpu registro = list_get(instruccion->params, 0);
+		uint32_t valor = list_get(instruccion->params, 1);
+		ejecutar_SET(registro, valor);
+	}
+
+	if(strcmp(instruccion->nombre, "ADD") == 0) {
+		registro_cpu destino = list_get(instruccion->params, 0);
+		registro_cpu origen = list_get(instruccion->params, 1);
+		ejecutar_ADD(destino, origen);
+	}
+
+	if(strcmp(instruccion->nombre, "MOV_IN") == 0) {
+		//ejecutar_MOV_IN();
+	}
+
+	if(strcmp(instruccion->nombre, "MOV_OUT") == 0) {
+		//ejecutar_MOV_OUT();
+	}
+
+	if(strcmp(instruccion->nombre, "I/O") == 0) {
+		//ejecutar_IO();
+	}
+
+	if(strcmp(instruccion->nombre, "EXIT") == 0) {
+		ejecutar_EXIT(pcb);
+	}
+}
+
+uint32_t AX, BX, CX, DX; //esto no se usa
+registros[] = {0,0,0,0};
+
+/*SET (Registro, Valor): Asigna al registro el valor pasado como parámetro.*/
+void ejecutar_SET(registro_cpu registro, uint32_t valor) {
+	log_info(logger, "Nos llego el valor %d \n", valor);
+	registros[registro] = valor;
+	log_info("Guardamos el valor %d en el registro %d \n", valor, registro); //hay que ver si devuelve un numero o el enum en sí
+}
+
+/*ADD (Registro Destino, Registro Origen): Suma ambos registros y deja el resultado en el Registro Destino.*/
+void ejecutar_ADD(registro_cpu destino, registro_cpu origen) {
+	registros[destino] = registros[destino] + registros[origen];
+	log_info("La suma entre %d y %d es %d \n", destino, origen, registros[destino]);
+}
+
+/*I/O (Dispositivo, Registro / Unidades de trabajo): Esta instrucción representa una syscall de I/O bloqueante. Se deberá devolver 
+el Contexto de Ejecución actualizado al Kernel junto el dispositivo y la cantidad de unidades de trabajo del dispositivo que desea 
+utilizar el proceso (o el Registro a completar o leer en caso de que el dispositivo sea Pantalla o Teclado).*/
+/* TODO
+void ejecutar_IO(t_pcb* pcb, Dispositivo dispositivo, ) {
+	
+}*/
+
+/*EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.*/
+void ejecutar_EXIT(t_pcb* pcb) {
+	pcb->estado_actual = EXIT;
+	pthread_mutex_lock(&pedidofin);
+	parar_proceso++;
+	pthread_mutex_unlock(&pedidofin);
+	log_info(logger, "Se ejecuto instruccion EXIT \n");
+}
+
+int checkInterrupt(){ //chequear esto TODO
+	pthread_mutex_lock(&pedidofin);
+	if(parar_proceso > 0) { 
+		pthread_mutex_unlock(&pedidofin);
+		return 1;
+	} else {
+		pthread_mutex_unlock(&pedidofin);
+	return 0;
+	}
 }
 
 void* conexion_inicial_memoria(){
