@@ -43,8 +43,15 @@ typedef struct
 	//u_int32_t* registros_cpu;
 	t_estado estado_actual;
 	t_estado estado_anterior;
+	t_list* parametros;
 	// tabla_de_segmentos
 } t_pcb;
+
+typedef struct
+{
+	registro_cpu registro;
+	u_int32_t valor;
+} t_parametros;
 
 void print_valores(int valor);
 void destructor_instrucciones(t_list *);
