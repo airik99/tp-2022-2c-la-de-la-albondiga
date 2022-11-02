@@ -166,10 +166,12 @@ void ejecutar_ADD(registro_cpu destino, registro_cpu origen) {
 /*I/O (Dispositivo, Registro / Unidades de trabajo): Esta instrucción representa una syscall de I/O bloqueante. Se deberá devolver 
 el Contexto de Ejecución actualizado al Kernel junto el dispositivo y la cantidad de unidades de trabajo del dispositivo que desea 
 utilizar el proceso (o el Registro a completar o leer en caso de que el dispositivo sea Pantalla o Teclado).*/
-/* TODO
-void ejecutar_IO(t_pcb* pcb, Dispositivo dispositivo, ) {
-	
-}*/
+void ejecutar_IO(t_pcb* pcb, char* dispositivo_a_asignar,t_instruccion* instruccion /*, int unidades_a_asignar*/) {
+	t_pcb* pcb_a_enviar= pcb;
+	pcb_a_enviar->tiempo_bloqueo= atoi(list_get(instruccion->params, 1));//CHEQUEAR QUE FUNCIONE
+	actualizar_estado(pcb_a_enviar, BLOCKED);
+	//enviar_mensaje(kernel,pcb_a_enviar);
+}
 
 /*EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.*/
 void ejecutar_EXIT(t_pcb* pcb) {
