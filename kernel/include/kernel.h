@@ -3,8 +3,8 @@
 
 #include <shared_utils.h>
 #include <conexion.h>
-#include "kernel_utils.h"
-#include "planificacion.h"
+#include <kernel_utils.h>
+#include <planificacion.h>
 #include "serializacion.h"
 #include "tests.h"
 #include <signal.h>

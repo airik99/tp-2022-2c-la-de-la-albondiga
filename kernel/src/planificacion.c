@@ -1,7 +1,5 @@
 #include "planificacion.h"
 
-#include "kernel_utils.h"
-
 sem_t sem_cola_new;
 sem_t sem_cola_ready_fifo;
 sem_t sem_cola_ready_round_robin;
@@ -21,6 +19,17 @@ void iniciar_planificador_largo_plazo(void) {
 	sem_init(&sem_cola_new, 0, 1);
 	sem_init(&sem_cola_exit, 0, 1);
 	sem_init(&sem_grado_multiprogramacion, 0, config_valores.grado_max_multiprogramacion);
+}
+
+void iniciar_planificador_corto_plazo(void) {
+    colaReadyRoundRobin = list_create();
+    colaReadyFifo = list_create();
+    colaExec = list_create();
+    colaBlock = list_create();
+	sem_init(&sem_cola_ready_fifo, 0, 1);
+    sem_init(&sem_cola_ready_round_robin, 0, 1);
+	sem_init(&sem_cola_exec, 0, 1);
+	sem_init(&sem_cola_block, 0, 1);
 }
 
 void planificar_largo(t_pcb* pcb_a_planificar) {
@@ -55,16 +64,6 @@ void planificar_largo(t_pcb* pcb_a_planificar) {
     }else{
         log_info(logger, "No se pudo enviar a planificar corto el pcb de pid: %d porque la cola de ready esta llena \n", pcb_a_planificar->pid);
     }
-}
-void iniciar_planificador_corto_plazo(void) {
-    colaReadyRoundRobin = list_create();
-    colaReadyFifo = list_create();
-    colaExec = list_create();
-    colaBlock = list_create();
-	sem_init(&sem_cola_ready_fifo, 0, 1);
-    sem_init(&sem_cola_ready_round_robin, 0, 1);
-	sem_init(&sem_cola_exec, 0, 1);
-	sem_init(&sem_cola_block, 0, 1);
 }
 
 void planificador_corto(t_pcb* pcb_nuevo) {
@@ -130,13 +129,8 @@ t_pcb* algoritmo_fifo() {
     sem_post(&sem_cola_ready_fifo);
 }
 
-t_pcb* algoritmo_rr(){
-    t_pcb* pcb_a_ejecutar;
-    pthread_create(hilo_proceso, NULL, esperar_quantum, &pcb_a_ejecutar);
-    return pcb_a_ejecutar;
-}
 
-void * esperar_quantum(t_pcb* pcb_a_ejecutar) {
+void esperar_quantum(t_pcb* pcb_a_ejecutar) {
     usleep(config_valores.quantum_rr);
     log_info(logger, "Se agrego el pcb de pid: %d a la cola de ready \n", pcb_a_ejecutar->pid);
     //TODO ENVIAR A CPU POR EL PUERTO INTERRUPT
@@ -152,11 +146,14 @@ void * esperar_quantum(t_pcb* pcb_a_ejecutar) {
     pcb_a_ejecutar = primer_pcb;
 }
 
-t_pcb* page_fault(t_pcb* pcb_pf,int nro_pagina){
-    ptheard_create(hilo_page_fault,NULL,atender_page_fault,(pcb_pf,nro_pagina));
+t_pcb* algoritmo_rr(){
+    t_pcb* pcb_a_ejecutar;
+    pthread_create(hilo_proceso, NULL, esperar_quantum, &pcb_a_ejecutar);
+    return pcb_a_ejecutar;
 }
 
-void* atender_page_fault(t_pcb* pcb_pf,int nro_pagina){
+
+void atender_page_fault(t_pcb* pcb_pf,int nro_pagina){
     sem_init(&sem_page_fault, 0, 1);
     actualizar_estado(pcb_pf,BLOCKED);
     //sem_wait(sem_page_fault);
@@ -166,7 +163,11 @@ void* atender_page_fault(t_pcb* pcb_pf,int nro_pagina){
     planificador_corto(pcb_pf);
 }
 
-void* solicitar_pagina_a_memoria(int nro_pagina){
+t_pcb* page_fault(t_pcb* pcb_pf,int nro_pagina){
+    pthread_create(hilo_page_fault,NULL,atender_page_fault,(pcb_pf,nro_pagina));
+}
+
+void solicitar_pagina_a_memoria(int nro_pagina){
 
     //Solicitar al modulo memoria que se cargue en memoria principal la pagina correspondiente, la misma sera obtenida desde el mensaje recibido de la CPU
     //sem_post(sem_page_fault);

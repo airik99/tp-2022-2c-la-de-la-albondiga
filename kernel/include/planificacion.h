@@ -4,6 +4,7 @@
 #include <serializacion.h>
 #include <shared_utils.h>
 #include <semaphore.h>
+#include <kernel_utils.h>
 
 //Semaforos
 extern sem_t sem_cola_new;

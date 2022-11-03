@@ -40,13 +40,19 @@ typedef struct
 	u_int32_t pid;
 	t_list* instrucciones; 
 	u_int32_t program_counter;
-	u_int32_t tiempo_bloqueo;
 	//u_int32_t* registros_cpu;
 	t_estado estado_actual;
 	t_estado estado_anterior;
 	t_list* parametros;
 	// tabla_de_segmentos
 } t_pcb;
+
+typedef enum{
+	AX,
+	BX,
+	CX,
+	DX
+} registro_cpu;
 
 typedef struct
 {
@@ -55,12 +61,7 @@ typedef struct
 } t_parametros;
 
 //TODO Puede ser que se cambie
-typedef enum registro_cpu{
-	AX,
-	BX,
-	CX,
-	DX
-} registro_cpu;
+
 
 void print_valores(int valor);
 void destructor_instrucciones(t_list *);

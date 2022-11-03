@@ -23,7 +23,17 @@ void cargar_configuracion() {
     config_valores.puerto_cpu_dispatch = config_get_string_value(config, "PUERTO_CPU_DISPATCH");
     config_valores.puerto_cpu_interrupt = config_get_string_value(config, "PUERTO_CPU_INTERRUPT");
     config_valores.puerto_escucha = config_get_string_value(config, "PUERTO_ESCUCHA");
-    config_valores.algoritmo_planificacion = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
+    char * algoritmo = config_get_string_value(config, "ALGORITMO_PLANIFICACION");
+
+    if (strcmp(algoritmo, "FIFO") == 0) {
+        config_valores.algoritmo_planificacion = FIFO;
+    } else if (strcmp(algoritmo, "RR") == 0) {
+        config_valores.algoritmo_planificacion = RR;
+    } else if (strcmp(algoritmo, "FEEDBACK") == 0) {
+        config_valores.algoritmo_planificacion = FEEDBACK;
+    } else {
+        log_error(logger, "No se reconoce el algoritmo de planificacion");
+    }
     config_valores.grado_max_multiprogramacion = config_get_int_value(config, "GRADO_MAX_MULTIPROGRAMACION");
     config_valores.dispositivos_io = config_get_array_value(config, "DISPOSITIVOS_IO");
     config_valores.tiempos_io = config_get_array_value(config, "TIEMPOS_IO");

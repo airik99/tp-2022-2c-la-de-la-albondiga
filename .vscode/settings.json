@@ -2,6 +2,7 @@
     "files.associations": {
         "log.h": "c",
         "planificacion.h": "c",
-        "kernel.h": "c"
+        "kernel.h": "c",
+        "kernel_utils.h": "c"
     }
 }

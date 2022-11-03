@@ -1,24 +1,28 @@
+#ifndef KERNEL_UTILS_H
+#define KERNEL_UTILS_H
+
 #include "shared_utils.h"
 
-typedef struct config_kernel {
+typedef enum {
+    RR,
+    FIFO,
+    FEEDBACK
+} t_algoritmo_planificacion;
+
+typedef struct  {
     char *ip_memoria;
     char *puerto_memoria;
     char *ip_cpu;
     char *puerto_cpu_dispatch;
     char *puerto_cpu_interrupt;
     char *puerto_escucha;
-    algoritmo_planificacion algoritmo_planificacion;
+    t_algoritmo_planificacion algoritmo_planificacion;
     int grado_max_multiprogramacion;
     int quantum_rr;
     char **dispositivos_io;
     char **tiempos_io;
 } config_kernel;
 
-typedef enum algoritmo_planificacion{
-    RR,
-    FIFO,
-    FEEDBACK
-} algoritmo_planificacion;
 
 /**
  * @brief Crea el logger del kernel
@@ -71,3 +75,5 @@ extern t_list *colaReadyFifo;
 extern t_list *colaReadyRoundRobin;
 extern t_list *colaExec;
 extern t_list *colaBlock;
+
+#endif
