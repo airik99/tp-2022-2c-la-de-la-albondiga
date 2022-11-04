@@ -7,7 +7,13 @@ t_list *colaNew;
 t_list *colaExit;
 t_list *colaReady;
 t_list *colaExec;
+t_list *colaReadyFifo;
+t_list *colaReadyRoundRobin;
 t_list *colaBlock;
+int conexion_cpu_dispatch;
+int conexion_memoria;
+int conexion_cpu_interrupt;
+int socket_servidor;
 int contador_pid;
 
 void iniciar_logger() {
@@ -72,4 +78,8 @@ void liberar_colas() {
     list_destroy_and_destroy_elements(colaReady, (void *)eliminar_pcb);
     list_destroy_and_destroy_elements(colaNew, (void *)eliminar_pcb);
     list_destroy_and_destroy_elements(colaExec, (void *)eliminar_pcb);
+}
+
+bool es_algoritmo_FIFO(){
+    return config_valores.algoritmo_planificacion == FIFO;
 }

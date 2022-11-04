@@ -9,7 +9,7 @@ typedef enum {
     FEEDBACK
 } t_algoritmo_planificacion;
 
-typedef struct  {
+typedef struct {
     char *ip_memoria;
     char *puerto_memoria;
     char *ip_cpu;
@@ -22,6 +22,22 @@ typedef struct  {
     char **dispositivos_io;
     char **tiempos_io;
 } config_kernel;
+
+// variables
+extern config_kernel config_valores;
+extern t_config *config;
+extern t_log *logger;
+extern int contador_pid;
+extern t_list *colaNew;
+extern t_list *colaExit;
+extern t_list *colaReadyFifo;
+extern t_list *colaReadyRoundRobin;
+extern t_list *colaExec;
+extern t_list *colaBlock;
+extern int conexion_cpu_dispatch;
+extern int conexion_memoria;
+extern int conexion_cpu_interrupt;
+extern int socket_servidor;
 
 
 /**
@@ -64,16 +80,8 @@ void eliminar_pcb(t_pcb *pcb);
  */
 void liberar_colas();
 
-// variables
-extern config_kernel config_valores;
-extern t_config *config;
-extern t_log *logger;
-extern int contador_pid;
-extern t_list *colaNew;
-extern t_list *colaExit;
-extern t_list *colaReadyFifo;
-extern t_list *colaReadyRoundRobin;
-extern t_list *colaExec;
-extern t_list *colaBlock;
+bool es_algoritmo_FIFO();
+
+
 
 #endif

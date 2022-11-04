@@ -11,7 +11,9 @@ typedef enum
 	INSTRUCCIONES,
 	HANDSHAKE,
 	PCB,
-	INTERRUPCION
+	INTERRUPCION,
+	PCB_BLOCK,
+	PCB_EXIT
 } op_code;
 
 typedef struct{

@@ -7,12 +7,13 @@
 #include <kernel_utils.h>
 
 //Semaforos
-extern sem_t sem_cola_new;
-extern sem_t sem_cola_ready;
-extern sem_t sem_cola_exec;
-extern sem_t sem_cola_block;
-extern sem_t sem_cola_exit;
+
+extern pthread_mutex_t  mx_cola_new;
+extern pthread_mutex_t  mx_cola_exec;
+extern pthread_mutex_t  mx_cola_block;
+extern pthread_mutex_t  mx_cola_exit; 
 extern sem_t sem_grado_multiprogramacion;
+extern sem_t sem_procesos_new;
 
 
 // funciones
@@ -22,11 +23,13 @@ extern sem_t sem_grado_multiprogramacion;
  */
 void iniciar_planificador_largo_plazo(void);
 
-void planificar_largo(t_pcb* pcb_a_planificar);
+void planificar_largo();
+
+void recibir_pcb_cpu();
 
 void iniciar_planificador_corto_plazo (void);
 
-void planificador_corto(t_pcb* pcb_nuevo);
+void planificador_corto();
 
 t_pcb* algoritmo_feedback();
 
