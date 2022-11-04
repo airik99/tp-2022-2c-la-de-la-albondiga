@@ -13,7 +13,8 @@ typedef enum
 	PCB,
 	INTERRUPCION,
 	PCB_BLOCK,
-	PCB_EXIT
+	PCB_EXIT,
+	PAQUETE
 } op_code;
 
 typedef struct{

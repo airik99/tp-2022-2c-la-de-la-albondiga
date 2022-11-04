@@ -73,7 +73,7 @@ void liberar_colas() {
 
 void actualizar_estado(t_pcb *pcb, t_estado nuevo_estado) {
     log_info(logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",
-             pcb->pid, estado_a_string[pcb->estado_actual], estado_a_string[nuevo_estado]);
+    pcb->pid, estado_a_string[pcb->estado_actual], estado_a_string[nuevo_estado]);
     pcb->estado_anterior = pcb->estado_actual;
     pcb->estado_actual = nuevo_estado;
 }

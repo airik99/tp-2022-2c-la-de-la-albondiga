@@ -4,10 +4,11 @@ config_cpu config_valores;
 t_config* config;
 t_log* logger;
 char* ip;
+t_handshake* configuracion_tabla;
 t_pcb* pcb_recibido;
-int conexion_memoria, parar_proceso, cliente_servidor_dispatch, socket_servidor_dispatch, socket_servidor_interrupt;
+int conexion_memoria, parar_proceso,cliente_servidor_interrupt ,cliente_servidor_dispatch, socket_servidor_dispatch, socket_servidor_interrupt;
 pthread_t conexion_memoria_i, hilo_dispatch, hilo_interrupt, pedidofin;
-int ultimo_pid = -1;  // no se para que es esto pero se usa
+int ultimo_pid = -1;  
 int registros[] = {0, 0, 0, 0};
 
 int main(int argc, char** argv) {
@@ -29,7 +30,7 @@ int main(int argc, char** argv) {
     log_info(logger, "Iniciando conexion con kernel por interrupt\n");
     socket_servidor_interrupt = iniciar_servidor(ip, config_valores.puerto_escucha_interrupt);
 	log_info(logger, "Esperando cliente por Interrupt");
-    int socket_kernel = esperar_cliente(socket_servidor_interrupt);
+    cliente_servidor_interrupt = esperar_cliente(socket_servidor_interrupt);
     log_info(logger, "Conexión con Kernel en puerto Interrupt establecida.");
 
     log_info(logger, "Iniciando conexion con kernel por dispatch\n");
@@ -74,29 +75,32 @@ void error_conexion(int socket) {
 void evaluar_cod_op(int cod_op) {
     switch (cod_op) {
         case PCB:
-            parar_proceso = 0;                                      // INICIA EL CONTADOR DE PARAR PROCESO
+            parar_proceso = 0; // INICIA EL CONTADOR DE PARAR PROCESO
             pcb_recibido = recibir_pcb(cliente_servidor_dispatch);  
             log_info(logger, "Recibi PCB de Id: %d \n", pcb_recibido->pid);
             /*if(ultimo_pid != pcb_recibido->pid && list_size(tlb->lista) != 0){
                     //vaciarTlb();
-                    log_info(logger,"Se vacio TLB\n");
+                    //log_info(logger,"Se vacio TLB\n");
             }*/
-            //ciclo_de_instruccion(pcb_recibido);  // INICIA EL CICLO DE INSTRUCCION
+            ciclo_de_instruccion(pcb_recibido);  // INICIA EL CICLO DE INSTRUCCION
 			t_paquete* retorno_pcb = crear_paquete(PCB_EXIT);
 			sleep(2);
 			serializar_pcb(retorno_pcb, pcb_recibido);
 			enviar_paquete(retorno_pcb, cliente_servidor_dispatch);
             break;
-            /* case HANDSHAKE:
-                 log_info(logger, "Se recibio la configuracion por handshake \n");
-                 t_handshake* configuracion_tabla = recibir_handshake(conexion_memoria);
-                 return NULL;
-                 break;
-             case INTERRUPCION:
-                 log_info(logger, "Peticion de interrupcion recibida \n");
-                 parar_proceso++;
-                 break;
-                 casos_de_error(cod_op);*/
+        case PAQUETE:
+			log_info(logger,"Recibi configuracion por handshake \n");
+			configuracion_tabla = recibir_handshake(conexion_memoria);
+			break;
+        case HANDSHAKE:
+            log_info(logger, "Se recibio la configuracion por handshake \n");
+            t_handshake* configuracion_tabla = recibir_handshake(conexion_memoria);
+            break;
+        case INTERRUPCION:
+            log_info(logger, "Peticion de interrupcion recibida \n");
+            parar_proceso++;
+            break;
+        casos_de_error(cod_op);
     }
     return EXIT_SUCCESS;
 }
@@ -113,31 +117,7 @@ void casos_de_error(int codigo_error) {
     }
 }
 
-void cargar_configuracion() {
-    config = config_create("cfg/archivo_configuracion.config");
-    log_info(logger, "Arranco a leer el archivo de configuracion \n");
 
-    config_valores.entradas_tlb = config_get_int_value(config, "ENTRADAS_TLB");
-    config_valores.reemplazo_tlb = config_get_string_value(config, "REEMPLAZO_TLB");
-    config_valores.retardo_instruccion = config_get_int_value(config, "RETARDO_INSTRUCCION");
-    config_valores.ip_memoria = config_get_string_value(config, "IP_MEMORIA");
-    config_valores.puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
-    config_valores.puerto_escucha_dispatch = config_get_string_value(config, "PUERTO_ESCUCHA_DISPATCH");
-    config_valores.puerto_escucha_interrupt = config_get_string_value(config, "PUERTO_ESCUCHA_INTERRUPT");
-
-    log_info(logger, "Termino de leer el archivo de configuracion \n");
-}
-
-void liberar_todo() {
-    liberar_conexion(conexion_memoria);
-    liberar_conexion(socket_servidor_dispatch);
-    liberar_conexion(cliente_servidor_dispatch);
-    config_destroy(config);
-    log_destroy(logger);
-}
-
-/*
-/*
 void* ciclo_de_instruccion(t_pcb* pcb) {
     t_instruccion* instruccionProxima;
     parar_proceso = 0;
@@ -189,10 +169,7 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
     }
 }
 
-uint32_t AX, BX, CX, DX;  // esto no se usa
-registros[] = {0, 0, 0, 0};
-
-/*SET (Registro, Valor): Asigna al registro el valor pasado como parámetro.
+//SET (Registro, Valor): Asigna al registro el valor pasado como parámetro.
 void ejecutar_SET(registro_cpu registro, uint32_t valor) {
     log_info(logger, "Nos llego el valor %d \n", valor);
     registros[registro] = valor;
@@ -208,11 +185,13 @@ void ejecutar_ADD(registro_cpu destino, registro_cpu origen) {
 //I/O (Dispositivo, Registro / Unidades de trabajo): Esta instrucción representa una syscall de I/O bloqueante. Se deberá devolver
 //el Contexto de Ejecución actualizado al Kernel junto el dispositivo y la cantidad de unidades de trabajo del dispositivo que desea
 //utilizar el proceso (o el Registro a completar o leer en caso de que el dispositivo sea Pantalla o Teclado).
-void ejecutar_IO(t_pcb* pcb, char* dispositivo_a_asignar, t_instruccion* instruccion /*, int unidades_a_asignar) {
-    t_pcb* pcb_a_enviar = pcb;
-    pcb_a_enviar->tiempo_bloqueo = atoi(list_get(instruccion->params, 1));  // CHEQUEAR QUE FUNCIONE
-    actualizar_estado(pcb_a_enviar, BLOCKED);
-    // enviar_mensaje(kernel,pcb_a_enviar);
+void ejecutar_IO(t_pcb* pcb, t_instruccion* instruccion) {
+    pcb->tiempo_bloqueo = atoi(list_get(instruccion->params, 1));  // CHEQUEAR QUE FUNCIONE
+    pcb->dispositivo_actual = list_get(instruccion->params, 0);
+    log_info(logger, "Obtengo el tiempo de bloqueo por IO: %d \n", pcb->tiempo_bloqueo);
+    actualizar_estado(pcb, BLOCKED);
+    serializar_pcb(crear_paquete(PCB), pcb);
+	enviar_paquete(pcb, cliente_servidor_interrupt); //dispatch
 }
 
 //EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.
@@ -224,7 +203,7 @@ void ejecutar_EXIT(t_pcb* pcb) {
     log_info(logger, "Se ejecuto instruccion EXIT \n");
 }
 
-int checkInterrupt() {  // chequear esto TODO
+int checkInterrupt() { 
     pthread_mutex_lock(&pedidofin);
     if (parar_proceso > 0) {
         pthread_mutex_unlock(&pedidofin);
@@ -238,9 +217,9 @@ int checkInterrupt() {  // chequear esto TODO
 void* conexion_inicial_memoria() {
     pedir_handshake(conexion_memoria);
     log_info(logger, "Se envio el pedido de handshake\n");
-
+    int cod_op;
     while (1) {
-        int cod_op = recibir_operacion(conexion_memoria);
+        cod_op = recibir_operacion(conexion_memoria);
         evaluar_cod_op(cod_op);
     }
     return NULL;
@@ -275,4 +254,27 @@ void* conexion_interrupciones(char* ip, char* puerto) {
         evaluar_cod_op(cod_op);
     }
     return NULL;
-}*/
+}
+
+void cargar_configuracion() {
+    config = config_create("cfg/archivo_configuracion.config");
+    log_info(logger, "Arranco a leer el archivo de configuracion \n");
+
+    config_valores.entradas_tlb = config_get_int_value(config, "ENTRADAS_TLB");
+    config_valores.reemplazo_tlb = config_get_string_value(config, "REEMPLAZO_TLB");
+    config_valores.retardo_instruccion = config_get_int_value(config, "RETARDO_INSTRUCCION");
+    config_valores.ip_memoria = config_get_string_value(config, "IP_MEMORIA");
+    config_valores.puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
+    config_valores.puerto_escucha_dispatch = config_get_string_value(config, "PUERTO_ESCUCHA_DISPATCH");
+    config_valores.puerto_escucha_interrupt = config_get_string_value(config, "PUERTO_ESCUCHA_INTERRUPT");
+
+    log_info(logger, "Termino de leer el archivo de configuracion \n");
+}
+
+void liberar_todo() {
+    liberar_conexion(conexion_memoria);
+    liberar_conexion(socket_servidor_dispatch);
+    liberar_conexion(cliente_servidor_dispatch);
+    config_destroy(config);
+    log_destroy(logger);
+}

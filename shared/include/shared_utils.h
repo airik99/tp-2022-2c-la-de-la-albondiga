@@ -46,6 +46,8 @@ typedef struct
 	t_estado estado_anterior;
 	t_list* parametros;
 	// tabla_de_segmentos
+	u_int32_t tiempo_bloqueo;
+	char* dispositivo_actual;
 } t_pcb;
 
 typedef enum{
