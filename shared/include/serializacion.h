@@ -112,7 +112,7 @@ void serializar_segmentos(t_paquete *paquete, char** segmentos);
  */
 void serializar_pcb(t_paquete *paquete, t_pcb* pcb);
 
-
+void enviar_pcb(t_pcb* pcb, int socket);
 /**
  * @brief Recibe un pcb
  * 
@@ -134,8 +134,11 @@ t_proceso* recibir_proceso(int socket_cliente);
 
 void enviar_mensaje(char* mensaje, int socket_cliente);
 
+
 int enviar_datos(int socket_fd, void *source, uint32_t size);
 
 int recibir_datos(int socket_fd, void *dest, uint32_t size);
+
+
 
 #endif

@@ -88,7 +88,7 @@ void escuchar_consola(int socket_cliente) {
             t_paquete *paquete = crear_paquete(PCB);
             serializar_pcb(paquete, pcb);
             pthread_mutex_lock(&mx_cola_new);
-            list_add(colaNew, pcb);
+            queue_push(cola_new, pcb);
             pthread_mutex_unlock(&mx_cola_new);
             sem_post(&sem_procesos_new);
             //  Por ahora borro estas cosas para que no salten MemLeaks con Valgrind despues hay

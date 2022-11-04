@@ -23,21 +23,35 @@ extern sem_t sem_procesos_new;
  */
 void iniciar_planificador_largo_plazo(void);
 
-void planificar_largo();
-
-void recibir_pcb_cpu();
-
 void iniciar_planificador_corto_plazo (void);
 
-void planificador_corto();
+void planificar_largo();
 
-t_pcb* algoritmo_feedback();
+void planificador_corto_FIFO();
 
-t_pcb* algoritmo_fifo();
+void planificador_corto_RR();
 
-t_pcb* algoritmo_rr();
+void planificador_corto_FEEDBACK();
+
+void esperar_quantum();
+
+/**
+ * @brief Retorna el primer pcb de la cola usando los semaforos correspondientes 
+ * 
+ * @param cola 0 para cola de mayor prioridad, 1 para cola de menor prioridad
+ * @return t_pcb* 
+ */
+t_pcb* tomar_primer_pcb(int cola);
+
+void algoritmo_FIFO(int cola);
+
+void algoritmo_RR(int cola);
 
 void escuchar_mensaje_cpu();
+
+void recibir_pcb_cpu_RR();
+
+void recibir_pcb_cpu_FIFO();
 
 void finalizar_pcb(t_pcb* pcb);
 

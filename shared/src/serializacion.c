@@ -196,6 +196,12 @@ void serializar_pcb(t_paquete *paquete, t_pcb *pcb) {
     // TODO: Tabla de segmentos
 }
 
+void enviar_pcb(t_pcb* pcb, int socket){
+    t_paquete* paquete = crear_paquete(PCB);
+    serializar_pcb(paquete, pcb);
+    enviar_paquete(paquete, socket);
+}
+
 t_pcb *recibir_pcb(int socket_cliente) {
     int size;
     int desplazamiento = 0;
@@ -218,3 +224,4 @@ t_pcb *recibir_pcb(int socket_cliente) {
     free(buffer);
     return pcb;
 }
+

@@ -3,12 +3,6 @@
 
 #include "shared_utils.h"
 
-typedef enum {
-    RR,
-    FIFO,
-    FEEDBACK
-} t_algoritmo_planificacion;
-
 typedef struct {
     char *ip_memoria;
     char *puerto_memoria;
@@ -16,7 +10,7 @@ typedef struct {
     char *puerto_cpu_dispatch;
     char *puerto_cpu_interrupt;
     char *puerto_escucha;
-    t_algoritmo_planificacion algoritmo_planificacion;
+    char *algoritmo_planificacion;
     int grado_max_multiprogramacion;
     int quantum_rr;
     char **dispositivos_io;
@@ -28,17 +22,17 @@ extern config_kernel config_valores;
 extern t_config *config;
 extern t_log *logger;
 extern int contador_pid;
-extern t_list *colaNew;
-extern t_list *colaExit;
-extern t_list *colaReadyFifo;
-extern t_list *colaReadyRoundRobin;
-extern t_list *colaExec;
-extern t_list *colaBlock;
+extern t_queue *cola_new;
+extern t_queue *cola_exit;
+extern t_queue *cola_ready_prioritaria;
+extern t_queue *cola_ready_segundo_nivel;
+extern t_queue *cola_exec;
+extern t_queue *colaBlock;
 extern int conexion_cpu_dispatch;
 extern int conexion_memoria;
 extern int conexion_cpu_interrupt;
 extern int socket_servidor;
-
+extern char* estado_a_string[5];
 
 /**
  * @brief Crea el logger del kernel
@@ -80,7 +74,20 @@ void eliminar_pcb(t_pcb *pcb);
  */
 void liberar_colas();
 
+void actualizar_estado(t_pcb*,t_estado);
+
+bool es_algoritmo_FEEDBACK();
 bool es_algoritmo_FIFO();
+bool es_algoritmo_RR();
+
+int* pid_array(t_queue* cola);
+
+void loggear_colas_ready();
+
+char* string_de_pids(t_queue* cola);
+char* obtener_pid_como_string(t_pcb* pcb);
+char* concatenar_string_con_coma(char* string1, char* string2);
+
 
 
 

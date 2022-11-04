@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <commons/log.h>
 #include <commons/collections/list.h>
+#include <commons/collections/queue.h>
 #include <commons/string.h>
 #include <commons/txt.h>
 #include <commons/config.h>
@@ -67,7 +68,7 @@ void print_valores(int valor);
 void destructor_instrucciones(t_list *);
 void destructor_instruccion(t_instruccion*);
 void print_instruccion(t_instruccion* );
-void actualizar_estado(t_pcb*,t_estado);
+
 #endif
 
 

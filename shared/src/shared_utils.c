@@ -18,7 +18,4 @@ void destructor_instruccion(t_instruccion* instruccion) {
     list_destroy_and_destroy_elements(instruccion->params, (void*)free);
     free(instruccion);
 }
-void actualizar_estado(t_pcb* pcb,t_estado nuevo_estado){
-    pcb->estado_anterior=pcb->estado_actual;
-    pcb->estado_actual=nuevo_estado;
-}
+
