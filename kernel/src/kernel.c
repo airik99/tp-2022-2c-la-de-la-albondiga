@@ -85,8 +85,7 @@ void escuchar_consola(int socket_cliente) {
         case INSTRUCCIONES:
             proceso = recibir_proceso(socket_cliente);
             t_pcb *pcb = crear_nuevo_pcb(proceso);
-            t_paquete *paquete = crear_paquete(PCB);
-            serializar_pcb(paquete, pcb);
+            log_info(logger, "Se crea el proceso <%d> en NEW", pcb->pid);
             pthread_mutex_lock(&mx_cola_new);
             queue_push(cola_new, pcb);
             pthread_mutex_unlock(&mx_cola_new);

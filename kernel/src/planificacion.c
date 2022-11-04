@@ -42,18 +42,16 @@ void iniciar_planificador_corto_plazo(void) {
     pthread_t t_corto_plazo;
 
     if (es_algoritmo_FEEDBACK()) {
-        log_info(logger, "FB");
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_FEEDBACK, NULL);
         cola_ready_segundo_nivel = queue_create();
         pthread_mutex_init(&mx_cola_ready_segunda, NULL);
     }
     else if (es_algoritmo_FIFO()) {
-        log_info(logger, "FIFO");
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_FIFO, NULL);
     } else {
-        log_info(logger, "RR");
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_RR, NULL);
     }
+    log_info(logger, "Iniciado el Planificador de corto plazo con algoritmo %s", config_valores.algoritmo_planificacion);
     pthread_detach(t_corto_plazo);
 }
 
@@ -122,8 +120,8 @@ void recibir_pcb_cpu_FIFO() {
     switch (cod_op) {
         case PCB_EXIT:
             pcb = recibir_pcb(conexion_cpu_dispatch);
-            log_info(logger, "Eliminar pcb [%d]", pcb->pid);
             sem_post(&sem_grado_multiprogramacion);
+            actualizar_estado(pcb,EXIT);
             eliminar_pcb(pcb);
             break;
         // Case BLOCK: Hay que ver porque hay 3 block distintos
@@ -139,8 +137,8 @@ void recibir_pcb_cpu_RR() {
     switch (cod_op) {
         case PCB_EXIT:
             pcb = recibir_pcb(conexion_cpu_dispatch);
-            log_info(logger, "Eliminar pcb [%d]", pcb->pid);
             sem_post(&sem_grado_multiprogramacion);
+            actualizar_estado(pcb,EXIT);
             eliminar_pcb(pcb);
             // pthread_cancel(t_quantum);
             break;
@@ -148,7 +146,7 @@ void recibir_pcb_cpu_RR() {
         //  Case BLOCK: Hay que ver porque hay 3 block distintos
         // pthread_cancel(t_quantum)
         default:
-            log_warning(logger, "El proceso %d con operacion desconocida.", pcb->pid);
+            log_warning(logger, "Operacion desconocida.");
             break;
     }
 }
