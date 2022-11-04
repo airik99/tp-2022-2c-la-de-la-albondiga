@@ -68,7 +68,7 @@ void planificar_largo() {
         pthread_mutex_unlock(&mx_cola_ready_prioritaria);
 
         actualizar_estado(pcb, READY);
-        //loggear_colas_ready();
+        loggear_colas_ready();
         sem_post(&sem_procesos_ready);
     }
 }

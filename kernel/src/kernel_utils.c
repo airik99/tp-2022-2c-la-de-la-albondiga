@@ -91,7 +91,7 @@ bool es_algoritmo_RR() {
 void loggear_colas_ready() {
     char *pids_primera_cola = string_de_pids(cola_ready_prioritaria);
 
-    if (es_algoritmo_FEEDBACK) {
+    if (es_algoritmo_FEEDBACK()) {
         char *pids_segunda_cola = string_de_pids(cola_ready_segundo_nivel);
         log_info(logger, "Cola Ready <Round Robin>: [%s]", pids_primera_cola);
         log_info(logger, "Cola Ready <FIFO>: [%s]", pids_segunda_cola);
@@ -100,17 +100,18 @@ void loggear_colas_ready() {
     }
 }
 
-char *string_de_pids(t_queue *cola) {
-    t_list *pid_list = list_map(cola->elements, obtener_pid_como_string);
-    return list_fold1(pid_list, concatenar_string_con_coma);
-}
-
 char *obtener_pid_como_string(t_pcb *pcb) {
     return string_itoa(pcb->pid);
 }
 
 char *concatenar_string_con_coma(char *string1, char *string2) {
-    char *temp = string_duplicate(string1);
-    string_append_with_format(&temp, "%s, %s", string2);
-    return temp;
+    string_append_with_format(&string1, ", %s", string2);
+    return string1;
+}
+
+char *string_de_pids(t_queue *cola) {
+    if (queue_is_empty(cola))
+        return "";
+    t_list *pid_list = list_map(cola->elements, (void *)obtener_pid_como_string);
+    return list_fold1(pid_list, (void *)concatenar_string_con_coma);
 }
