@@ -161,7 +161,7 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
     }
 
     if (strcmp(instruccion->nombre, "I/O") == 0) {
-        // ejecutar_IO();
+        ejecutar_IO(pcb, instruccion);
     }
 
     if (strcmp(instruccion->nombre, "EXIT") == 0) {
