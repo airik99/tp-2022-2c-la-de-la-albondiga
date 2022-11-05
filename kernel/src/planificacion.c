@@ -45,8 +45,7 @@ void iniciar_planificador_corto_plazo(void) {
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_FEEDBACK, NULL);
         cola_ready_segundo_nivel = queue_create();
         pthread_mutex_init(&mx_cola_ready_segunda, NULL);
-    }
-    else if (es_algoritmo_FIFO()) {
+    } else if (es_algoritmo_FIFO()) {
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_FIFO, NULL);
     } else {
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_RR, NULL);
@@ -121,10 +120,12 @@ void recibir_pcb_cpu_FIFO() {
         case PCB_EXIT:
             pcb = recibir_pcb(conexion_cpu_dispatch);
             sem_post(&sem_grado_multiprogramacion);
-            actualizar_estado(pcb,EXIT);
+            actualizar_estado(pcb, EXIT);
             eliminar_pcb(pcb);
             break;
-        // Case BLOCK: Hay que ver porque hay 3 block distintos
+        case PCB_BLOCK:
+            pcb = recibir_pcb(conexion_cpu_dispatch);
+            actualizar_estado(pcb, BLOCKED);
         default:
             log_warning(logger, "El proceso %d con operacion desconocida.", pcb->pid);
             break;
@@ -137,14 +138,23 @@ void recibir_pcb_cpu_RR() {
     switch (cod_op) {
         case PCB_EXIT:
             pcb = recibir_pcb(conexion_cpu_dispatch);
-            sem_post(&sem_grado_multiprogramacion);
-            actualizar_estado(pcb,EXIT);
+            pthread_cancel(t_quantum);
+            actualizar_estado(pcb, EXIT);
             eliminar_pcb(pcb);
-            // pthread_cancel(t_quantum);
+            sem_post(&sem_grado_multiprogramacion);
             break;
-        // case INTERRUPCION:
-        //  Case BLOCK: Hay que ver porque hay 3 block distintos
-        // pthread_cancel(t_quantum)
+        case PCB_BLOCK:
+            pcb = recibir_pcb(conexion_cpu_dispatch);
+            pthread_cancel(t_quantum);
+            actualizar_estado(pcb, BLOCKED);
+            break;    
+        case INTERRUPCION:
+            pcb = recibir_pcb(conexion_cpu_dispatch);
+            actualizar_estado(pcb, READY);
+            if(es_algoritmo_FEEDBACK())
+                queue_push(cola_ready_segundo_nivel, pcb);
+            else
+                queue_push(cola_ready_prioritaria, pcb);
         default:
             log_warning(logger, "Operacion desconocida.");
             break;

@@ -190,14 +190,17 @@ void serializar_pcb(t_paquete *paquete, t_pcb *pcb) {
     agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
     serializar_instrucciones(paquete, pcb->instrucciones);
     agregar_a_paquete(paquete, &(pcb->program_counter), sizeof(u_int32_t));
-    //agregar_a_paquete(paquete, &(pcb->registros_cpu), sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &(pcb->registro->AX), sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &(pcb->registro->BX), sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &(pcb->registro->CX), sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &(pcb->registro->DX), sizeof(u_int32_t));
     agregar_a_paquete(paquete, &(pcb->estado_actual), sizeof(t_estado));
     agregar_a_paquete(paquete, &(pcb->estado_anterior), sizeof(t_estado));
     // TODO: Tabla de segmentos
 }
 
-void enviar_pcb(t_pcb* pcb, int socket){
-    t_paquete* paquete = crear_paquete(PCB);
+void enviar_pcb(t_pcb *pcb, int socket) {
+    t_paquete *paquete = crear_paquete(PCB);
     serializar_pcb(paquete, pcb);
     enviar_paquete(paquete, socket);
 }
@@ -215,8 +218,15 @@ t_pcb *recibir_pcb(int socket_cliente) {
     pcb->instrucciones = deserializar_instrucciones(buffer, &desplazamiento);
     memcpy(&(pcb->program_counter), buffer + desplazamiento, sizeof(u_int32_t));
     desplazamiento += sizeof(u_int32_t);
-    //memcpy(&(pcb->registros_cpu), buffer + desplazamiento, sizeof(u_int32_t));
-    //desplazamiento += sizeof(u_int32_t);
+    pcb->registro = malloc(sizeof(registro_cpu));
+    memcpy(&(pcb->registro->AX), buffer + desplazamiento, sizeof(u_int32_t));
+    desplazamiento += sizeof(u_int32_t);
+    memcpy(&(pcb->registro->BX), buffer + desplazamiento, sizeof(u_int32_t));
+    desplazamiento += sizeof(u_int32_t);
+    memcpy(&(pcb->registro->CX), buffer + desplazamiento, sizeof(u_int32_t));
+    desplazamiento += sizeof(u_int32_t);
+    memcpy(&(pcb->registro->DX), buffer + desplazamiento, sizeof(u_int32_t));
+    desplazamiento += sizeof(u_int32_t);
     memcpy(&(pcb->estado_actual), buffer + desplazamiento, sizeof(t_estado));
     desplazamiento += sizeof(t_estado);
     memcpy(&(pcb->estado_anterior), buffer + desplazamiento, sizeof(t_estado));
@@ -224,4 +234,3 @@ t_pcb *recibir_pcb(int socket_cliente) {
     free(buffer);
     return pcb;
 }
-

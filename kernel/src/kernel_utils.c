@@ -51,6 +51,11 @@ t_pcb *crear_nuevo_pcb(t_proceso *proceso_consola) {
     nuevo_pcb->pid = contador_pid;
     contador_pid++;
     nuevo_pcb->instrucciones = proceso_consola->instrucciones;
+    nuevo_pcb->registro = malloc(sizeof(registro_cpu));
+    nuevo_pcb->registro->AX = 0;
+    nuevo_pcb->registro->BX = 0;
+    nuevo_pcb->registro->CX = 0;
+    nuevo_pcb->registro->DX = 0;
     nuevo_pcb->program_counter = 0;
     nuevo_pcb->estado_actual = NEW;
     nuevo_pcb->estado_anterior = NEW;

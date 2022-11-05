@@ -36,12 +36,19 @@ typedef enum estado {
 	PAGE_FAULT
 } t_estado;
 
+typedef struct{
+	u_int32_t AX;
+	u_int32_t BX;
+	u_int32_t CX;
+	u_int32_t DX;
+} registro_cpu;
+
 typedef struct 
 {
 	u_int32_t pid;
 	t_list* instrucciones; 
 	u_int32_t program_counter;
-	//u_int32_t* registros_cpu;
+	registro_cpu* registro;
 	t_estado estado_actual;
 	t_estado estado_anterior;
 	t_list* parametros;
@@ -50,12 +57,7 @@ typedef struct
 	char* dispositivo_actual;
 } t_pcb;
 
-typedef enum{
-	AX,
-	BX,
-	CX,
-	DX
-} registro_cpu;
+
 
 typedef struct
 {

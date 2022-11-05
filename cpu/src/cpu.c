@@ -6,9 +6,9 @@ t_log* logger;
 char* ip;
 t_handshake* configuracion_tabla;
 t_pcb* pcb_recibido;
-int conexion_memoria, parar_proceso,cliente_servidor_interrupt ,cliente_servidor_dispatch, socket_servidor_dispatch, socket_servidor_interrupt;
+int conexion_memoria, parar_proceso, cliente_servidor_interrupt, cliente_servidor_dispatch, socket_servidor_dispatch, socket_servidor_interrupt;
 pthread_t conexion_memoria_i, hilo_dispatch, hilo_interrupt, pedidofin;
-int ultimo_pid = -1;  
+int ultimo_pid = -1;
 int registros[] = {0, 0, 0, 0};
 
 int main(int argc, char** argv) {
@@ -29,17 +29,17 @@ int main(int argc, char** argv) {
 
     log_info(logger, "Iniciando conexion con kernel por interrupt\n");
     socket_servidor_interrupt = iniciar_servidor(ip, config_valores.puerto_escucha_interrupt);
-	log_info(logger, "Esperando cliente por Interrupt");
+    log_info(logger, "Esperando cliente por Interrupt");
     cliente_servidor_interrupt = esperar_cliente(socket_servidor_interrupt);
     log_info(logger, "Conexión con Kernel en puerto Interrupt establecida.");
 
     log_info(logger, "Iniciando conexion con kernel por dispatch\n");
     socket_servidor_dispatch = iniciar_servidor(ip, config_valores.puerto_escucha_dispatch);
-	log_info(logger, "Esperando cliente por dispatch");
+    log_info(logger, "Esperando cliente por dispatch");
     cliente_servidor_dispatch = esperar_cliente(socket_servidor_dispatch);
     log_info(logger, "Conexión con Kernel en puerto Dispatch establecida.");
 
-    //error_conexion(socket_servidor_dispatch);
+    // error_conexion(socket_servidor_dispatch);
 
     pthread_create(&hilo_interrupt, NULL, (void*)esperar_kernel_interrupt, (void*)socket_servidor_interrupt);
     pthread_create(&hilo_dispatch, NULL, (void*)esperar_kernel_dispatch, (void*)socket_servidor_dispatch);
@@ -63,6 +63,10 @@ void esperar_kernel_dispatch(int socket_servidor_dispatch) {
 }
 
 void esperar_kernel_interrupt(int socket_servidor_interrupt) {
+    while (1) {
+        op_code operacion = recibir_operacion(cliente_servidor_interrupt);
+        evaluar_cod_op(operacion);
+    }
 }
 
 void error_conexion(int socket) {
@@ -75,23 +79,20 @@ void error_conexion(int socket) {
 void evaluar_cod_op(int cod_op) {
     switch (cod_op) {
         case PCB:
-            parar_proceso = 0; // INICIA EL CONTADOR DE PARAR PROCESO
-            pcb_recibido = recibir_pcb(cliente_servidor_dispatch);  
+            parar_proceso = 0;  // INICIA EL CONTADOR DE PARAR PROCESO
+            pcb_recibido = recibir_pcb(cliente_servidor_dispatch);
+            copiar_registros_de_pcb(pcb_recibido);
             log_info(logger, "Recibi PCB de Id: %d \n", pcb_recibido->pid);
             /*if(ultimo_pid != pcb_recibido->pid && list_size(tlb->lista) != 0){
                     //vaciarTlb();
                     //log_info(logger,"Se vacio TLB\n");
             }*/
             ciclo_de_instruccion(pcb_recibido);  // INICIA EL CICLO DE INSTRUCCION
-			t_paquete* retorno_pcb = crear_paquete(PCB_EXIT);
-			sleep(2);
-			serializar_pcb(retorno_pcb, pcb_recibido);
-			enviar_paquete(retorno_pcb, cliente_servidor_dispatch);
             break;
         case PAQUETE:
-			log_info(logger,"Recibi configuracion por handshake \n");
-			configuracion_tabla = recibir_handshake(conexion_memoria);
-			break;
+            log_info(logger, "Recibi configuracion por handshake \n");
+            configuracion_tabla = recibir_handshake(conexion_memoria);
+            break;
         case HANDSHAKE:
             log_info(logger, "Se recibio la configuracion por handshake \n");
             t_handshake* configuracion_tabla = recibir_handshake(conexion_memoria);
@@ -100,9 +101,8 @@ void evaluar_cod_op(int cod_op) {
             log_info(logger, "Peticion de interrupcion recibida \n");
             parar_proceso++;
             break;
-        casos_de_error(cod_op);
+            casos_de_error(cod_op);
     }
-    return EXIT_SUCCESS;
 }
 
 void casos_de_error(int codigo_error) {
@@ -117,93 +117,97 @@ void casos_de_error(int codigo_error) {
     }
 }
 
-
 void* ciclo_de_instruccion(t_pcb* pcb) {
     t_instruccion* instruccionProxima;
     parar_proceso = 0;
-
-    log_info(logger, "Se creo hilo para recibir interrupciones \n");
 
     while (pcb->program_counter < list_size(pcb->instrucciones)) {
         instruccionProxima = list_get(pcb->instrucciones, pcb->program_counter);  // FETCH
         decode(instruccionProxima, pcb);                                          // DECODE (CON EXECUTE INCLUIDO)
         pcb->program_counter++;
 
-        if (checkInterrupt() == 1) {  // SE FIJA QUE NO HAYA PEDIDO DE PARAR EL PROCESO ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
+        /*if (checkInterrupt() == 1) {  // SE FIJA QUE NO HAYA PEDIDO DE PARAR EL PROCESO ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
             ultimo_pid = pcb->pid;
             // enviarPcb(socket_kernel, pcb);
             log_info(logger, "Envio pcb devuelta al kernel \n");
-            return NULL;
-        }
+            return;
+        }*/
     }
-    return NULL;
+    t_paquete* retorno_pcb = crear_paquete(PCB_EXIT);
+    serializar_pcb(retorno_pcb, pcb_recibido);
+    enviar_paquete(retorno_pcb, cliente_servidor_dispatch);
 }
 
 void decode(t_instruccion* instruccion, t_pcb* pcb) {
     if (strcmp(instruccion->nombre, "SET") == 0) {
-        registro_cpu registro = list_get(instruccion->params, 0);
-        uint32_t valor = list_get(instruccion->params, 1);
+        char* registro = list_get(instruccion->params, 0);
+        uint32_t valor = atoi(list_get(instruccion->params, 1));
+        log_info(logger, "PID: <%d> - Ejecutando: <SET> - <%s> - <%d>", pcb->pid, registro, valor);
         ejecutar_SET(registro, valor);
     }
 
     if (strcmp(instruccion->nombre, "ADD") == 0) {
-        registro_cpu destino = list_get(instruccion->params, 0);
-        registro_cpu origen = list_get(instruccion->params, 1);
+        char* destino = list_get(instruccion->params, 0);
+        char* origen = list_get(instruccion->params, 1);
+        log_info(logger, "PID: <%d> - Ejecutando: <ADD> - <%s> - <%s>", pcb->pid, destino, origen);
         ejecutar_ADD(destino, origen);
     }
 
     if (strcmp(instruccion->nombre, "MOV_IN") == 0) {
+        log_info(logger, "PID: <%d> - Ejecutando: <MOV_IN> - <PENDIENTE> - <PENDIENTE>", pcb->pid);
         // ejecutar_MOV_IN();
     }
 
     if (strcmp(instruccion->nombre, "MOV_OUT") == 0) {
+        log_info(logger, "PID: <%d> - Ejecutando: <MOV_OUT> - <PENDIENTE> - <PENDIENTE>", pcb->pid);
         // ejecutar_MOV_OUT();
     }
 
     if (strcmp(instruccion->nombre, "I/O") == 0) {
-        ejecutar_IO(pcb, instruccion);
+        char* dispositivo = list_get(instruccion->params, 0);
+        char* param2 = list_get(instruccion->params, 1);
+        log_info(logger, "PID: <%d> - Ejecutando: <I/O> - <%s> - <%s>", pcb->pid, dispositivo, param2);
+        ejecutar_IO(dispositivo, param2);
     }
 
     if (strcmp(instruccion->nombre, "EXIT") == 0) {
+        log_info(logger, "PID: <%d> - Ejecutando: <EXIT> -", pcb->pid);
         ejecutar_EXIT(pcb);
     }
 }
 
-//SET (Registro, Valor): Asigna al registro el valor pasado como parámetro.
-void ejecutar_SET(registro_cpu registro, uint32_t valor) {
-    log_info(logger, "Nos llego el valor %d \n", valor);
-    registros[registro] = valor;
-    log_info("Guardamos el valor %d en el registro %d \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
+// SET (Registro, Valor): Asigna al registro el valor pasado como parámetro.
+void ejecutar_SET(char* registro, uint32_t valor) {
+    int indice = indice_registro(registro);
+    registros[indice] = valor;
+    log_info("Guardamos el valor %d en el registro %s \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
 }
 
-//ADD (Registro Destino, Registro Origen): Suma ambos registros y deja el resultado en el Registro Destino.
-void ejecutar_ADD(registro_cpu destino, registro_cpu origen) {
-    registros[destino] = registros[destino] + registros[origen];
-    log_info("La suma entre %d y %d es %d \n", destino, origen, registros[destino]);
+// ADD (Registro Destino, Registro Origen): Suma ambos registros y deja el resultado en el Registro Destino.
+void ejecutar_ADD(char* destino, char* origen) {
+    int registro_origen = indice_registro(origen);
+    int registro_destino = indice_registro(destino);
+    int resultado = registros[registro_destino] + registros[registro_origen];
+    log_info(logger, "La suma entre %s (%d) y %s (%d) es %d \n", destino,registros[registro_destino], origen, registros[registro_origen], resultado);
+    registros[registro_destino] = resultado;
 }
 
-//I/O (Dispositivo, Registro / Unidades de trabajo): Esta instrucción representa una syscall de I/O bloqueante. Se deberá devolver
-//el Contexto de Ejecución actualizado al Kernel junto el dispositivo y la cantidad de unidades de trabajo del dispositivo que desea
-//utilizar el proceso (o el Registro a completar o leer en caso de que el dispositivo sea Pantalla o Teclado).
-void ejecutar_IO(t_pcb* pcb, t_instruccion* instruccion) {
-    pcb->tiempo_bloqueo = atoi(list_get(instruccion->params, 1));  // CHEQUEAR QUE FUNCIONE
-    pcb->dispositivo_actual = list_get(instruccion->params, 0);
-    log_info(logger, "Obtengo el tiempo de bloqueo por IO: %d \n", pcb->tiempo_bloqueo);
-    actualizar_estado(pcb, BLOCKED);
-    serializar_pcb(crear_paquete(PCB), pcb);
-	enviar_paquete(pcb, cliente_servidor_interrupt); //dispatch
+// I/O (Dispositivo, Registro / Unidades de trabajo): Esta instrucción representa una syscall de I/O bloqueante. Se deberá devolver
+// el Contexto de Ejecución actualizado al Kernel junto el dispositivo y la cantidad de unidades de trabajo del dispositivo que desea
+// utilizar el proceso (o el Registro a completar o leer en caso de que el dispositivo sea Pantalla o Teclado).
+void ejecutar_IO(char* dispositivo, char* tiempo) {
+    // serializar_pcb(crear_paquete(PCB_BLOCK), pcb);
+    // enviar_paquete(pcb, cliente_servidor_dispatch);  // dispatch
 }
 
-//EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.
+// EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.
 void ejecutar_EXIT(t_pcb* pcb) {
-    pcb->estado_actual = EXIT;
     pthread_mutex_lock(&pedidofin);
     parar_proceso++;
     pthread_mutex_unlock(&pedidofin);
-    log_info(logger, "Se ejecuto instruccion EXIT \n");
 }
 
-int checkInterrupt() { 
+int checkInterrupt() {
     pthread_mutex_lock(&pedidofin);
     if (parar_proceso > 0) {
         pthread_mutex_unlock(&pedidofin);
@@ -242,20 +246,6 @@ t_handshake* recibir_handshake(int socket_memoria) {
     return han;
 }
 
-void* conexion_interrupciones(char* ip, char* puerto) {
-    int server_fd = iniciar_servidor(ip, puerto);
-    log_info(logger, "CPU listo para recibir interrupciones \n");
-    int cliente_fd = esperar_cliente(server_fd);
-    log_info(logger, "Se conecto Kernel al puerto interrupt \n");
-
-    while (1) {
-        int cod_op;
-        recibir_datos(cliente_fd, &cod_op, sizeof(int));
-        evaluar_cod_op(cod_op);
-    }
-    return NULL;
-}
-
 void cargar_configuracion() {
     config = config_create("cfg/archivo_configuracion.config");
     log_info(logger, "Arranco a leer el archivo de configuracion \n");
@@ -277,4 +267,22 @@ void liberar_todo() {
     liberar_conexion(cliente_servidor_dispatch);
     config_destroy(config);
     log_destroy(logger);
+}
+
+int indice_registro(char* registro) {
+    if (strcmp(registro, "AX") == 0)
+        return 0;
+    if (strcmp(registro, "BX") == 0)
+        return 1;
+    if (strcmp(registro, "CX") == 0)
+        return 2;
+    if (strcmp(registro, "DX") == 0)
+        return 3;
+}
+
+void copiar_registros_de_pcb(t_pcb* pcb) {
+    registros[0] = pcb_recibido->registro->AX;
+    registros[1] = pcb_recibido->registro->BX;
+    registros[2] = pcb_recibido->registro->CX;
+    registros[3] = pcb_recibido->registro->DX;
 }
