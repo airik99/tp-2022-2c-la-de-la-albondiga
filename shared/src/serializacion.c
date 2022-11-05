@@ -76,25 +76,6 @@ void *recibir_buffer(int *size, int socket_cliente) {
     return buffer;
 }
 
-void enviar_mensaje(char *mensaje, int socket_cliente) {
-    t_paquete *paquete = malloc(sizeof(t_paquete));
-
-    paquete->codigo_operacion = MENSAJE;
-    paquete->buffer = malloc(sizeof(t_buffer));
-    paquete->buffer->size = strlen(mensaje) + 1;
-    paquete->buffer->stream = malloc(paquete->buffer->size);
-    memcpy(paquete->buffer->stream, mensaje, paquete->buffer->size);
-
-    int bytes = paquete->buffer->size + 2 * sizeof(int);
-
-    void *a_enviar = serializar_paquete(paquete, bytes);
-
-    send(socket_cliente, a_enviar, bytes, 0);
-
-    free(a_enviar);
-    eliminar_paquete(paquete);
-}
-
 //-------------------------------------------------------------------------------------------------//
 void serializar_segmentos(t_paquete *paquete, char **segmentos) {
     for (int i = 0; segmentos[i] != NULL; i++) {
@@ -167,7 +148,6 @@ t_list *deserializar_instrucciones(void *buffer, int *desplazamiento) {
 t_proceso *recibir_proceso(int socket_cliente) {
     int size;
     int desplazamiento = 0;
-    u_int32_t cantidad_instrucciones;
     void *buffer;
 
     t_proceso *proceso_consola = malloc(sizeof(t_proceso));
@@ -189,20 +169,34 @@ t_proceso *recibir_proceso(int socket_cliente) {
 void serializar_pcb(t_paquete *paquete, t_pcb *pcb) {
     agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
     serializar_instrucciones(paquete, pcb->instrucciones);
+    agregar_a_paquete(paquete, &(pcb->socket_consola), sizeof(u_int32_t));
     agregar_a_paquete(paquete, &(pcb->program_counter), sizeof(u_int32_t));
-    agregar_a_paquete(paquete, &(pcb->registro->AX), sizeof(u_int32_t));
-    agregar_a_paquete(paquete, &(pcb->registro->BX), sizeof(u_int32_t));
-    agregar_a_paquete(paquete, &(pcb->registro->CX), sizeof(u_int32_t));
-    agregar_a_paquete(paquete, &(pcb->registro->DX), sizeof(u_int32_t));
+    for (int i = 0; i < 4; i++) {
+        agregar_a_paquete(paquete, &(pcb->registro[i]), sizeof(u_int32_t));
+    }
     agregar_a_paquete(paquete, &(pcb->estado_actual), sizeof(t_estado));
     agregar_a_paquete(paquete, &(pcb->estado_anterior), sizeof(t_estado));
     // TODO: Tabla de segmentos
 }
 
-void enviar_pcb(t_pcb *pcb, int socket) {
-    t_paquete *paquete = crear_paquete(PCB);
-    serializar_pcb(paquete, pcb);
-    enviar_paquete(paquete, socket);
+t_pcb *deserializar_pcb(void *buffer, int *desplazamiento) {
+    t_pcb *pcb = malloc(sizeof(t_pcb));
+    memcpy(&(pcb->pid), buffer + *desplazamiento, sizeof(int));
+    *desplazamiento += sizeof(u_int32_t);
+    pcb->instrucciones = deserializar_instrucciones(buffer, desplazamiento);
+    memcpy(&(pcb->socket_consola), buffer + *desplazamiento, sizeof(u_int32_t));
+    *desplazamiento += sizeof(u_int32_t);
+    memcpy(&(pcb->program_counter), buffer + *desplazamiento, sizeof(u_int32_t));
+    *desplazamiento += sizeof(u_int32_t);
+    for (int i = 0; i < 4; i++) {
+        memcpy(&(pcb->registro[i]), buffer + *desplazamiento, sizeof(u_int32_t));
+        *desplazamiento += sizeof(u_int32_t);
+    }
+    memcpy(&(pcb->estado_actual), buffer + *desplazamiento, sizeof(t_estado));
+    *desplazamiento += sizeof(t_estado);
+    memcpy(&(pcb->estado_anterior), buffer + *desplazamiento, sizeof(t_estado));
+    *desplazamiento += sizeof(t_estado);
+    return pcb;
 }
 
 t_pcb *recibir_pcb(int socket_cliente) {
@@ -210,27 +204,39 @@ t_pcb *recibir_pcb(int socket_cliente) {
     int desplazamiento = 0;
     void *buffer;
 
-    t_pcb *pcb = malloc(sizeof(t_pcb));
     buffer = recibir_buffer(&size, socket_cliente);
-
-    memcpy(&(pcb->pid), buffer + desplazamiento, sizeof(int));
-    desplazamiento += sizeof(u_int32_t);
-    pcb->instrucciones = deserializar_instrucciones(buffer, &desplazamiento);
-    memcpy(&(pcb->program_counter), buffer + desplazamiento, sizeof(u_int32_t));
-    desplazamiento += sizeof(u_int32_t);
-    pcb->registro = malloc(sizeof(registro_cpu));
-    memcpy(&(pcb->registro->AX), buffer + desplazamiento, sizeof(u_int32_t));
-    desplazamiento += sizeof(u_int32_t);
-    memcpy(&(pcb->registro->BX), buffer + desplazamiento, sizeof(u_int32_t));
-    desplazamiento += sizeof(u_int32_t);
-    memcpy(&(pcb->registro->CX), buffer + desplazamiento, sizeof(u_int32_t));
-    desplazamiento += sizeof(u_int32_t);
-    memcpy(&(pcb->registro->DX), buffer + desplazamiento, sizeof(u_int32_t));
-    desplazamiento += sizeof(u_int32_t);
-    memcpy(&(pcb->estado_actual), buffer + desplazamiento, sizeof(t_estado));
-    desplazamiento += sizeof(t_estado);
-    memcpy(&(pcb->estado_anterior), buffer + desplazamiento, sizeof(t_estado));
-    desplazamiento += sizeof(t_estado);
+    t_pcb *pcb = deserializar_pcb(buffer, &desplazamiento);
     free(buffer);
     return pcb;
+}
+
+t_solicitud_io *recibir_pcb_io(int socket_cliente) {
+    int size;
+    int desplazamiento = 0;
+    void *buffer;
+    int largo_nombre, largo_parametro;
+    t_solicitud_io *solicitud = malloc(sizeof(t_solicitud_io));
+
+    buffer = recibir_buffer(&size, socket_cliente);
+    solicitud->pcb = deserializar_pcb(buffer, &desplazamiento);
+
+    memcpy(&largo_nombre, buffer + desplazamiento, sizeof(int));
+    desplazamiento += sizeof(int);
+    solicitud->dispositivo = malloc(largo_nombre);
+    memcpy(solicitud->dispositivo, buffer + desplazamiento, largo_nombre);
+    desplazamiento += largo_nombre;
+
+    memcpy(&largo_parametro, buffer + desplazamiento, sizeof(int));
+    desplazamiento += sizeof(int);
+    solicitud->parametro = malloc(largo_parametro);
+    memcpy(solicitud->parametro, buffer + desplazamiento, largo_parametro);
+    free(buffer);
+    return solicitud;
+}
+
+void enviar_pcb(t_pcb *pcb, op_code codigo_op, int socket) {
+    t_paquete *paquete = crear_paquete(codigo_op);
+    serializar_pcb(paquete, pcb);
+    enviar_paquete(paquete, socket);
+    eliminar_paquete(paquete);
 }

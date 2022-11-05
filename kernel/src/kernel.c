@@ -19,10 +19,8 @@ int main(int argc, char **argv) {
     iniciar_planificador_largo_plazo();
     iniciar_planificador_corto_plazo();
 
-    ip = "127.0.0.1";  // esto no debería estar hardcodeado
-
     // CONEXION CON CONSOLAS
-    socket_servidor = iniciar_servidor(ip, config_valores.puerto_escucha);
+    socket_servidor = iniciar_servidor(config_valores.ip_memoria, config_valores.puerto_escucha);
 
     if (socket_servidor == -1) {
         log_info(logger, "Error al iniciar el servidor");
@@ -62,7 +60,6 @@ int main(int argc, char **argv) {
 
     liberar_colas();
     destruir_estructuras();
-    // eliminar_paquete(paquete);
     return EXIT_SUCCESS;
 }
 
@@ -84,7 +81,7 @@ void escuchar_consola(int socket_cliente) {
     switch (cod_op) {
         case INSTRUCCIONES:
             proceso = recibir_proceso(socket_cliente);
-            t_pcb *pcb = crear_nuevo_pcb(proceso);
+            t_pcb *pcb = crear_nuevo_pcb(proceso, socket_cliente);
             log_info(logger, "Se crea el proceso <%d> en NEW", pcb->pid);
             pthread_mutex_lock(&mx_cola_new);
             queue_push(cola_new, pcb);
@@ -92,7 +89,7 @@ void escuchar_consola(int socket_cliente) {
             sem_post(&sem_procesos_new);
             //  Por ahora borro estas cosas para que no salten MemLeaks con Valgrind despues hay
             list_destroy(proceso->espacios_memoria);
-            // free(proceso);
+            free(proceso);
             break;
         default:
             respuesta = 1;

@@ -46,19 +46,20 @@ typedef struct{
 typedef struct 
 {
 	u_int32_t pid;
+	u_int32_t socket_consola;
 	t_list* instrucciones; 
 	u_int32_t program_counter;
-	registro_cpu* registro;
+	int registro[4];
 	t_estado estado_actual;
 	t_estado estado_anterior;
-	t_list* parametros;
 	// tabla_de_segmentos
-	u_int32_t tiempo_bloqueo;
-	char* dispositivo_actual;
 } t_pcb;
 
-
-
+typedef struct{
+	t_pcb* pcb;
+	char* dispositivo;
+	char* parametro;
+} t_solicitud_io;
 typedef struct
 {
 	registro_cpu registro;
@@ -72,6 +73,13 @@ void print_valores(int valor);
 void destructor_instrucciones(t_list *);
 void destructor_instruccion(t_instruccion*);
 void print_instruccion(t_instruccion* );
+/**
+ * @brief Libera todos los campos de un pcb
+ *
+ * @param pcb pcb a eliminar
+ */
+void eliminar_pcb(t_pcb *pcb);
+int indice_registro(char* registro);
 
 #endif
 

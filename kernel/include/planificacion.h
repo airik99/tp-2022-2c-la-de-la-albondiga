@@ -10,7 +10,8 @@
 
 extern pthread_mutex_t  mx_cola_new;
 extern pthread_mutex_t  mx_cola_exec;
-extern pthread_mutex_t  mx_cola_block;
+extern pthread_mutex_t mx_cola_block_disco;
+extern pthread_mutex_t mx_cola_block_impresora;
 extern pthread_mutex_t  mx_cola_exit; 
 extern sem_t sem_grado_multiprogramacion;
 extern sem_t sem_procesos_new;
@@ -52,6 +53,14 @@ void escuchar_mensaje_cpu();
 void recibir_pcb_cpu_RR();
 
 void recibir_pcb_cpu_FIFO();
+
+void manejar_bloqueo(t_solicitud_io* solicitud);
+
+void manejar_impresora();
+
+void manejar_disco();
+
+void io_pantalla_teclado(t_solicitud_io* solicitud);
 
 void finalizar_pcb(t_pcb* pcb);
 

@@ -14,6 +14,8 @@ typedef enum
 	INTERRUPCION,
 	PCB_BLOCK,
 	PCB_EXIT,
+	IO_TECLADO,
+	IO_PANTALLA,
 	PAQUETE
 } op_code;
 
@@ -113,7 +115,17 @@ void serializar_segmentos(t_paquete *paquete, char** segmentos);
  */
 void serializar_pcb(t_paquete *paquete, t_pcb* pcb);
 
-void enviar_pcb(t_pcb* pcb, int socket);
+t_pcb *deserializar_pcb(void *buffer, int *desplazamiento);
+
+
+/**
+ * @brief Crea un paquete con cierto codigo de operacion, agrega el pcb y lo envia
+ * 
+ * @param pcb pcb a enviar
+ * @param codigo_op codigo de operacion del pcb
+ * @param socket destino
+ */
+void enviar_pcb(t_pcb* pcb, op_code codigo_op, int socket);
 /**
  * @brief Recibe un pcb
  * 
@@ -122,6 +134,7 @@ void enviar_pcb(t_pcb* pcb, int socket);
  */
 t_pcb *recibir_pcb(int socket_cliente) ;
 
+t_solicitud_io* recibir_pcb_io(int socket_cliente);
 
 void crear_buffer(t_paquete *paquete);
 
@@ -129,12 +142,7 @@ int recibir_operacion(int socket_cliente);
 
 void *recibir_buffer(int *size, int socket_cliente);
 
-t_list *recibir_paquete(int socket_cliente);
-
 t_proceso* recibir_proceso(int socket_cliente);
-
-void enviar_mensaje(char* mensaje, int socket_cliente);
-
 
 int enviar_datos(int socket_fd, void *source, uint32_t size);
 

@@ -27,7 +27,8 @@ extern t_queue *cola_exit;
 extern t_queue *cola_ready_prioritaria;
 extern t_queue *cola_ready_segundo_nivel;
 extern t_queue *cola_exec;
-extern t_queue *colaBlock;
+extern t_queue *cola_block_disco;
+extern t_queue *cola_block_impresora;
 extern int conexion_cpu_dispatch;
 extern int conexion_memoria;
 extern int conexion_cpu_interrupt;
@@ -55,18 +56,13 @@ void destruir_estructuras();
 /**
  * @brief Crea un pcb
  *
- * @param proceso recibe un proceso que mando una consola
+ * @param proceso proceso que mando una consola
+ * @param socket socket de la consola que manda el paquete
  *
  * @return El pcb de un proceso.
  */
-t_pcb *crear_nuevo_pcb(t_proceso *proceso);
+t_pcb *crear_nuevo_pcb(t_proceso *proceso, int socket);
 
-/**
- * @brief Libera todos los campos de un pcb
- *
- * @param pcb pcb a eliminar
- */
-void eliminar_pcb(t_pcb *pcb);
 
 /**
  * @brief Destruye todas las colas y los pcb que tengan

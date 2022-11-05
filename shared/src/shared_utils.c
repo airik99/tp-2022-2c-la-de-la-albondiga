@@ -19,3 +19,19 @@ void destructor_instruccion(t_instruccion* instruccion) {
     free(instruccion);
 }
 
+void eliminar_pcb(t_pcb *pcb) {
+    destructor_instrucciones(pcb->instrucciones);
+    free(pcb);
+}
+
+int indice_registro(char* registro) {
+    if (strcmp(registro, "AX") == 0)
+        return 0;
+    if (strcmp(registro, "BX") == 0)
+        return 1;
+    if (strcmp(registro, "CX") == 0)
+        return 2;
+    if (strcmp(registro, "DX") == 0)
+        return 3;
+    return -1;    
+}

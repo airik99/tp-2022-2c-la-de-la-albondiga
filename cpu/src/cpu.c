@@ -5,11 +5,11 @@ t_config* config;
 t_log* logger;
 char* ip;
 t_handshake* configuracion_tabla;
-t_pcb* pcb_recibido;
 int conexion_memoria, parar_proceso, cliente_servidor_interrupt, cliente_servidor_dispatch, socket_servidor_dispatch, socket_servidor_interrupt;
 pthread_t conexion_memoria_i, hilo_dispatch, hilo_interrupt, pedidofin;
 int ultimo_pid = -1;
 int registros[] = {0, 0, 0, 0};
+int flag_salida, interrupcion;
 
 int main(int argc, char** argv) {
     logger = log_create("cfg/cpu.log", "CPU", true, LOG_LEVEL_INFO);
@@ -59,13 +59,16 @@ void esperar_kernel_dispatch(int socket_servidor_dispatch) {
     while (1) {
         op_code operacion = recibir_operacion(cliente_servidor_dispatch);
         evaluar_cod_op(operacion);
+        /*if(ultimo_pid != pcb_recibido->pid && list_size(tlb->lista) != 0){
+                //vaciarTlb();
+                //log_info(logger,"Se vacio TLB\n");
+        }*/
     }
 }
 
 void esperar_kernel_interrupt(int socket_servidor_interrupt) {
     while (1) {
-        op_code operacion = recibir_operacion(cliente_servidor_interrupt);
-        evaluar_cod_op(operacion);
+        recv(socket_servidor_interrupt, &interrupcion, sizeof(uint32_t), MSG_WAITALL);
     }
 }
 
@@ -77,21 +80,19 @@ void error_conexion(int socket) {
 }
 
 void evaluar_cod_op(int cod_op) {
+    t_pcb* pcb_recibido;
     switch (cod_op) {
         case PCB:
             parar_proceso = 0;  // INICIA EL CONTADOR DE PARAR PROCESO
             pcb_recibido = recibir_pcb(cliente_servidor_dispatch);
-            copiar_registros_de_pcb(pcb_recibido);
-            log_info(logger, "Recibi PCB de Id: %d \n", pcb_recibido->pid);
+            copiar_valores_registros((pcb_recibido->registro), registros);
+
             /*if(ultimo_pid != pcb_recibido->pid && list_size(tlb->lista) != 0){
                     //vaciarTlb();
                     //log_info(logger,"Se vacio TLB\n");
             }*/
             ciclo_de_instruccion(pcb_recibido);  // INICIA EL CICLO DE INSTRUCCION
-            break;
-        case PAQUETE:
-            log_info(logger, "Recibi configuracion por handshake \n");
-            configuracion_tabla = recibir_handshake(conexion_memoria);
+            eliminar_pcb(pcb_recibido);
             break;
         case HANDSHAKE:
             log_info(logger, "Se recibio la configuracion por handshake \n");
@@ -117,25 +118,27 @@ void casos_de_error(int codigo_error) {
     }
 }
 
-void* ciclo_de_instruccion(t_pcb* pcb) {
+void ciclo_de_instruccion(t_pcb* pcb) {
     t_instruccion* instruccionProxima;
-    parar_proceso = 0;
+    flag_salida = 0;
+    interrupcion = 0;
 
     while (pcb->program_counter < list_size(pcb->instrucciones)) {
         instruccionProxima = list_get(pcb->instrucciones, pcb->program_counter);  // FETCH
-        decode(instruccionProxima, pcb);                                          // DECODE (CON EXECUTE INCLUIDO)
         pcb->program_counter++;
-
-        /*if (checkInterrupt() == 1) {  // SE FIJA QUE NO HAYA PEDIDO DE PARAR EL PROCESO ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
-            ultimo_pid = pcb->pid;
-            // enviarPcb(socket_kernel, pcb);
-            log_info(logger, "Envio pcb devuelta al kernel \n");
+        decode(instruccionProxima, pcb);  // DECODE (CON EXECUTE INCLUIDO)
+        if (flag_salida) {
             return;
-        }*/
+        }
+
+        if (checkInterrupt()) {  // SE FIJA QUE NO HAYA PEDIDO DE PARAR EL PROCESO ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
+            ultimo_pid = pcb->pid;
+            t_paquete* paquete = crear_paquete(INTERRUPCION);
+            serializar_pcb(paquete, pcb);
+            enviar_paquete(paquete, cliente_servidor_dispatch);
+            return;
+        }
     }
-    t_paquete* retorno_pcb = crear_paquete(PCB_EXIT);
-    serializar_pcb(retorno_pcb, pcb_recibido);
-    enviar_paquete(retorno_pcb, cliente_servidor_dispatch);
 }
 
 void decode(t_instruccion* instruccion, t_pcb* pcb) {
@@ -167,7 +170,7 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         char* dispositivo = list_get(instruccion->params, 0);
         char* param2 = list_get(instruccion->params, 1);
         log_info(logger, "PID: <%d> - Ejecutando: <I/O> - <%s> - <%s>", pcb->pid, dispositivo, param2);
-        ejecutar_IO(dispositivo, param2);
+        ejecutar_IO(dispositivo, param2, pcb);
     }
 
     if (strcmp(instruccion->nombre, "EXIT") == 0) {
@@ -178,44 +181,50 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
 
 // SET (Registro, Valor): Asigna al registro el valor pasado como parámetro.
 void ejecutar_SET(char* registro, uint32_t valor) {
+    usleep(config_valores.retardo_instruccion * 1000);
     int indice = indice_registro(registro);
     registros[indice] = valor;
-    log_info("Guardamos el valor %d en el registro %s \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
+    log_info("Se guarda el valor %d en el registro %s \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
 }
 
 // ADD (Registro Destino, Registro Origen): Suma ambos registros y deja el resultado en el Registro Destino.
 void ejecutar_ADD(char* destino, char* origen) {
+    usleep(config_valores.retardo_instruccion * 1000);
     int registro_origen = indice_registro(origen);
     int registro_destino = indice_registro(destino);
     int resultado = registros[registro_destino] + registros[registro_origen];
-    log_info(logger, "La suma entre %s (%d) y %s (%d) es %d \n", destino,registros[registro_destino], origen, registros[registro_origen], resultado);
+    log_info(logger, "La suma entre %s (%d) y %s (%d) es %d \n", destino, registros[registro_destino], origen, registros[registro_origen], resultado);
     registros[registro_destino] = resultado;
 }
 
 // I/O (Dispositivo, Registro / Unidades de trabajo): Esta instrucción representa una syscall de I/O bloqueante. Se deberá devolver
 // el Contexto de Ejecución actualizado al Kernel junto el dispositivo y la cantidad de unidades de trabajo del dispositivo que desea
 // utilizar el proceso (o el Registro a completar o leer en caso de que el dispositivo sea Pantalla o Teclado).
-void ejecutar_IO(char* dispositivo, char* tiempo) {
-    // serializar_pcb(crear_paquete(PCB_BLOCK), pcb);
-    // enviar_paquete(pcb, cliente_servidor_dispatch);  // dispatch
+void ejecutar_IO(char* dispositivo, char* parametro, t_pcb* pcb) {
+    copiar_valores_registros(registros, (pcb->registro));
+    t_paquete* paquete = crear_paquete(PCB_BLOCK);
+    int largo_nombre = strlen(dispositivo) + 1;
+    int largo_parametro = strlen(parametro) + 1;
+    serializar_pcb(paquete, pcb);
+    agregar_a_paquete(paquete, &largo_nombre, sizeof(int));
+    agregar_a_paquete(paquete, dispositivo, largo_nombre);
+    agregar_a_paquete(paquete, &largo_parametro, sizeof(int));
+    agregar_a_paquete(paquete, parametro, largo_parametro);
+    enviar_paquete(paquete, cliente_servidor_dispatch);  // dispatch
+    eliminar_paquete(paquete);
+    flag_salida = 1;
 }
 
 // EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.
 void ejecutar_EXIT(t_pcb* pcb) {
-    pthread_mutex_lock(&pedidofin);
-    parar_proceso++;
-    pthread_mutex_unlock(&pedidofin);
+    // SOLICITUD MEMORIA
+    copiar_valores_registros(registros, (pcb->registro));
+    enviar_pcb(pcb, PCB_EXIT, cliente_servidor_dispatch);
+    flag_salida = 1;
 }
 
 int checkInterrupt() {
-    pthread_mutex_lock(&pedidofin);
-    if (parar_proceso > 0) {
-        pthread_mutex_unlock(&pedidofin);
-        return 1;
-    } else {
-        pthread_mutex_unlock(&pedidofin);
-        return 0;
-    }
+    return interrupcion;
 }
 
 void* conexion_inicial_memoria() {
@@ -269,20 +278,7 @@ void liberar_todo() {
     log_destroy(logger);
 }
 
-int indice_registro(char* registro) {
-    if (strcmp(registro, "AX") == 0)
-        return 0;
-    if (strcmp(registro, "BX") == 0)
-        return 1;
-    if (strcmp(registro, "CX") == 0)
-        return 2;
-    if (strcmp(registro, "DX") == 0)
-        return 3;
-}
-
-void copiar_registros_de_pcb(t_pcb* pcb) {
-    registros[0] = pcb_recibido->registro->AX;
-    registros[1] = pcb_recibido->registro->BX;
-    registros[2] = pcb_recibido->registro->CX;
-    registros[3] = pcb_recibido->registro->DX;
+void copiar_valores_registros(int* origen, int* destino) {
+    for (int i = 0; i < 4; i++)
+        *(destino + i) = *(origen + i);
 }

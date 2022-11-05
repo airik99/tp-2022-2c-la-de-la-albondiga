@@ -8,7 +8,8 @@ t_queue *cola_exit;
 t_queue *cola_exec;
 t_queue *cola_ready_prioritaria;
 t_queue *cola_ready_segundo_nivel;
-t_queue *colaBlock;
+t_queue *cola_block_disco;
+t_queue *cola_block_impresora;
 char *estado_a_string[] = {"NEW", "READY", "EXEC", "BLOCKED", "EXIT"};
 int conexion_cpu_dispatch;
 int conexion_memoria;
@@ -46,29 +47,23 @@ void destruir_estructuras() {
 }
 
 // esto tiene que hacerlo cuando se conecta una consola al kernel
-t_pcb *crear_nuevo_pcb(t_proceso *proceso_consola) {
+t_pcb *crear_nuevo_pcb(t_proceso *proceso_consola, int socket) {
     t_pcb *nuevo_pcb = malloc(sizeof(t_pcb));
     nuevo_pcb->pid = contador_pid;
     contador_pid++;
+    nuevo_pcb->socket_consola = socket;
     nuevo_pcb->instrucciones = proceso_consola->instrucciones;
-    nuevo_pcb->registro = malloc(sizeof(registro_cpu));
-    nuevo_pcb->registro->AX = 0;
-    nuevo_pcb->registro->BX = 0;
-    nuevo_pcb->registro->CX = 0;
-    nuevo_pcb->registro->DX = 0;
+    for (int i = 0; i < 4; i++)
+        nuevo_pcb->registro[i] = 0;
     nuevo_pcb->program_counter = 0;
     nuevo_pcb->estado_actual = NEW;
     nuevo_pcb->estado_anterior = NEW;
     return nuevo_pcb;
 }
 
-void eliminar_pcb(t_pcb *pcb) {
-    destructor_instrucciones(pcb->instrucciones);
-    free(pcb);
-}
-
 void liberar_colas() {
-    queue_clean_and_destroy_elements(colaBlock, (void *)eliminar_pcb);
+    queue_clean_and_destroy_elements(cola_block_disco, (void *)eliminar_pcb);
+    queue_clean_and_destroy_elements(cola_block_impresora, (void *)eliminar_pcb);
     queue_clean_and_destroy_elements(cola_exit, (void *)eliminar_pcb);
     queue_clean_and_destroy_elements(cola_ready_prioritaria, (void *)eliminar_pcb);
     queue_clean_and_destroy_elements(cola_ready_segundo_nivel, (void *)eliminar_pcb);
@@ -78,7 +73,7 @@ void liberar_colas() {
 
 void actualizar_estado(t_pcb *pcb, t_estado nuevo_estado) {
     log_info(logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",
-    pcb->pid, estado_a_string[pcb->estado_actual], estado_a_string[nuevo_estado]);
+             pcb->pid, estado_a_string[pcb->estado_actual], estado_a_string[nuevo_estado]);
     pcb->estado_anterior = pcb->estado_actual;
     pcb->estado_actual = nuevo_estado;
 }
