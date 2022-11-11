@@ -23,9 +23,9 @@ void error_conexion(int); //evalua si la conexion no fue exitosa y tira un error
 
 void recibir_codigo_operacion_por_dispatch(int); //si el codigo de operacion es un pcb lo guarda en la variable global pcb_recibido
 
-void esperar_kernel_interrupt(int);
+void esperar_kernel_interrupt();
 
-void esperar_kernel_dispatch(int);
+void esperar_kernel_dispatch();
 
 void evaluar_cod_op(int); //evalua el codigo de operacion recibido. Puede ser una interrupcion, un pcb o un handshake
 

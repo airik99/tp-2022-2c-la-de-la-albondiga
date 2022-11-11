@@ -5,12 +5,15 @@ t_config_consola config_consola;
 int main(int argc, char **argv) {
     if (argc < 3)
         return EXIT_FAILURE;
-    char *path_config= argv[1];
-    char *path_pseudocodigo= argv[2];
+    char *path_config = argv[1];
+    char *path_pseudocodigo = argv[2];
 
-    logger = log_create("cfg/Consola.log", "Consola", true, LOG_LEVEL_INFO);
     iniciar_config(path_config);
     t_list *instrucciones = leer_archivo(path_pseudocodigo);
+    // iniciar_config("cfg/Consola.config");
+    // t_list *instrucciones = leer_archivo("/home/utnso/geck-pruebas/BASE_2");
+
+    logger = log_create("cfg/Consola.log", "Consola", true, LOG_LEVEL_INFO);
 
     log_info(logger, "Consola iniciada. Intentando conectarse al kernel");
 
@@ -39,14 +42,12 @@ int main(int argc, char **argv) {
     destructor_instrucciones(instrucciones);
     eliminar_paquete(paquete_instrucciones);
     string_array_destroy(config_consola.segmentos);
-    free(config_consola.ip_kernel);
-    free(config_consola.puerto_kernel);
     config_destroy(config);
     log_destroy(logger);
     return EXIT_SUCCESS;
 }
 
-t_config *iniciar_config(char *path) {
+void iniciar_config(char *path) {
     config = config_create(path);
     config_consola.ip_kernel = config_get_string_value(config, "IP_KERNEL");
     config_consola.puerto_kernel = config_get_string_value(config, "PUERTO_KERNEL");
@@ -117,27 +118,27 @@ void esperar_respuesta(int socket) {
     int respuesta = 0;
     int size;
     void *buffer;
-    do {
-        codigo_operacion = recibir_operacion(socket);
-        switch (codigo_operacion) {
-            case IO_PANTALLA:
-                buffer = recibir_buffer(&size, socket);
-                memcpy(&valor, buffer, sizeof(int));
-                log_info(logger, "Valor del registro: %d", valor);
-                usleep(config_consola.tiempo_pantalla * 1000);
-                send(socket, &respuesta, sizeof(uint32_t), MSG_WAITALL);
-                break;
-            case IO_TECLADO:
-                log_info(logger, "Ingrese un entero:");
-                scanf("%d", &respuesta);
-                send(socket, &respuesta, sizeof(uint32_t), MSG_WAITALL);
-                break;
-            case PCB_EXIT:
-                log_info(logger, "Ejecucion finalizada");
-                break;
-            default:
-                log_error(logger, "Error en la respuesta del kernel");
-                break;
-        }
-    } while (codigo_operacion != PCB_EXIT);
+    codigo_operacion = recibir_operacion(socket);
+    switch (codigo_operacion) {
+        case IO_PANTALLA:
+            buffer = recibir_buffer(&size, socket);
+            memcpy(&valor, buffer, sizeof(int));
+            log_info(logger, "Valor del registro: %d", valor);
+            usleep(config_consola.tiempo_pantalla * 1000);
+            send(socket, &respuesta, sizeof(uint32_t), MSG_WAITALL);
+            esperar_respuesta(socket);
+            break;
+        case IO_TECLADO:
+            log_info(logger, "Ingrese un entero:");
+            scanf("%d", &respuesta);
+            send(socket, &respuesta, sizeof(uint32_t), MSG_WAITALL);
+            esperar_respuesta(socket);
+            break;
+        case PCB_EXIT:
+            log_info(logger, "Ejecucion finalizada");
+            break;
+        default:
+            log_error(logger, "Error en la respuesta del kernel");
+            break;
+    }
 }

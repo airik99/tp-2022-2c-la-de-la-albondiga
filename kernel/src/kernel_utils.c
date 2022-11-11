@@ -113,5 +113,6 @@ char *string_de_pids(t_queue *cola) {
     if (queue_is_empty(cola))
         return "";
     t_list *pid_list = list_map(cola->elements, (void *)obtener_pid_como_string);
-    return list_fold1(pid_list, (void *)concatenar_string_con_coma);
+    char* resultado = list_fold1(pid_list, (void *)concatenar_string_con_coma);
+    return resultado;
 }

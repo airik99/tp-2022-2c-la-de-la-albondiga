@@ -12,7 +12,7 @@ typedef struct t_config_consola {
     int tiempo_pantalla;
 } t_config_consola;
 
-t_config* iniciar_config(char* path);
+void iniciar_config(char* path);
 t_instruccion* crear_instruccion(char*, t_list*);
 t_list* leer_archivo(char*);
 char* leer_linea(FILE*);

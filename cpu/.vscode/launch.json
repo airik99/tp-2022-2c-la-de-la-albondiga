@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "preLaunchTask": "Make",
-            "program": "${workspaceFolder}/Cpu",
+            "program": "${workspaceFolder}/cpu",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

@@ -42,11 +42,11 @@ void esperar_quantum();
  * @param cola 0 para cola de mayor prioridad, 1 para cola de menor prioridad
  * @return t_pcb* 
  */
-t_pcb* tomar_primer_pcb(int cola);
+t_pcb* tomar_primer_pcb(t_queue* cola, pthread_mutex_t semaforo);
 
-void algoritmo_FIFO(int cola);
+void algoritmo_FIFO(t_queue* cola, pthread_mutex_t semaforo);
 
-void algoritmo_RR(int cola);
+void algoritmo_RR(t_queue* cola, pthread_mutex_t semaforo);
 
 void escuchar_mensaje_cpu();
 

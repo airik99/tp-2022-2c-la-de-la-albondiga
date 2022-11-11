@@ -73,9 +73,7 @@ void iniciar_planificador_corto_plazo(void) {
 void planificar_largo() {
     while (1) {
         sem_wait(&sem_procesos_new);
-        pthread_mutex_lock(&mx_cola_new);
-        t_pcb* pcb = queue_pop(cola_new);
-        pthread_mutex_unlock(&mx_cola_new);
+        t_pcb* pcb = tomar_primer_pcb(cola_new, mx_cola_new);
 
         sem_wait(&sem_grado_multiprogramacion);
         pthread_mutex_lock(&mx_cola_ready_prioritaria);
@@ -87,17 +85,18 @@ void planificar_largo() {
         sem_post(&sem_procesos_ready);
     }
 }
+
 //----------FIFO--------------------
 void planificador_corto_FIFO() {
     while (1) {
         sem_wait(&sem_procesos_ready);
-        algoritmo_FIFO(0);
+        algoritmo_FIFO(cola_ready_prioritaria, mx_cola_ready_prioritaria);
         recibir_pcb_cpu_FIFO();
     }
 }
 
-void algoritmo_FIFO(int id_cola) {
-    t_pcb* pcb = tomar_primer_pcb(id_cola);
+void algoritmo_FIFO(t_queue* queue, pthread_mutex_t semaforo) {
+    t_pcb* pcb = tomar_primer_pcb(queue, semaforo);
     actualizar_estado(pcb, EXEC);
     enviar_pcb(pcb, PCB, conexion_cpu_dispatch);
     eliminar_pcb(pcb);
@@ -111,14 +110,15 @@ void recibir_pcb_cpu_FIFO() {
         case PCB_EXIT:
             pcb = recibir_pcb(conexion_cpu_dispatch);
             actualizar_estado(pcb, EXIT);
+            sem_post(&sem_grado_multiprogramacion);
             op_code codigo_exit = PCB_EXIT;
             send(pcb->socket_consola, &codigo_exit, sizeof(op_code), MSG_WAITALL);
             eliminar_pcb(pcb);
-            sem_post(&sem_grado_multiprogramacion);
             break;
         case PCB_BLOCK:
             solicitud = recibir_pcb_io(conexion_cpu_dispatch);
             manejar_bloqueo(solicitud);
+            break;
         default:
             log_warning(logger, "Operacion desconocida.");
             break;
@@ -130,15 +130,18 @@ void recibir_pcb_cpu_FIFO() {
 void planificador_corto_RR() {
     while (1) {
         sem_wait(&sem_procesos_ready);
-        algoritmo_RR(0);
+        algoritmo_RR(cola_ready_prioritaria, mx_cola_ready_prioritaria);
         recibir_pcb_cpu_RR();
     }
 }
 
-void algoritmo_RR(int id_cola) {
-    algoritmo_FIFO(id_cola);
+void algoritmo_RR(t_queue* queue, pthread_mutex_t semaforo) {
+    t_pcb* pcb = tomar_primer_pcb(queue, semaforo);
+    actualizar_estado(pcb, EXEC);
+    enviar_pcb(pcb, PCB, conexion_cpu_dispatch);
     pthread_create(&t_quantum, NULL, (void*)esperar_quantum, NULL);
     pthread_detach(t_quantum);
+    eliminar_pcb(pcb);
 }
 
 void recibir_pcb_cpu_RR() {
@@ -147,24 +150,26 @@ void recibir_pcb_cpu_RR() {
     t_solicitud_io* solicitud;
     switch (cod_op) {
         case PCB_EXIT:
-            pcb = recibir_pcb(conexion_cpu_dispatch);
             pthread_cancel(t_quantum);
+            pcb = recibir_pcb(conexion_cpu_dispatch);
             actualizar_estado(pcb, EXIT);
+            sem_post(&sem_grado_multiprogramacion);
             op_code codigo_exit = PCB_EXIT;
             send(pcb->socket_consola, &codigo_exit, sizeof(uint32_t), MSG_WAITALL);
             eliminar_pcb(pcb);
-            sem_post(&sem_grado_multiprogramacion);
             break;
         case PCB_BLOCK:
-            solicitud = recibir_pcb_io(conexion_cpu_dispatch);
             pthread_cancel(t_quantum);
+            solicitud = recibir_pcb_io(conexion_cpu_dispatch);
             manejar_bloqueo(solicitud);
             break;
         case INTERRUPCION:
             pcb = recibir_pcb(conexion_cpu_dispatch);
             actualizar_estado(pcb, READY);
+            sem_post(&sem_procesos_ready);
             log_info(logger, "PID: <%d> - Desalojado por fin de Quantum", pcb->pid);
             es_algoritmo_FEEDBACK() ? queue_push(cola_ready_segundo_nivel, pcb) : queue_push(cola_ready_prioritaria, pcb);
+            loggear_colas_ready();
             break;
         default:
             log_warning(logger, "Operacion desconocida.");
@@ -176,36 +181,29 @@ void esperar_quantum() {
     usleep(config_valores.quantum_rr * 1000);
     int interrupcion = 1;
     send(conexion_cpu_interrupt, &interrupcion, sizeof(uint32_t), MSG_WAITALL);
+    log_info(logger, "Interrupcion por quantum enviada.");
 }
+
 //--------------------FEEDBACK--------------------------------
 void planificador_corto_FEEDBACK() {
     while (1) {
         sem_wait(&sem_procesos_ready);
         if (queue_size(cola_ready_prioritaria) > 0) {
-            algoritmo_RR(0);
+            algoritmo_RR(cola_ready_prioritaria, mx_cola_ready_prioritaria);
             recibir_pcb_cpu_RR();
         } else {
-            algoritmo_FIFO(1);
+            algoritmo_FIFO(cola_ready_segundo_nivel, mx_cola_ready_segunda);
             recibir_pcb_cpu_FIFO();
         }
     }
 }
 
 //-----------------GENERALES----------------------
-t_pcb* tomar_primer_pcb(int cola) {
+t_pcb* tomar_primer_pcb(t_queue* queue, pthread_mutex_t semaforo) {
     t_pcb* pcb_a_ejecutar;
-    if (cola == 0) {
-        pthread_mutex_lock(&mx_cola_ready_prioritaria);
-        pcb_a_ejecutar = queue_pop(cola_ready_prioritaria);
-        pthread_mutex_unlock(&mx_cola_ready_prioritaria);
-    } else if (cola == 1) {
-        pthread_mutex_lock(&mx_cola_ready_segunda);
-        pcb_a_ejecutar = queue_pop(cola_ready_segundo_nivel);
-        pthread_mutex_unlock(&mx_cola_ready_segunda);
-    } else {
-        pcb_a_ejecutar = NULL;
-        log_error(logger, "Parametro de cola incorrecto");
-    }
+    pthread_mutex_lock(&semaforo);
+    pcb_a_ejecutar = queue_pop(queue);
+    pthread_mutex_unlock(&semaforo);
     return pcb_a_ejecutar;
 }
 
@@ -281,7 +279,9 @@ void io_pantalla_teclado(t_solicitud_io* solicitud) {
         pcb->registro[indice_registro(solicitud->parametro)] = respuesta;
     }
     actualizar_estado(solicitud->pcb, READY);
+    pthread_mutex_unlock(&mx_cola_ready_prioritaria);
     queue_push(cola_ready_prioritaria, solicitud->pcb);
+    pthread_mutex_unlock(&mx_cola_ready_prioritaria);
     loggear_colas_ready();
     sem_post(&sem_procesos_ready);
     free(solicitud->dispositivo);

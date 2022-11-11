@@ -41,8 +41,8 @@ int main(int argc, char** argv) {
 
     // error_conexion(socket_servidor_dispatch);
 
-    pthread_create(&hilo_interrupt, NULL, (void*)esperar_kernel_interrupt, (void*)socket_servidor_interrupt);
-    pthread_create(&hilo_dispatch, NULL, (void*)esperar_kernel_dispatch, (void*)socket_servidor_dispatch);
+    pthread_create(&hilo_interrupt, NULL, (void*)esperar_kernel_interrupt, NULL);
+    pthread_create(&hilo_dispatch, NULL, (void*)esperar_kernel_dispatch, NULL);
     log_info(logger, "Hilo de interrupciones creado \n");
     log_info(logger, "Hilo dispatch creado\n");
 
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
-void esperar_kernel_dispatch(int socket_servidor_dispatch) {
+void esperar_kernel_dispatch() {
     while (1) {
         op_code operacion = recibir_operacion(cliente_servidor_dispatch);
         evaluar_cod_op(operacion);
@@ -66,9 +66,12 @@ void esperar_kernel_dispatch(int socket_servidor_dispatch) {
     }
 }
 
-void esperar_kernel_interrupt(int socket_servidor_interrupt) {
+void esperar_kernel_interrupt() {
     while (1) {
-        recv(socket_servidor_interrupt, &interrupcion, sizeof(uint32_t), MSG_WAITALL);
+        recv(cliente_servidor_interrupt, &interrupcion, sizeof(uint32_t), MSG_WAITALL);
+        if (interrupcion != 1)
+            return;
+        log_info(logger, "Recibi interrupt");
     }
 }
 
