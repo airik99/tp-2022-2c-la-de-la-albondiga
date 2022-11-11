@@ -218,6 +218,54 @@ void ejecutar_IO(char* dispositivo, char* parametro, t_pcb* pcb) {
     flag_salida = 1;
 }
 
+//MOV_IN (Registro, Dirección Lógica): Lee el valor de memoria del segmento de Datos correspondiente a la Dirección Lógica y lo almacena en el Registro.
+void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
+    int valor=leer_de_memoria(direccion_logica);
+    int indice = indice_registro(registro);
+    registros[indice] = valor;
+    log_info(logger, "Se guarda el valor %d en el registro %s \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
+}
+
+//MOV_OUT (Dirección Lógica, Registro): Lee el valor del Registro y lo escribe en la dirección física de memoria del segmento de Datos obtenida a partir 
+//de la Dirección Lógica.I/O (Dispositivo, Registro / Unidades de trabajo): Esta instrucción representa una syscall de I/O bloqueante. 
+//Se deberá devolver el Contexto de Ejecución actualizado al Kernel junto el dispositivo y la cantidad de unidades de trabajo del 
+//dispositivo que desea utilizar el proceso (o el Registro a completar o leer en caso de que el dispositivo sea Pantalla o Teclado).
+void ejecutar_MOV_OUT(char* direccion_logica, char* registro,t_pcb* pcb,char* dispositivo, char* parametro) {
+    char* direccion_fisica=traducir_direccion_logica(direccion_logica);
+    int indice = indice_registro(registro);
+    int valor=registros[indice];
+    escribir_en_memoria(direccion_fisica,valor);
+
+
+    copiar_valores_registros(registros, (pcb->registro));
+    t_paquete* paquete = crear_paquete(PCB_BLOCK);
+    int largo_nombre = strlen(dispositivo) + 1;
+    int largo_parametro = strlen(parametro) + 1;
+    serializar_pcb(paquete, pcb);
+    agregar_a_paquete(paquete, &largo_nombre, sizeof(int));
+    agregar_a_paquete(paquete, dispositivo, largo_nombre);
+    agregar_a_paquete(paquete, &largo_parametro, sizeof(int));
+    agregar_a_paquete(paquete, parametro, largo_parametro);
+    enviar_paquete(paquete, cliente_servidor_dispatch);  // dispatch
+    eliminar_paquete(paquete);
+}
+
+int leer_de_memoria(uint32_t direccion_logica){
+    //TODO
+    return 0;
+}
+
+char* traducir_direccion_logica(char* direccion_logica){
+    char* direccion_fisica;
+    return direccion_fisica;
+}
+
+void escribir_en_memoria(char* direccion_fisica,int valor){
+    int indice = indice_registro(direccion_fisica);
+    memoria[indice] = valor;
+    log_info(logger, "Se guarda el valor %d en la direccion %s \n", valor, direccion_fisica);  // hay que ver si devuelve un numero o el enum en sí
+}
+
 // EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.
 void ejecutar_EXIT(t_pcb* pcb) {
     // SOLICITUD MEMORIA
