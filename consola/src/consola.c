@@ -9,41 +9,30 @@ int main(int argc, char **argv) {
     char *path_pseudocodigo = argv[2];
 
     iniciar_config(path_config);
-    t_list *instrucciones = leer_archivo(path_pseudocodigo);
-    // iniciar_config("cfg/Consola.config");
-    // t_list *instrucciones = leer_archivo("/home/utnso/geck-pruebas/BASE_2");
-
     logger = log_create("cfg/Consola.log", "Consola", true, LOG_LEVEL_INFO);
-
-    log_info(logger, "Consola iniciada. Intentando conectarse al kernel");
 
     int socket_cliente = conectarse_a_servidor(config_consola.ip_kernel, config_consola.puerto_kernel);
 
     if (socket_cliente == -1) {
         log_info(logger, "Error en la conexion al servidor. Terminando consola");
+        destruir_estructuras();
         return EXIT_FAILURE;
     }
-
-    /*recv(socket_cliente,&respuesta,sizeof(uint32_t),MSG_WAITALL);
-            if(respuesta == 0)log_info(logger, "Finalizacion exitosa");
-            else			  log_error(logger, "Ocurrio un error con la ejecucion del proceso");
-    */
+    log_info(logger, "Conexion correcta. Enviando instrucciones");
+    t_list *instrucciones = leer_archivo(path_pseudocodigo);
+    list_iterate(instrucciones, print_instruccion);
 
     t_paquete *paquete_instrucciones = crear_paquete(INSTRUCCIONES);
     serializar_instrucciones(paquete_instrucciones, instrucciones);
     serializar_segmentos(paquete_instrucciones, config_consola.segmentos);
 
-    log_info(logger, "Conexion correcta. Enviando instrucciones");
-    list_iterate(instrucciones, (void *)print_instruccion);
     enviar_paquete(paquete_instrucciones, socket_cliente);
     esperar_respuesta(socket_cliente);
 
     liberar_conexion(socket_cliente);
     destructor_instrucciones(instrucciones);
     eliminar_paquete(paquete_instrucciones);
-    string_array_destroy(config_consola.segmentos);
-    config_destroy(config);
-    log_destroy(logger);
+    destruir_estructuras();
     return EXIT_SUCCESS;
 }
 
@@ -141,4 +130,10 @@ void esperar_respuesta(int socket) {
             log_error(logger, "Error en la respuesta del kernel");
             break;
     }
+}
+
+void destruir_estructuras() {
+    string_array_destroy(config_consola.segmentos);
+    config_destroy(config);
+    log_destroy(logger);
 }

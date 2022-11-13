@@ -1,29 +1,16 @@
 #include "kernel.h"
 
-char *ip;
-pthread_t t_manejo_consola;
-
-void manejador_seniales(int senial) {
-    switch (senial) {
-        case SIGINT:
-            log_info(logger, "Cerrando hilos");
-            pthread_cancel(t_manejo_consola);
-            break;
-    }
-}
-
 int main(int argc, char **argv) {
-    signal(SIGINT, manejador_seniales);
     iniciar_logger();
     cargar_configuracion();
-    iniciar_planificador_largo_plazo();
-    iniciar_planificador_corto_plazo();
+    signal(SIGINT, manejador_seniales);
 
     // CONEXION CON CONSOLAS
     socket_servidor = iniciar_servidor(config_valores.ip_memoria, config_valores.puerto_escucha);
 
     if (socket_servidor == -1) {
-        log_info(logger, "Error al iniciar el servidor");
+        log_error(logger, "Error al iniciar el servidor");
+        destruir_estructuras();
         return EXIT_FAILURE;
     }
     log_info(logger, "Kernel listo para recibir consolas");
@@ -35,21 +22,26 @@ int main(int argc, char **argv) {
     conexion_memoria = conectarse_a_servidor(ip, config_valores.puerto_memoria);
 
     if (conexion_memoria == -1) {
-        log_info(logger, "Error en la conexion al servidor. Terminando kernel");
+        log_error(logger, "Error en la conexion al servidor. Terminando kernel");
+        log_destroy(logger);
         return EXIT_FAILURE;
     }
 
     log_info(logger, "Conexion con memoria exitosa");*/
 
     // CONEXION CON CPU
-    conexion_cpu_interrupt = conectarse_a_servidor(ip, config_valores.puerto_cpu_interrupt);
+    conexion_cpu_interrupt = conectarse_a_servidor(config_valores.ip_cpu, config_valores.puerto_cpu_interrupt);
     log_info(logger, "Conexion con cpu interrupt exitosa");
-    conexion_cpu_dispatch = conectarse_a_servidor(ip, config_valores.puerto_cpu_dispatch);
+    conexion_cpu_dispatch = conectarse_a_servidor(config_valores.ip_cpu, config_valores.puerto_cpu_dispatch);
     log_info(logger, "Conexion con cpu dispatch exitosa");
+
     if (conexion_cpu_dispatch == -1 || conexion_cpu_interrupt == -1) {
-        log_info(logger, "Error en la conexion al servidor. Terminando kernel");
+        log_error(logger, "Error en la conexion al servidor. Terminando kernel");
+        destruir_estructuras();
         return EXIT_FAILURE;
     }
+    iniciar_planificador_largo_plazo();
+    iniciar_planificador_corto_plazo();
 
     pthread_create(&t_manejo_consola, NULL, (void *)manejar_consolas, (void *)socket_servidor);
     pthread_join(t_manejo_consola, NULL);
@@ -59,6 +51,7 @@ int main(int argc, char **argv) {
     //  liberar_conexion(conexion_memoria);
 
     liberar_colas();
+    eliminar_semaforos();
     destruir_estructuras();
     return EXIT_SUCCESS;
 }

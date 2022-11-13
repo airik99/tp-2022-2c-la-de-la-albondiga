@@ -7,8 +7,7 @@
 #include <planificacion.h>
 #include "serializacion.h"
 #include "tests.h"
-#include <signal.h>
-
+ 
 //estructuras
 
 //funciones
@@ -29,12 +28,5 @@ void manejar_consolas(int socket_servidor);
  */
 void escuchar_consola(int socket_cliente);
 
-
-/**
- * @brief Cierra todos los hilos al enviar SIGINT (ctrl+c en la consola) para poder liberar todas las estructuras y conexiones correctamente  
- * 
- * @param senial
- */
-void manejador_seniales(int senial);
 
 #endif

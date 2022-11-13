@@ -3,13 +3,14 @@
 config_kernel config_valores;
 t_config *config;
 t_log *logger;
-t_queue *cola_new;
-t_queue *cola_exit;
-t_queue *cola_exec;
-t_queue *cola_ready_prioritaria;
-t_queue *cola_ready_segundo_nivel;
-t_queue *cola_block_disco;
-t_queue *cola_block_impresora;
+t_queue *cola_new, *cola_ready_prioritaria, *cola_ready_segundo_nivel;
+t_list *lista_colas_bloqueo;
+
+pthread_mutex_t mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda;
+sem_t sem_procesos_new, sem_procesos_ready, sem_grado_multiprogramacion, sem_page_fault;
+pthread_t t_page_fault, t_largo_plazo, t_quantum, t_corto_plazo, t_manejo_consola;
+
+
 char *estado_a_string[] = {"NEW", "READY", "EXEC", "BLOCKED", "EXIT"};
 int conexion_cpu_dispatch;
 int conexion_memoria;
@@ -46,7 +47,6 @@ void destruir_estructuras() {
     string_array_destroy(config_valores.tiempos_io);
 }
 
-// esto tiene que hacerlo cuando se conecta una consola al kernel
 t_pcb *crear_nuevo_pcb(t_proceso *proceso_consola, int socket) {
     t_pcb *nuevo_pcb = malloc(sizeof(t_pcb));
     nuevo_pcb->pid = contador_pid;
@@ -62,13 +62,41 @@ t_pcb *crear_nuevo_pcb(t_proceso *proceso_consola, int socket) {
 }
 
 void liberar_colas() {
-    queue_clean_and_destroy_elements(cola_block_disco, (void *)eliminar_pcb);
-    queue_clean_and_destroy_elements(cola_block_impresora, (void *)eliminar_pcb);
-    queue_clean_and_destroy_elements(cola_exit, (void *)eliminar_pcb);
-    queue_clean_and_destroy_elements(cola_ready_prioritaria, (void *)eliminar_pcb);
-    queue_clean_and_destroy_elements(cola_ready_segundo_nivel, (void *)eliminar_pcb);
-    queue_clean_and_destroy_elements(cola_new, (void *)eliminar_pcb);
-    queue_clean_and_destroy_elements(cola_exec, (void *)eliminar_pcb);
+    queue_destroy_and_destroy_elements(cola_ready_prioritaria, (void *)eliminar_pcb);
+    if (es_algoritmo_FEEDBACK()) queue_destroy_and_destroy_elements(cola_ready_segundo_nivel, (void *)eliminar_pcb);
+    queue_destroy_and_destroy_elements(cola_new, (void *)eliminar_pcb);
+    list_destroy_and_destroy_elements(lista_colas_bloqueo, destruir_cola_bloqueo);
+}
+
+void destruir_cola_bloqueo(t_cola_bloqueo* cola){
+    //no hace falta hacer free(cola->dispositivo) porque ya se hace en string_array_destroy(config_valores.dispositivos_io);
+   pthread_mutex_destroy(&(cola->mx_cola_bloqueados)); 
+   sem_destroy(&(cola->procesos_bloqueado));
+   pthread_cancel(cola->t_bloqueo);
+   queue_destroy_and_destroy_elements(cola->cola_bloqueados,destruir_solicitud_bloqueo);
+   free(cola);
+}
+
+void destruir_solicitud_bloqueo(t_solicitud_io* solicitud){
+    eliminar_pcb(solicitud->pcb);
+    liberar_solicitud(solicitud);
+}
+
+
+void liberar_solicitud(t_solicitud_io* solicitud) {
+    free(solicitud->dispositivo);
+    free(solicitud->parametro);
+    free(solicitud);
+}
+
+void eliminar_semaforos() {
+    pthread_mutex_destroy(&mx_cola_new);
+    pthread_mutex_destroy(&mx_cola_ready_prioritaria);
+    if (es_algoritmo_FEEDBACK()) pthread_mutex_destroy(&mx_cola_ready_segunda);
+    sem_destroy(&sem_grado_multiprogramacion);
+    sem_destroy(&sem_procesos_new);
+    sem_destroy(&sem_grado_multiprogramacion);
+    
 }
 
 void actualizar_estado(t_pcb *pcb, t_estado nuevo_estado) {
@@ -90,15 +118,14 @@ bool es_algoritmo_RR() {
 
 void loggear_colas_ready() {
     char *pids_primera_cola = string_de_pids(cola_ready_prioritaria);
-    char *pids_segunda_cola = string_de_pids(cola_ready_segundo_nivel);
     if (es_algoritmo_FEEDBACK()) {
+        char *pids_segunda_cola = string_de_pids(cola_ready_segundo_nivel);
         log_info(logger, "Cola Ready <Round Robin>: [%s]", pids_primera_cola);
         log_info(logger, "Cola Ready <FIFO>: [%s]", pids_segunda_cola);
-    } else {
+        free(pids_segunda_cola);
+    } else
         log_info(logger, "Cola Ready <%s>: [%s]", config_valores.algoritmo_planificacion, pids_primera_cola);
-    }
     free(pids_primera_cola);
-    free(pids_segunda_cola);
 }
 
 char *obtener_pid_como_string(t_pcb *pcb) {
@@ -120,4 +147,15 @@ char *string_de_pids(t_queue *cola) {
         resultado = list_fold1(pid_list, (void *)concatenar_string_con_coma);
     list_destroy(pid_list);
     return resultado;
+}
+
+void manejador_seniales(int senial) {
+    switch (senial) {
+        case SIGINT:
+            log_info(logger, "Cerrando hilos");
+            pthread_cancel(t_corto_plazo);
+            pthread_cancel(t_manejo_consola);
+            pthread_cancel(t_largo_plazo);
+            break;
+    }
 }

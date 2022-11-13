@@ -24,6 +24,13 @@ void eliminar_pcb(t_pcb *pcb) {
     free(pcb);
 }
 
+void pushear_semaforizado(t_queue* q, void* dato, pthread_mutex_t mx){
+    pthread_mutex_lock(&mx);
+    queue_push(q, dato);
+    pthread_mutex_unlock(&mx);
+}
+
+
 int indice_registro(char* registro) {
     if (strcmp(registro, "AX") == 0)
         return 0;

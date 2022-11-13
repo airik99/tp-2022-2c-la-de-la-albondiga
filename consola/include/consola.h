@@ -17,5 +17,6 @@ t_instruccion* crear_instruccion(char*, t_list*);
 t_list* leer_archivo(char*);
 char* leer_linea(FILE*);
 void esperar_respuesta(int);
+void destruir_estructuras();
 
 #endif

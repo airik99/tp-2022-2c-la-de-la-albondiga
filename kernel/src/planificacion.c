@@ -1,84 +1,58 @@
 #include "planificacion.h"
 
-pthread_mutex_t mx_cola_new;
-pthread_mutex_t mx_cola_ready_prioritaria;
-pthread_mutex_t mx_cola_ready_segunda;
-pthread_mutex_t mx_cola_exec;
-pthread_mutex_t mx_cola_block_disco;
-pthread_mutex_t mx_cola_block_impresora;
-pthread_mutex_t mx_cola_exit;
-sem_t sem_procesos_new;
-sem_t sem_procesos_ready;
-sem_t sem_grado_multiprogramacion;
-sem_t sem_page_fault;
-sem_t sem_block_disco;
-sem_t sem_block_impresora;
-pthread_t t_page_fault;
-pthread_t t_quantum;
-pthread_t t_impresora;
-pthread_t t_disco;
-
 void iniciar_planificador_largo_plazo(void) {
     contador_pid = 0;
     cola_new = queue_create();
-    cola_exit = queue_create();
 
     pthread_mutex_init(&mx_cola_new, NULL);
-    pthread_mutex_init(&mx_cola_exit, NULL);
 
     sem_init(&sem_procesos_new, 0, 0);
     sem_init(&sem_grado_multiprogramacion, 0, config_valores.grado_max_multiprogramacion);
 
-    pthread_t t_largo_plazo;
     pthread_create(&t_largo_plazo, NULL, (void*)planificar_largo, NULL);
     pthread_detach(t_largo_plazo);
 }
 
 void iniciar_planificador_corto_plazo(void) {
-    cola_exec = queue_create();
-    cola_block_disco = queue_create();
-    cola_block_impresora = queue_create();    // esta hardcodeado, creo que se resuleve usando vectores y eso pero ahora no puede hacerlo
-    cola_ready_prioritaria = queue_create();  // igual
+    cola_ready_prioritaria = queue_create();
+    lista_colas_bloqueo = list_create();
 
-    pthread_create(&t_impresora, NULL, (void*)manejar_impresora, NULL);
-    pthread_detach(t_impresora);
-
-    pthread_t t_disco;
-    pthread_create(&t_disco, NULL, (void*)manejar_disco, NULL);
-    pthread_detach(t_disco);
+    for (int i = 0; config_valores.dispositivos_io[i] != NULL; i++) {
+        t_cola_bloqueo* cola_bloqueo = malloc(sizeof(t_cola_bloqueo));
+        cola_bloqueo->dispositivo = config_valores.dispositivos_io[i];
+        cola_bloqueo->tiempo_dispositivo = atoi(config_valores.tiempos_io[i]);
+        sem_init(&(cola_bloqueo->procesos_bloqueado), 0, 0);
+        pthread_mutex_init(&(cola_bloqueo->mx_cola_bloqueados), NULL);
+        cola_bloqueo->cola_bloqueados = queue_create();
+        pthread_create(&(cola_bloqueo->t_bloqueo), NULL, (void*)io_otros_dispositivos, cola_bloqueo);
+        pthread_detach(cola_bloqueo->t_bloqueo);
+        list_add(lista_colas_bloqueo, cola_bloqueo);
+    }
 
     pthread_mutex_init(&mx_cola_ready_prioritaria, NULL);
-    pthread_mutex_init(&mx_cola_exec, NULL);
-    pthread_mutex_init(&mx_cola_block_disco, NULL);
-    pthread_mutex_init(&mx_cola_block_impresora, NULL);
-    sem_init(&sem_block_disco, 0, 0);
-    sem_init(&sem_block_impresora, 0, 0);
     sem_init(&sem_procesos_ready, 0, 0);
-
-    pthread_t t_corto_plazo;
 
     if (es_algoritmo_FEEDBACK()) {
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_FEEDBACK, NULL);
         cola_ready_segundo_nivel = queue_create();
         pthread_mutex_init(&mx_cola_ready_segunda, NULL);
-    } else if (es_algoritmo_FIFO()) {
+    } else if (es_algoritmo_FIFO())
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_FIFO, NULL);
-    } else {
+    else
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_RR, NULL);
-    }
-    log_info(logger, "Iniciado el Planificador de corto plazo con algoritmo %s", config_valores.algoritmo_planificacion);
+
     pthread_detach(t_corto_plazo);
+    log_info(logger, "Iniciado el Planificador de corto plazo con algoritmo %s", config_valores.algoritmo_planificacion);
 }
 
 void planificar_largo() {
     while (1) {
         sem_wait(&sem_procesos_new);
-        t_pcb* pcb = tomar_primer_pcb(cola_new, mx_cola_new);
+        t_pcb* pcb = tomar_primero(cola_new, mx_cola_new);
 
         sem_wait(&sem_grado_multiprogramacion);
-        pthread_mutex_lock(&mx_cola_ready_prioritaria);
-        queue_push(cola_ready_prioritaria, pcb);  // En RR y FIFO hay una sola cola, En Feedback los nuevos siempre entran a la de maxima prioridad
-        pthread_mutex_unlock(&mx_cola_ready_prioritaria);
+
+        pushear_semaforizado(cola_ready_prioritaria, pcb, mx_cola_ready_prioritaria);
 
         actualizar_estado(pcb, READY);
         loggear_colas_ready();
@@ -96,7 +70,7 @@ void planificador_corto_FIFO() {
 }
 
 void algoritmo_FIFO(t_queue* queue, pthread_mutex_t semaforo) {
-    t_pcb* pcb = tomar_primer_pcb(queue, semaforo);
+    t_pcb* pcb = tomar_primero(queue, semaforo);
     actualizar_estado(pcb, EXEC);
     enviar_pcb(pcb, PCB, conexion_cpu_dispatch);
     eliminar_pcb(pcb);
@@ -136,7 +110,7 @@ void planificador_corto_RR() {
 }
 
 void algoritmo_RR(t_queue* queue, pthread_mutex_t semaforo) {
-    t_pcb* pcb = tomar_primer_pcb(queue, semaforo);
+    t_pcb* pcb = tomar_primero(queue, semaforo);
     actualizar_estado(pcb, EXEC);
     enviar_pcb(pcb, PCB, conexion_cpu_dispatch);
     pthread_create(&t_quantum, NULL, (void*)esperar_quantum, NULL);
@@ -168,7 +142,8 @@ void recibir_pcb_cpu_RR() {
             actualizar_estado(pcb, READY);
             sem_post(&sem_procesos_ready);
             log_info(logger, "PID: <%d> - Desalojado por fin de Quantum", pcb->pid);
-            es_algoritmo_FEEDBACK() ? queue_push(cola_ready_segundo_nivel, pcb) : queue_push(cola_ready_prioritaria, pcb);
+            es_algoritmo_FEEDBACK() ? pushear_semaforizado(cola_ready_segundo_nivel, pcb, mx_cola_ready_segunda)
+                                    : pushear_semaforizado(cola_ready_prioritaria, pcb, mx_cola_ready_prioritaria);
             loggear_colas_ready();
             break;
         default:
@@ -199,94 +174,75 @@ void planificador_corto_FEEDBACK() {
 }
 
 //-----------------GENERALES----------------------
-t_pcb* tomar_primer_pcb(t_queue* queue, pthread_mutex_t semaforo) {
-    t_pcb* pcb_a_ejecutar;
+void* tomar_primero(t_queue* queue, pthread_mutex_t semaforo) {
+    void* dato;
     pthread_mutex_lock(&semaforo);
-    pcb_a_ejecutar = queue_pop(queue);
+    dato = queue_pop(queue);
     pthread_mutex_unlock(&semaforo);
-    return pcb_a_ejecutar;
+    return dato;
 }
 
 void manejar_bloqueo(t_solicitud_io* solicitud) {
     actualizar_estado(solicitud->pcb, BLOCKED);
     log_info(logger, "PID: <%d> - Bloqueado por: <%s>", solicitud->pcb->pid, solicitud->dispositivo);
-    if ((strcmp(solicitud->dispositivo, "PANTALLA") == 0) || (strcmp(solicitud->dispositivo, "TECLADO") == 0)) {
+    if (strcmp(solicitud->dispositivo, "PANTALLA") == 0) {
         pthread_t t_bloqueo;
-        pthread_create(&t_bloqueo, NULL, (void*)io_pantalla_teclado, (void*)solicitud);
+        pthread_create(&t_bloqueo, NULL, (void*)io_pantalla, (void*)solicitud);
         pthread_detach(t_bloqueo);
-    } else {  // TODO: Cambiar esta cosa fea cuando haga bien la lista de dispositivos
-        if (strcmp(solicitud->dispositivo, "DISCO") == 0) {
-            pthread_mutex_lock(&mx_cola_block_disco);
-            queue_push(cola_block_disco, solicitud);
-            pthread_mutex_unlock(&mx_cola_block_disco);
-            sem_post(&sem_block_disco);
-        } else {
-            pthread_mutex_lock(&mx_cola_block_impresora);
-            queue_push(cola_block_impresora, solicitud);
-            pthread_mutex_unlock(&mx_cola_block_impresora);
-            sem_post(&sem_block_impresora);
+    } else if (strcmp(solicitud->dispositivo, "TECLADO") == 0) {
+        pthread_t t_bloqueo;
+        pthread_create(&t_bloqueo, NULL, (void*)io_teclado, (void*)solicitud);
+        pthread_detach(t_bloqueo);
+    } else {
+        bool _coincide_nombre_cola(t_cola_bloqueo * una_cola) {
+            return strcmp(solicitud->dispositivo, una_cola->dispositivo) == 0;
         }
-    }
-}
-void manejar_impresora() {
-    while (1) {
-        sem_wait(&sem_block_impresora);
-        pthread_mutex_lock(&mx_cola_block_impresora);
-        t_solicitud_io* solicitud = queue_pop(cola_block_impresora);
-        pthread_mutex_unlock(&mx_cola_block_impresora);
-        int tiempo = atoi(solicitud->parametro) * atoi(config_valores.tiempos_io[1]) * 1000;
-        usleep(tiempo);
-        actualizar_estado(solicitud->pcb, READY);
-        queue_push(cola_ready_prioritaria, solicitud->pcb);
-        loggear_colas_ready();
-        sem_post(&sem_procesos_ready);
-        free(solicitud->dispositivo);
-        free(solicitud->parametro);
-        free(solicitud);
+        t_cola_bloqueo* cola = list_find(lista_colas_bloqueo, (void*)_coincide_nombre_cola);
+        pushear_semaforizado(cola->cola_bloqueados, solicitud, cola->mx_cola_bloqueados);
+        sem_post(&(cola->procesos_bloqueado));
     }
 }
 
-void manejar_disco() {
-    while (1) {
-        sem_wait(&sem_block_disco);
-        pthread_mutex_lock(&mx_cola_block_disco);
-        t_solicitud_io* solicitud = queue_pop(cola_block_disco);
-        pthread_mutex_unlock(&mx_cola_block_disco);
-        int tiempo = atoi(solicitud->parametro) * atoi(config_valores.tiempos_io[0]) * 1000;
-        usleep(tiempo);
-        actualizar_estado(solicitud->pcb, READY);
-        queue_push(cola_ready_prioritaria, solicitud->pcb);
-        loggear_colas_ready();
-        sem_post(&sem_procesos_ready);
-        free(solicitud->dispositivo);
-        free(solicitud->parametro);
-        free(solicitud);
-    }
-}
-void io_pantalla_teclado(t_solicitud_io* solicitud) {
-    uint32_t respuesta;
-    t_pcb* pcb = solicitud->pcb;
-    if (strcmp(solicitud->dispositivo, "PANTALLA") == 0) {
-        t_paquete* paquete = crear_paquete(IO_PANTALLA);
-        int dato = pcb->registro[indice_registro(solicitud->parametro)];
-        agregar_a_paquete(paquete, &dato, sizeof(int));
-        enviar_paquete(paquete, pcb->socket_consola);
-        recv(pcb->socket_consola, &respuesta, sizeof(uint32_t), MSG_WAITALL);
-    } else {
-        op_code codigo = IO_TECLADO;
-        send(pcb->socket_consola, &codigo, sizeof(uint32_t), MSG_WAITALL);
-        recv(pcb->socket_consola, &respuesta, sizeof(uint32_t), MSG_WAITALL);
-        pcb->registro[indice_registro(solicitud->parametro)] = respuesta;
-    }
+void io_teclado(t_solicitud_io* solicitud) {
+    int respuesta;
+    op_code codigo = IO_TECLADO;
+    send(solicitud->pcb->socket_consola, &codigo, sizeof(uint32_t), MSG_WAITALL);
+    recv(solicitud->pcb->socket_consola, &respuesta, sizeof(uint32_t), MSG_WAITALL);
+    solicitud->pcb->registro[indice_registro(solicitud->parametro)] = respuesta;
+    pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, mx_cola_ready_prioritaria);
     actualizar_estado(solicitud->pcb, READY);
-    pthread_mutex_unlock(&mx_cola_ready_prioritaria);
-    queue_push(cola_ready_prioritaria, solicitud->pcb);
-    pthread_mutex_unlock(&mx_cola_ready_prioritaria);
     loggear_colas_ready();
     sem_post(&sem_procesos_ready);
-    free(solicitud->dispositivo);
-    free(solicitud->parametro);
-    free(solicitud);
+    liberar_solicitud(solicitud);
+}
+
+void io_pantalla(t_solicitud_io* solicitud) {
+    int respuesta;
+    t_paquete* paquete = crear_paquete(IO_PANTALLA);
+    int dato = solicitud->pcb->registro[indice_registro(solicitud->parametro)];
+    agregar_a_paquete(paquete, &dato, sizeof(int));
+    enviar_paquete(paquete, solicitud->pcb->socket_consola);
+    eliminar_paquete(paquete);
+    recv(solicitud->pcb->socket_consola, &respuesta, sizeof(uint32_t), MSG_WAITALL);
+    pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, mx_cola_ready_prioritaria);
+    actualizar_estado(solicitud->pcb, READY);
+    sem_post(&sem_procesos_ready);
+    loggear_colas_ready();
+    liberar_solicitud(solicitud);
+}
+
+void io_otros_dispositivos(t_cola_bloqueo* cola_bloqueo) {
+    while (1) {
+        sem_wait(&(cola_bloqueo->procesos_bloqueado));
+        t_solicitud_io* solicitud = (t_solicitud_io*)tomar_primero(cola_bloqueo->cola_bloqueados, cola_bloqueo->mx_cola_bloqueados);
+        int tiempo = atoi(solicitud->parametro) * cola_bloqueo->tiempo_dispositivo * 1000;
+        usleep(tiempo);
+        actualizar_estado(solicitud->pcb, READY);
+        pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, mx_cola_ready_prioritaria);
+        sem_post(&sem_procesos_ready);
+        loggear_colas_ready();
+        liberar_solicitud(solicitud);
+    }
 }
 
 /*void atender_page_fault(t_pcb* pcb_pf, int nro_pagina) {
@@ -305,23 +261,4 @@ void solicitar_pagina_a_memoria(int nro_pagina) {
     // sem_post(sem_page_fault);
 }
 
-void escuchar_mensaje_cpu() {
-    // TODO Cuando reciba un mensaje del cpu para finalizar el proceso, llama a finalizar_pcb()
-    // finalizar_pcb(pcb_recibido);
-}
-
-void finalizar_pcb(t_pcb* pcb) {
-    actualizar_estado(pcb, EXIT);
-    // sem_wait(mx_cola_exit)
-    queue_push(cola_exit, pcb);
-    // sem_post(mx_cola_exit)
-    // TODO Enviar mensaje a memoria para que libere sus estructuras
-    chequear_lista_pcbs(cola_exit);
-}
-
-void chequear_lista_pcbs(t_list* lista) {  // Funcion para listar la lista de los pcb
-    for (int i = 0; i < list_size(lista); i++) {
-        t_pcb* pcb = list_get(lista, i);
-        log_info(logger, "PCB ID: %d\n", pcb->pid);
-    }
-}*/
+*/
