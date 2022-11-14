@@ -113,6 +113,7 @@ void esperar_respuesta(int socket) {
             buffer = recibir_buffer(&size, socket);
             memcpy(&valor, buffer, sizeof(int));
             log_info(logger, "Valor del registro: %d", valor);
+            free(buffer);
             usleep(config_consola.tiempo_pantalla * 1000);
             send(socket, &respuesta, sizeof(uint32_t), MSG_WAITALL);
             esperar_respuesta(socket);
