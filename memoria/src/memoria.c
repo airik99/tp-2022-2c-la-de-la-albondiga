@@ -13,7 +13,7 @@ int main(int argc, char ** argv){
 
     cargar_configuracion(); 
 
-	int socket_servidor = iniciar_servidor(ip, config_valores.puerto);
+	int socket_servidor = iniciar_servidor(config_valores.puerto);
 
     if (socket_servidor == -1)
     {
@@ -41,7 +41,7 @@ int main(int argc, char ** argv){
 
 void cargar_configuracion() {
     
-	config = config_create("cfg/archivo_configuracion.config");
+	config = config_create("cfg/Memoria.config");
     log_info(logger, "Arranco a leer el archivo de configuracion");
 
 	config_valores.entradas_por_tabla = config_get_int_value(config, "ENTRADAS_POR_TABLA");
@@ -86,7 +86,7 @@ int escuchar_clientes(){
 void conectar_con_clientes() {
 	log_info(logger, "Iniciando servidor...");
 
-	socket_servidor = iniciar_servidor(ip, config_valores.puerto);
+	socket_servidor = iniciar_servidor(config_valores.puerto);
 
 	sleep(5);
 

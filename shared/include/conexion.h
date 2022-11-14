@@ -14,7 +14,7 @@
  *
  * @return Socket del servidor o -1 por error.
  **/
-int iniciar_servidor(char *ip, char *puerto);
+int iniciar_servidor(char *puerto);
 
 /**
  * @brief Espera a que un cliente se conecte al servidor.

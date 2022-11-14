@@ -140,11 +140,11 @@ void recibir_pcb_cpu_RR() {
         case INTERRUPCION:
             pcb = recibir_pcb(conexion_cpu_dispatch);
             actualizar_estado(pcb, READY);
-            sem_post(&sem_procesos_ready);
             log_info(logger, "PID: <%d> - Desalojado por fin de Quantum", pcb->pid);
             es_algoritmo_FEEDBACK() ? pushear_semaforizado(cola_ready_segundo_nivel, pcb, mx_cola_ready_segunda)
                                     : pushear_semaforizado(cola_ready_prioritaria, pcb, mx_cola_ready_prioritaria);
             loggear_colas_ready();
+            sem_post(&sem_procesos_ready);  // hago el post despues para que muestre bien las colas ready
             break;
         default:
             log_warning(logger, "Operacion desconocida.");
@@ -198,7 +198,7 @@ void manejar_bloqueo(t_solicitud_io* solicitud) {
             return strcmp(solicitud->dispositivo, una_cola->dispositivo) == 0;
         }
         t_cola_bloqueo* cola = list_find(lista_colas_bloqueo, (void*)_coincide_nombre_cola);
-        pushear_semaforizado(cola->cola_bloqueados, solicitud, cola->mx_cola_bloqueados);
+        pushear_semaforizado(cola->cola_bloqueados, solicitud, cola->mx_cola_bloqueados); //funciona por mas que vscode lo marque como error
         sem_post(&(cola->procesos_bloqueado));
     }
 }
@@ -226,8 +226,8 @@ void io_pantalla(t_solicitud_io* solicitud) {
     recv(solicitud->pcb->socket_consola, &respuesta, sizeof(uint32_t), MSG_WAITALL);
     pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, mx_cola_ready_prioritaria);
     actualizar_estado(solicitud->pcb, READY);
-    sem_post(&sem_procesos_ready);
     loggear_colas_ready();
+    sem_post(&sem_procesos_ready);
     liberar_solicitud(solicitud);
 }
 
@@ -239,8 +239,8 @@ void io_otros_dispositivos(t_cola_bloqueo* cola_bloqueo) {
         usleep(tiempo);
         actualizar_estado(solicitud->pcb, READY);
         pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, mx_cola_ready_prioritaria);
-        sem_post(&sem_procesos_ready);
         loggear_colas_ready();
+        sem_post(&sem_procesos_ready);
         liberar_solicitud(solicitud);
     }
 }

@@ -6,7 +6,7 @@ int main(int argc, char **argv) {
     signal(SIGINT, manejador_seniales);
 
     // CONEXION CON CONSOLAS
-    socket_servidor = iniciar_servidor(config_valores.ip_memoria, config_valores.puerto_escucha);
+    socket_servidor = iniciar_servidor(config_valores.puerto_escucha);
 
     if (socket_servidor == -1) {
         log_error(logger, "Error al iniciar el servidor");

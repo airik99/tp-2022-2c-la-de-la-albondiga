@@ -13,7 +13,6 @@ int flag_salida, interrupcion;
 
 int main(int argc, char** argv) {
     logger = log_create("cfg/cpu.log", "CPU", true, LOG_LEVEL_INFO);
-    ip = "127.0.0.1";  // esto no debería estar hardcodeado
     cargar_configuracion();
 
     // CONEXION CON MEMORIA
@@ -28,13 +27,13 @@ int main(int argc, char** argv) {
     // log_info(logger, "Hilo de conexion con memoria creado \n");
 
     log_info(logger, "Iniciando conexion con kernel por interrupt\n");
-    socket_servidor_interrupt = iniciar_servidor(ip, config_valores.puerto_escucha_interrupt);
+    socket_servidor_interrupt = iniciar_servidor(config_valores.puerto_escucha_interrupt);
     log_info(logger, "Esperando cliente por Interrupt");
     cliente_servidor_interrupt = esperar_cliente(socket_servidor_interrupt);
     log_info(logger, "Conexión con Kernel en puerto Interrupt establecida.");
 
     log_info(logger, "Iniciando conexion con kernel por dispatch\n");
-    socket_servidor_dispatch = iniciar_servidor(ip, config_valores.puerto_escucha_dispatch);
+    socket_servidor_dispatch = iniciar_servidor(config_valores.puerto_escucha_dispatch);
     log_info(logger, "Esperando cliente por dispatch");
     cliente_servidor_dispatch = esperar_cliente(socket_servidor_dispatch);
     log_info(logger, "Conexión con Kernel en puerto Dispatch establecida.");
@@ -231,7 +230,7 @@ void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
 //Se deberá devolver el Contexto de Ejecución actualizado al Kernel junto el dispositivo y la cantidad de unidades de trabajo del 
 //dispositivo que desea utilizar el proceso (o el Registro a completar o leer en caso de que el dispositivo sea Pantalla o Teclado).
 void ejecutar_MOV_OUT(char* direccion_logica, char* registro,t_pcb* pcb,char* dispositivo, char* parametro) {
-    char* direccion_fisica=traducir_direccion_logica(direccion_logica);
+    /*char* direccion_fisica=traducir_direccion_logica(direccion_logica);
     int indice = indice_registro(registro);
     int valor=registros[indice];
     escribir_en_memoria(direccion_fisica,valor);
@@ -248,7 +247,7 @@ void ejecutar_MOV_OUT(char* direccion_logica, char* registro,t_pcb* pcb,char* di
     agregar_a_paquete(paquete, parametro, largo_parametro);
     enviar_paquete(paquete, cliente_servidor_dispatch);  // dispatch
     eliminar_paquete(paquete);
-}
+*/}
 
 int leer_de_memoria(uint32_t direccion_logica){
     //TODO
@@ -261,9 +260,9 @@ char* traducir_direccion_logica(char* direccion_logica){
 }
 
 void escribir_en_memoria(char* direccion_fisica,int valor){
-    int indice = indice_registro(direccion_fisica);
-    memoria[indice] = valor;
-    log_info(logger, "Se guarda el valor %d en la direccion %s \n", valor, direccion_fisica);  // hay que ver si devuelve un numero o el enum en sí
+    //int indice = indice_registro(direccion_fisica);
+    //memoria[indice] = valor;
+    //log_info(logger, "Se guarda el valor %d en la direccion %s \n", valor, direccion_fisica);  // hay que ver si devuelve un numero o el enum en sí
 }
 
 // EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.
@@ -307,7 +306,7 @@ t_handshake* recibir_handshake(int socket_memoria) {
 }
 
 void cargar_configuracion() {
-    config = config_create("cfg/archivo_configuracion.config");
+    config = config_create("cfg/Cpu.config");
     log_info(logger, "Arranco a leer el archivo de configuracion \n");
 
     config_valores.entradas_tlb = config_get_int_value(config, "ENTRADAS_TLB");
