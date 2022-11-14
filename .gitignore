@@ -1,4 +1,7 @@
 # Prerequisites
+*
+!*/
+!*.*
 *.d
 
 # Object files
@@ -50,5 +53,7 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# Logs
+# Logs 
 *.log
+!makefile
+.vscode/
