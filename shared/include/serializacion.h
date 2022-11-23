@@ -16,7 +16,9 @@ typedef enum
 	PCB_EXIT,
 	IO_TECLADO,
 	IO_PANTALLA,
-	PAQUETE
+	PAQUETE,
+	PAGE_FAULT_REQUEST,
+	ESCRITURA_MEMORIA,
 } op_code;
 
 typedef struct{

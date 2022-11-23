@@ -154,6 +154,7 @@ void recibir_pcb_cpu_RR() {
 
 void esperar_quantum() {
     usleep(config_valores.quantum_rr * 1000);
+    //TODO Ya hay una variable "interrupcion" que se usa en cpu que es global
     int interrupcion = 1;
     send(conexion_cpu_interrupt, &interrupcion, sizeof(uint32_t), MSG_WAITALL);
     log_info(logger, "Interrupcion por quantum enviada.");

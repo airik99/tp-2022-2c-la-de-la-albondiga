@@ -84,7 +84,7 @@ void error_conexion(int socket) {
     }
 }
 
-int leer_de_memoria(uint32_t direccion_logica) {
+int leer_de_memoria(t_direccion_logica* direccion_logica) {
     // TODO
     return 0;
 }

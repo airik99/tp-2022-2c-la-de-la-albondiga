@@ -12,7 +12,7 @@ void ciclo_de_instruccion(t_pcb* pcb) {
         if (flag_salida) {
             return;
         }
-        if (check_interrupt()) {  // SE FIJA QUE NO HAYA PEDIDO DE PARAR EL PROCESO ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
+        if (check_interrupt()) {  // SE FIJA QUE NO HAYA UNA INTERRUPCION ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
             ultimo_pid = pcb->pid;
             t_paquete* paquete = crear_paquete(INTERRUPCION);
             serializar_pcb(paquete, pcb);
@@ -39,12 +39,18 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
 
     else if (strcmp(instruccion->nombre, "MOV_IN") == 0) {
         log_info(logger, "PID: <%d> - Ejecutando: <MOV_IN> - <PENDIENTE> - <PENDIENTE>", pcb->pid);
-        // ejecutar_MOV_IN();
+        t_direccion_logica* direccion_logica;
+        char* registro;
+        ejecutar_MOV_IN(registro, direccion_logica); //TODO falta hacer esto
     }
 
     else if (strcmp(instruccion->nombre, "MOV_OUT") == 0) {
         log_info(logger, "PID: <%d> - Ejecutando: <MOV_OUT> - <PENDIENTE> - <PENDIENTE>", pcb->pid);
-        // ejecutar_MOV_OUT();
+        t_direccion_logica* direccion_logica;
+        char* registro;
+        char* dispositivo;
+        char* parametro;
+        ejecutar_MOV_OUT(direccion_logica, registro, pcb, dispositivo, parametro); //TODO falta hacer esto
     }
 
     else if (strcmp(instruccion->nombre, "I/O") == 0) {
@@ -99,17 +105,18 @@ void ejecutar_IO(char* dispositivo, char* parametro, t_pcb* pcb) {
 }
 
 // MOV_IN (Registro, Dirección Lógica): Lee el valor de memoria del segmento de Datos correspondiente a la Dirección Lógica y lo almacena en el Registro.
-void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
+void ejecutar_MOV_IN(char* registro, t_direccion_logica* direccion_logica) {
     int valor = leer_de_memoria(direccion_logica);
     int indice = indice_registro(registro);
     registros[indice] = valor;
     log_info(logger, "Se guarda el valor %d en el registro %s \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
 }
 
+//[N° Segmento | N° Página | desplazamiento página ]
 // MOV_OUT (Dirección Lógica, Registro): Lee el valor del Registro y lo escribe en la dirección física de memoria del segmento de Datos obtenida a partir
 // de la Dirección Lógica.
-void ejecutar_MOV_OUT(char* direccion_logica, char* registro, t_pcb* pcb, char* dispositivo, char* parametro) {
-    /*char* direccion_fisica=traducir_direccion_logica(direccion_logica);
+void ejecutar_MOV_OUT(t_direccion_logica* direccion_logica, char* registro, t_pcb* pcb, char* dispositivo, char* parametro) {
+    char* direccion_fisica/*=traducir_direccion_logica(direccion_logica)*/;
     int indice = indice_registro(registro);
     int valor=registros[indice];
     escribir_en_memoria(direccion_fisica,valor);
@@ -125,7 +132,7 @@ void ejecutar_MOV_OUT(char* direccion_logica, char* registro, t_pcb* pcb, char* 
     agregar_a_paquete(paquete, &largo_parametro, sizeof(int));
     agregar_a_paquete(paquete, parametro, largo_parametro);
     enviar_paquete(paquete, cliente_servidor_dispatch);  // dispatch
-    eliminar_paquete(paquete);*/
+    eliminar_paquete(paquete);
 }
 // EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.
 void ejecutar_EXIT(t_pcb* pcb) {

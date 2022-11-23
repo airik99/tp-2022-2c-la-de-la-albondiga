@@ -16,6 +16,12 @@ typedef struct config_cpu {
 	char* puerto_escucha_interrupt;
 } config_cpu;
 
+typedef struct{
+	uint32_t nro_segmento;
+	uint32_t nro_pagina;
+    uint32_t desplazamiento;
+} t_direccion_logica;
+
 
 extern config_cpu config_valores;
 extern t_config* config;

@@ -59,19 +59,24 @@ void cargar_configuracion() {
 }
 
 int escuchar_clientes(){
+	t_paquete* paquete = malloc(sizeof(t_paquete));
+	int cod_op;
 		while(1){
-			int cod_op = recibir_operacion(socket_servidor);
+			cod_op = recibir_operacion(socket_servidor);
 			switch (cod_op) {
-			case MENSAJE:
-				recibir_mensaje(socket_servidor);
-				log_info(logger, "Me llego este mensaje\n");
+			case HANDSHAKE:
+				log_info(logger, "Recibi un handshake");
 				break;
-			/*case PAQUETE:
+			case PAGE_FAULT_REQUEST:
+				log_info(logger, "Recibi un page fault");
 				paquete = recibir_paquete(socket_servidor);
-				log_info(logger, "Me llegaron los siguientes valores:\n");
-				list_iterate(paquete, (void*) iterator);
-				//atender_paquete(paquete);
-				break;*/
+				//TODO manejar la page fault de planificacion de kernel
+				break;
+			case ESCRITURA_MEMORIA:
+				log_info(logger, "Recibi una escritura");
+				paquete = recibir_paquete(socket_servidor); //Me llega direccion desde cpu
+				//TODO Guardar en memoria la direccion
+				break;
 			case -1:
 				log_error(logger, "El cliente se desconecto. Terminando servidor");
 				return EXIT_FAILURE;
