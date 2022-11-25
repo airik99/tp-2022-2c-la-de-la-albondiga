@@ -18,7 +18,11 @@ typedef enum
 	IO_PANTALLA,
 	PAQUETE,
 	PAGE_FAULT_REQUEST,
+	LECTURA_MEMORIA,
 	ESCRITURA_MEMORIA,
+	ACCESO_TABLA_PAGINAS,
+	ACCESO_ESPACIO_USUARIO,
+	INICIAR_PROCESO
 } op_code;
 
 typedef struct{
@@ -145,6 +149,8 @@ int recibir_operacion(int socket_cliente);
 void *recibir_buffer(int *size, int socket_cliente);
 
 t_proceso* recibir_proceso(int socket_cliente);
+
+t_list* recibir_segmentos(int socket_cliente);//TODO recibe la lista de segmentos del proceso
 
 int enviar_datos(int socket_fd, void *source, uint32_t size);
 

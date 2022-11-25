@@ -15,12 +15,6 @@
 #include <string.h>
 #include <unistd.h>
 
-typedef struct{
-	uint32_t nro_segmento;
-	uint32_t nro_pagina;
-    uint32_t desplazamiento;
-} t_direccion_logica;
-
 typedef struct
 {
     int largo_nombre;

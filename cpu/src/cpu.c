@@ -5,15 +5,13 @@ int main(int argc, char** argv) {
     cargar_configuracion();
 
     // CONEXION CON MEMORIA
-    // log_info(logger, "Cpu iniciado. Intentando conectarse con la memoria \n");
+    log_info(logger, "Cpu iniciado. Intentando conectarse con la memoria \n");
 
-    // conexion_memoria = conectarse_a_servidor(ip, config_valores.puerto_memoria);
-    // error_conexion(conexion_memoria);
-
+    conexion_memoria = conectarse_a_servidor(config_valores.ip_memoria, config_valores.puerto_memoria);
+    error_conexion(conexion_memoria);
     // pthread_create(&conexion_memoria_i, NULL, conexion_inicial_memoria, NULL);
-    // log_info(logger, "Conexion con memoria exitosa \n");
-
-    // log_info(logger, "Hilo de conexion con memoria creado \n");
+    log_info(logger, "Conexion con memoria exitosa \n");
+    log_info(logger, "Hilo de conexion con memoria creado \n");
 
     log_info(logger, "Iniciando conexion con kernel por interrupt\n");
     socket_servidor_interrupt = iniciar_servidor(config_valores.puerto_escucha_interrupt);

@@ -15,11 +15,10 @@ int main(int argc, char **argv) {
     }
     log_info(logger, "Kernel listo para recibir consolas");
 
-    /*
     // CONEXION CON MEMORIA
     log_info(logger, "Kernel iniciado. Intentando conectarse con la memoria");
 
-    conexion_memoria = conectarse_a_servidor(ip, config_valores.puerto_memoria);
+    conexion_memoria = conectarse_a_servidor(config_valores.ip_memoria, config_valores.puerto_memoria);
 
     if (conexion_memoria == -1) {
         log_error(logger, "Error en la conexion al servidor. Terminando kernel");
@@ -27,7 +26,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    log_info(logger, "Conexion con memoria exitosa");*/
+    log_info(logger, "Conexion con memoria exitosa");
 
     // CONEXION CON CPU
     conexion_cpu_interrupt = conectarse_a_servidor(config_valores.ip_cpu, config_valores.puerto_cpu_interrupt);
