@@ -16,6 +16,7 @@ typedef struct config_memoria {
 	int marcos_por_proceso;
 	int retardo_swap;
 	char* path_swap;
+	int tam_swap;
 } config_memoria;
 
 void cargar_configuracion();

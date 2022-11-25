@@ -14,6 +14,8 @@ int main(int argc, char** argv) {
     // log_info(logger, "Conexion con memoria exitosa \n");
 
     // log_info(logger, "Hilo de conexion con memoria creado \n");
+    pedir_configuracion_a_memoria(TAM_PAGINA);
+	pedir_configuracion_a_memoria(ENTRADAS_POR_TABLA);
 
     log_info(logger, "Iniciando conexion con kernel por interrupt\n");
     socket_servidor_interrupt = iniciar_servidor(config_valores.puerto_escucha_interrupt);
@@ -28,6 +30,7 @@ int main(int argc, char** argv) {
     log_info(logger, "Conexión con Kernel en puerto Dispatch establecida.");
 
     // error_conexion(socket_servidor_dispatch);
+    
 
     pthread_create(&hilo_interrupt, NULL, (void*)esperar_kernel_interrupt, NULL);
     pthread_create(&hilo_dispatch, NULL, (void*)esperar_kernel_dispatch, NULL);
@@ -43,7 +46,12 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
-void esperar_kernel_dispatch() {
+int pedir_configuracion_a_memoria(int cod_op) {
+	t_paquete* paquete = crear_paquete(cod_op);
+	enviar_paquete(paquete, conexion_memoria);
+}
+
+void esperar_kernel_dispatch() { //OJO QUE ESTO ES DE KERNEL, NO DE MEMORIA
     t_pcb* pcb_recibido;
     while (1) {
         op_code operacion = recibir_operacion(cliente_servidor_dispatch);
@@ -54,9 +62,29 @@ void esperar_kernel_dispatch() {
                 ciclo_de_instruccion(pcb_recibido);  // INICIA EL CICLO DE INSTRUCCION
                 eliminar_pcb(pcb_recibido);
                 break;
+            default:
+                log_error(logger, "Fallo la comunicacion con kernel. Abortando");
+                finalizar();
+                break;
+        }
+    }
+}
+
+void recibir_de_memoria() { 
+    while (1) {
+        op_code operacion = recibir_operacion(conexion_memoria);
+        switch (operacion) {
             case HANDSHAKE:
                 log_info(logger, "Se recibio la configuracion por handshake");
                 t_handshake* configuracion_tabla = recibir_handshake(conexion_memoria);
+                break;
+            case TAM_PAGINA:
+                log_info(logger, "Se recibe el tamaño de paginas");
+                tam_pagina = recibir_numero(conexion_memoria);
+                break;
+            case ENTRADAS_POR_TABLA:
+                log_info(logger, "Se recibe la cantidad de entradas por tabla");
+                cant_entradas_por_tabla = recibir_numero(conexion_memoria);
                 break;
             default:
                 log_error(logger, "Fallo la comunicacion con kernel. Abortando");
@@ -84,7 +112,7 @@ void error_conexion(int socket) {
     }
 }
 
-int leer_de_memoria(t_direccion_logica* direccion_logica) {
+int leer_de_memoria(uint32_t direccion_logica) {
     // TODO
     return 0;
 }

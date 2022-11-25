@@ -15,12 +15,6 @@
 #include <string.h>
 #include <unistd.h>
 
-typedef struct{
-	uint32_t nro_segmento;
-	uint32_t nro_pagina;
-    uint32_t desplazamiento;
-} t_direccion_logica;
-
 typedef struct
 {
     int largo_nombre;
@@ -59,7 +53,7 @@ typedef struct
     int registro[4];
     t_estado estado_actual;
     t_estado estado_anterior;
-    // tabla_de_segmentos
+    // puntero a segmento que contiene una tabla de paginas
 } t_pcb;
 
 typedef struct {

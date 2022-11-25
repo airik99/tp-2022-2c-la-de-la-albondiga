@@ -166,6 +166,24 @@ t_proceso *recibir_proceso(int socket_cliente) {
     return proceso_consola;
 }
 
+int recibir_numero (int socket_cliente) { //TODO ver si funciona esto
+    int size;
+    int desplazamiento = 0;
+    void *buffer;
+
+    int numero = malloc(sizeof(int));
+    buffer = recibir_buffer(&size, socket_cliente);
+
+    while (desplazamiento < size) {
+        int valor;
+        memcpy(&valor, buffer + desplazamiento, sizeof(int));
+        desplazamiento += sizeof(int);
+    }
+
+    free(buffer);
+    return numero;
+}
+
 void serializar_pcb(t_paquete *paquete, t_pcb *pcb) {
     agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
     serializar_instrucciones(paquete, pcb->instrucciones);

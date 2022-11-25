@@ -19,6 +19,8 @@ typedef enum
 	PAQUETE,
 	PAGE_FAULT_REQUEST,
 	ESCRITURA_MEMORIA,
+	TAM_PAGINA,
+	ENTRADAS_POR_TABLA
 } op_code;
 
 typedef struct{

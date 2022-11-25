@@ -16,13 +16,6 @@ typedef struct config_cpu {
 	char* puerto_escucha_interrupt;
 } config_cpu;
 
-typedef struct{
-	uint32_t nro_segmento;
-	uint32_t nro_pagina;
-    uint32_t desplazamiento;
-} t_direccion_logica;
-
-
 extern config_cpu config_valores;
 extern t_config* config;
 extern t_log* logger;
@@ -32,6 +25,7 @@ extern pthread_t conexion_memoria_i, hilo_dispatch, hilo_interrupt, pedidofin;
 extern int ultimo_pid;
 extern int registros[4];
 extern int flag_salida, interrupcion;
+extern int tam_pagina, cant_entradas_por_tabla;
 
 void cargar_configuracion(); //carga todo lo del archivo de configuracion del cpu
 
