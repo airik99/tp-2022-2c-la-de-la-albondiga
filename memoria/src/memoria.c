@@ -23,7 +23,7 @@ int main(int argc, char ** argv){
 
 	//Si no funca el ftruncate, usar el truncate normal
 	ftruncate(fileno(fp), config_valores.tam_swap);
-	lista_tablas = list_create();
+	//lista_tablas = list_create(); //TODO Falta el tipo de dato de lista_tablas
 	
 	int socket_servidor = iniciar_servidor(config_valores.puerto);
 
@@ -92,38 +92,35 @@ int escuchar_clientes(int socket){
 			case INICIAR_PROCESO:
 				log_info(logger, "Recibi solicitud de iniciar proceso");
 				lista = recibir_segmentos(socket);
-				iniciar_tabla(lista);
-				//TODO manejar la page fault de planificacion de kernel
+				iniciar_estructuras(lista);
 				break;
 			case PAGE_FAULT_REQUEST:
 				log_info(logger, "Recibi un page fault");
+				//TODO Deberia recibir un pcb o un numero de pagina?
 				paquete = recibir_pcb(socket);
+				obtener_pagina(paquete);
 				//TODO manejar la page fault de planificacion de kernel
-				break;
-			case ESCRITURA_MEMORIA:
-				log_info(logger, "Recibi una escritura");
-				paquete = recibir_pcb(socket); //Me llega direccion desde cpu
-				//TODO Guardar en memoria la direccion
-				break;
-			case LECTURA_MEMORIA:
-				log_info(logger, "Recibi una lectura");
-				paquete = recibir_pcb(socket);
-				//TODO
 				break;
 			case ACCESO_TABLA_PAGINAS:
 				log_info(logger, "Recibi un acceso a tabla de paginas");
-				paquete = recibir_pcb(socket);
-				//TODO
+				paquete = recibir_pcb(socket); //En paquete creo que recibo tablo y entrada
+				devolver_marco(paquete);
 				break;
 			case ACCESO_ESPACIO_USUARIO:
 				log_info(logger, "Recibi un acceso a espacio de usuario");
 				paquete = recibir_pcb(socket);
-				//TODO
+				// if(lectura){
+				// 	devolver_valor(paquete);
+				// }
+				// if(escritura){
+				// 	guardar_valor(paquete);
+				// 	responder_ok(socket);
+				// }
 				break;
 			case EXIT:
 				log_info(logger, "Salgo del programa");
 				paquete = recibir_pcb(socket);
-				//TODO
+				finalizar_proceso(paquete);
 				break;
 			case -1:
 				log_error(logger, "El cliente se desconecto. Terminando servidor");
@@ -159,7 +156,7 @@ void recibir_mensaje(int socket_cliente) {
 	free(buffer);
 }
 
-void iniciar_tabla(t_list* segmentos){
+void iniciar_estructuras(t_list* segmentos){
 	/*t_list* direcciones = list_create();
 	for(int i = 0, i < list_size(segmentos), i++){
 		int tamanio_segmento = list_get(segmentos, i);
@@ -171,6 +168,45 @@ void iniciar_tabla(t_list* segmentos){
 		entrada->posicion_swap = cargar_en_swap(tamanio_segmento); 
 		list_add(lista)
 	}*/
+}
+
+void finalizar_proceso(t_pcb* pcb){
+	//TODO Liberar espacio en memoria y el espacio en swap
+}
+
+void obtener_pagina(t_pcb* pcb){
+	//TODO Buscar la pagina en el SWAP y escribirla en memoria
+	bool memoria_llena = true;
+	if(memoria_llena){
+		int pagina_victima = algoritmo_reemplazo();
+		//if(pagina_victima_fue_modificada){
+			//TODO Guardar en swap la pagina victima
+		// }
+		usleep(config_valores.retardo_memoria);
+		//TODO Eliminar de memoria la pagina victima y poner la pagina nueva
+	}
+}
+
+int algoritmo_reemplazo(){
+	//TODO
+	return 0;
+}
+
+void devolver_marco(t_paquete* paquete){
+	usleep(config_valores.retardo_memoria);
+	uint32_t tabla = list_get(paquete, 0);
+	uint32_t entrada = list_get(paquete, 1);
+	//TODO
+}
+
+void devolver_valor(t_paquete* paquete){
+	usleep(config_valores.retardo_memoria);
+	//TODO
+}
+
+void guardar_valor(t_paquete* paquete){
+	usleep(config_valores.retardo_memoria);
+	//TODO
 }
 
 //TODO
