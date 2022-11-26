@@ -41,6 +41,7 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         log_info(logger, "PID: <%d> - Ejecutando: <MOV_IN> - <PENDIENTE> - <PENDIENTE>", pcb->pid);
         uint32_t direccion_logica = list_get(instruccion->params, 1);
         char* registro = list_get(instruccion->params, 0);
+        id_pcb_actual = pcb->pid;
         ejecutar_MOV_IN(registro, direccion_logica); 
     }
 
@@ -48,7 +49,7 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         log_info(logger, "PID: <%d> - Ejecutando: <MOV_OUT> - <PENDIENTE> - <PENDIENTE>", pcb->pid);
         uint32_t direccion_logica = list_get(instruccion->params, 0);
         char* registro = list_get(instruccion->params, 1);
-        
+        id_pcb_actual = pcb->pid;
         ejecutar_MOV_OUT(direccion_logica, registro);
     }
 
@@ -105,7 +106,8 @@ void ejecutar_IO(char* dispositivo, char* parametro, t_pcb* pcb) {
 
 // MOV_IN (Registro, Dirección Lógica): Lee el valor de memoria del segmento de Datos correspondiente a la Dirección Lógica y lo almacena en el Registro.
 void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
-    uint32_t valor = traer_de_memoria(direccion_logica);
+    uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica, id_pcb_actual);
+    uint32_t valor /*= traer_de_memoria(direccion_logica)*/;
     int indice = indice_registro(registro);
     registros[indice] = valor;
     log_info(logger, "Se guarda el valor %d en el registro %s \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
@@ -115,7 +117,7 @@ void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
 // MOV_OUT (Dirección Lógica, Registro): Lee el valor del Registro y lo escribe en la dirección física de memoria del segmento de Datos obtenida a partir
 // de la Dirección Lógica.
 void ejecutar_MOV_OUT(uint32_t direccion_logica, char* registro) {
-    uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica);
+    uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica, id_pcb_actual);
     int indice = indice_registro(registro);
     int valor = registros[indice];
     escribir_en_memoria(direccion_fisica,valor);
