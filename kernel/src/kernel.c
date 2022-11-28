@@ -84,6 +84,9 @@ void escuchar_consola(int socket_cliente) {
             list_destroy(proceso->espacios_memoria);
             free(proceso);
             break;
+        case SEGMENTATION_FAULT:
+            log_info(logger, "Segmentation fault");
+            break;
         default:
             respuesta = 1;
             send(socket_cliente, &respuesta, sizeof(uint32_t), 0);

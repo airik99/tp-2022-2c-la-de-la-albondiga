@@ -9,7 +9,8 @@ pthread_t conexion_memoria_i, hilo_dispatch, hilo_interrupt, pedidofin;
 int ultimo_pid = 0;
 int registros[] = {0, 0, 0, 0};
 int flag_salida, interrupcion;
-int id_pcb_actual;
+t_pcb* pcb_actual;
+time_t tiempo;
 
 void cargar_configuracion() {
     config = config_create("cfg/Cpu.config");
@@ -44,8 +45,8 @@ void finalizar(){
     pthread_cancel(hilo_interrupt);
 }
 
-////////////////////////////////////////// MMU
-uint32_t traducir_direccion_logica(uint32_t direccion_logica){
+/////////////////////////////////////////////////////////////////  MMU /////////////////////////////////////////////////////////////////  
+uint32_t traducir_direccion_logica(uint32_t direccion_logica) {
     
 	uint32_t tam_max_segmento = cant_entradas_por_tabla * tam_pagina;
 	uint32_t num_segmento = floor(direccion_logica /  tam_max_segmento);
@@ -59,38 +60,62 @@ uint32_t traducir_direccion_logica(uint32_t direccion_logica){
 
 	uint32_t marco;
 	uint32_t direccion_fisica;
-
-	if(esta_en_tlb(num_pagina)) {
-		marco = buscar_en_tlb(num_pagina);
+	
+	if(desplazamiento_segmento > tam_max_segmento) {
+		log_error(logger, "Segmentation Fault (SIGSEGV): El desplazamiento del segmento es mayor al tamaño maximo del segmento \n");
+		t_paquete* paquete = crear_paquete(SEGMENTATION_FAULT);
+		agregar_a_paquete(paquete, pcb_actual, sizeof(t_pcb));
+		enviar_paquete(paquete, socket_servidor_dispatch);
+		//TODO: aca tenemos que enviar el contexto de ejecucion para que el kernel lo finalice, revisar si se envia así el pcb
+		return -1;
+	} else {
+		if(esta_en_tlb(num_pagina, num_segmento)) { //si la pagina está en la tlb
+		marco = buscar_en_tlb(num_pagina, num_segmento);
 		direccion_fisica = marco * tam_pagina + desplazamiento_pagina;
 		
-	} else {
-		if(es_direccion_fisica_valida(num_pagina, desplazamiento_pagina)) {
+		} else { //si la pagina no está en la tlb, tlb miss
+			if(es_direccion_fisica_valida(num_pagina, desplazamiento_pagina)) { //TODO: nos quedamos por aca
+				chequear_si_direccion_esta_en_memoria_y_sino_cargarla(num_pagina, desplazamiento_pagina);
+			
+				marco = obtener_marco(direccion_fisica);
 
-			marco = obtener_marco();
-
-			if(1/*hubo reemplazo en memoria*/) {
-				//se quita la misma pagina en tlb que la que se saco de memoria.
-				//como la pagina victima se saco de la memoria, se actualiza la cola del algoritmo de tlb para dejar los datos consistentes
-			}
-
-			if(tlb_llena()) {
-				//segun el algoritmo (de tlb) se agarra la pagina victima
-				//se quita la entrada de la pagina victima
-			} else {
-				if(1 /*no hubo reemplazo en memoria*/) {
-					// se actualiza la cola del algoritmo cuando la tlb no está llena
+				t_traduccion* traduccion = malloc(sizeof(t_traduccion));
+				traduccion->pagina = num_pagina;
+				traduccion->marco = marco;
+				traduccion->segmento = num_segmento;
+				traduccion->pid = pcb_actual->pid;
+			
+				if(tlb_llena()) {
+					agregar_a_tlb(traduccion);
+				} else {
+					agregar_a_tlb(traduccion);
 				}
-
-				// guarda pagina y marco en tlb. Se agrega entrada a tlb
-				 
 			}
-
 		}
-	}
-
 	return direccion_fisica;
+	}
+}
 
+void chequear_si_direccion_esta_en_memoria_y_sino_cargarla(uint32_t num_pagina,uint32_t desplazamiento_pagina){
+	if(!esta_en_memoria(num_pagina)){
+		cargar_pagina_en_memoria(num_pagina);
+		log_info(logger, "Se cargo en memoria la pagina %d ya que no estaba\n", num_pagina);
+	}
+}
+
+bool esta_en_memoria(uint32_t num_pagina){
+	//verificar si la pagina esta en memoria
+	return true;
+}
+
+void cargar_pagina_en_memoria(uint32_t num_pagina){
+	//cargar la pagina en memoria
+}
+
+//obtenemos el marco de la pagina cargada que ya esta en la RAM
+uint32_t obtener_marco(uint32_t direccion_fisica) {
+	//accede a memoria y devuelve el marco
+	return 1;
 }
 
 bool es_direccion_fisica_valida(uint32_t num_pagina, uint32_t desplazamiento_pagina) {
@@ -98,21 +123,24 @@ bool es_direccion_fisica_valida(uint32_t num_pagina, uint32_t desplazamiento_pag
 	//aca tenemos que usar id_pcb_actual de alguna forma
 }
 
-uint32_t obtener_marco() {
+/////////////////////////////////////////////////////////////////  TLB  ///////////////////////////////////////////////////////////////// 
+//[ pid | segmento | página | marco ]
 
+void agregar_a_tlb(t_traduccion* traduccion) {
+	int i = 0;
+	t_traduccion* aux = malloc(sizeof(t_traduccion));
+	while(list_size(tlb->traducciones) > i) { //corre todos los elementos de la lista una posicion a la derecha y agrega el mas nuevo adelante (posicion 0)
+		aux = list_replace(tlb->traducciones, i, traduccion);
+		traduccion = aux;
+		i++;
+	} 
+	free(aux);
+	free(traduccion);
 }
-//    config_valores.entradas_tlb 
-
-
-//////////////////////////////////////// TLB [ pid | segmento | página | marco ]
-// Solamente se permiten agregar campos que faciliten la implementación de los algoritmos de reemplazo como "instante de carga" o "instante de última referencia".
-//algoritmos: FIFO o LRU
 
 void inicializar_tlb() {
 	tlb = malloc(sizeof(t_tlb*));
 	tlb->traducciones = list_create();
-	tlb->algoritmo = string_new();
-	tlb->algoritmo = config_valores.reemplazo_tlb;
 }
 
 bool tlb_llena() {
@@ -120,57 +148,59 @@ bool tlb_llena() {
 }
 
 //busca una pagina en la tlb y devuelve el marco
-uint32_t obtener_marco_tlb(uint32_t num_pagina) {
+/*uint32_t obtener_marco_tlb(uint32_t num_pagina, u_int32_t num_segmento) {
 	t_traduccion* tradu = malloc(sizeof(t_traduccion*));
 	
 	bool _buscar_pagina(t_traduccion* traduccion) {
-		return traduccion->num_pagina == num_pagina;
+		return traduccion->num_pagina == num_pagina && traduccion->num_segmento == num_segmento;
 	}
 
 	tradu = list_find(tlb->traducciones, (void*)_buscar_pagina);
 	return tradu->marco;
-}
+}*/
 
 //TLB HIT: se encuentra la pagina en la tlb
-uint32_t buscar_en_tlb(uint32_t num_pagina) {
-	log_info(logger, "La pagina %d se encontró en la TLB! \n", num_pagina);
-	uint32_t marco = obtener_marco_tlb(num_pagina);
-	actualizar_ultima_pagina_referenciada(num_pagina);
-	return marco;
+uint32_t buscar_en_tlb(uint32_t num_pagina, uint32_t  num_segmento) {
+	log_info(logger, "La pagina %d del segmento %d se encontró en la TLB! \n", num_pagina, num_segmento);
+	t_traduccion* traduccion = malloc(sizeof(t_traduccion*));
+	
+	bool buscar_traduccion_en_tlb(t_traduccion* trad) {
+		if(trad->pagina == num_pagina && trad->segmento == num_segmento) {
+			return trad;
+		}
+	}
+	traduccion = list_find(tlb->traducciones, (void*) buscar_traduccion_en_tlb);
+	actualizar_ultima_referencia(traduccion);
+	return traduccion->marco;
 }
 
-
-bool esta_en_tlb(uint32_t num_pagina) {
+bool esta_en_tlb(uint32_t num_pagina, uint32_t num_segmento) {
 	bool buscar_traduccion_en_tlb(t_traduccion* traduccion) {
-		return traduccion->pagina == num_pagina;
+		return traduccion->pagina == num_pagina && traduccion->segmento == num_segmento;
 	}
 	return list_find(tlb->traducciones, (void*) buscar_traduccion_en_tlb) != NULL;
 }
-
-//TLB MISS: No se encuentra la traducción en la TLB, se debe buscar en la tabla de páginas
-
 
 bool es_algoritmo(char* algoritmo) {
 	return strcmp(config_valores.reemplazo_tlb, algoritmo) == 0;
 }
 
+//TODO: ASUMIMOS QUE LA TLB ES POR PROCESOS PERO NO ESTAMOS SEGUROS, SI LA TLB ES GLOBAL, ESTA FUNCION HAY QUE CAMBIARLA (CREO)
 //solo se hace en LRU porque en este algoritmo sí importa el momento en el que referenciamos la pagina, en FIFO no importa porque siempre saca la primera que entra
-void actualizar_ultima_pagina_referenciada(uint32_t num_pagina) {
+void actualizar_ultima_referencia(t_traduccion* traduccion) {
 	if(es_algoritmo("LRU")) {
-		bool es_pagina_ultimamente_referenciada(uint32_t pagina) { 
-			return pagina == num_pagina;
-		}
-		
-		list_remove_by_condition(cola_lru, (void *) es_pagina_ultimamente_referenciada);
-		list_add_in_index(cola_lru, 0, (void*) num_pagina);
+		t_traduccion* actualizar_instante_de_carga(t_traduccion* trad) {
+			if(es_la_traduccion_que_busco(trad, traduccion)) {
+				trad->instante_de_carga = 0;
+			}
+			trad->instante_de_carga++;
+			return trad;
+		}	
+
+		tlb->traducciones = list_map(tlb->traducciones, actualizar_instante_de_carga);
 	}
 }
 
-void inicializar_colas_de_algoritmos_tlb() {
-	if(es_algoritmo("FIFO")) {
-		cola_fifo = queue_create();
-	}
-	if(es_algoritmo("LRU")) {
-		cola_lru = list_create();
-	}
+bool es_la_traduccion_que_busco(t_traduccion* traduccion, t_traduccion* traduccion_a_buscar) {
+	return traduccion->pagina == traduccion_a_buscar->pagina && traduccion->segmento == traduccion_a_buscar->segmento && traduccion->pid == traduccion_a_buscar->pid && traduccion->marco == traduccion_a_buscar->marco;
 }

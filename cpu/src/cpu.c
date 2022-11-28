@@ -1,8 +1,10 @@
 #include "cpu.h"
 
 int main(int argc, char** argv) {
+    //tiempo = time(NULL);
     logger = log_create("cfg/cpu.log", "CPU", true, LOG_LEVEL_INFO);
     cargar_configuracion();
+    t_pcb* pcb_actual = malloc(sizeof(t_pcb)); //TODO: ver si esto esta bien
 
     // CONEXION CON MEMORIA
     // log_info(logger, "Cpu iniciado. Intentando conectarse con la memoria \n");

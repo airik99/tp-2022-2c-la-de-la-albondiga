@@ -53,8 +53,24 @@ typedef struct
     int registro[4];
     t_estado estado_actual;
     t_estado estado_anterior;
-    // puntero a segmento que contiene una tabla de paginas
+    t_segmento* tabla_segmentos;
 } t_pcb;
+
+typedef struct {
+    u_int32_t nro_segmento;
+    u_int32_t tamanio_segmento;
+    u_int32_t indice_tabla_paginas;
+} t_segmento;
+
+typedef struct {
+    u_int32_t indice_tabla_paginas;
+    u_int32_t nro_pagina;
+    u_int32_t presencia;
+    u_int32_t modificado;
+    u_int32_t uso;
+    u_int32_t marco;
+    u_int32_t posicion_en_swap;
+} t_tabla_paginas;
 
 typedef struct {
     char* dispositivo;
