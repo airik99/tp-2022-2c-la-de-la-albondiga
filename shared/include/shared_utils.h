@@ -57,6 +57,11 @@ typedef struct
 } t_pcb;
 
 typedef struct {
+    u_int32_t num_segmento;
+    u_int32_t num_pagina;
+} t_generaron_page_fault;
+
+typedef struct {
     u_int32_t nro_segmento;
     u_int32_t tamanio_segmento;
     u_int32_t indice_tabla_paginas;

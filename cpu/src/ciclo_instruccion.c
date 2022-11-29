@@ -107,21 +107,41 @@ void ejecutar_IO(char* dispositivo, char* parametro, t_pcb* pcb) {
 // MOV_IN (Registro, Dirección Lógica): Lee el valor de memoria del segmento de Datos correspondiente a la Dirección Lógica y lo almacena en el Registro.
 void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
     uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica);
-    uint32_t valor /*= traer_de_memoria(direccion_logica)*/;
+    uint32_t valor = leer_de_memoria(direccion_fisica);
     int indice = indice_registro(registro);
     registros[indice] = valor;
     log_info(logger, "Se guarda el valor %d en el registro %s \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
 }
 
-//[N° Segmento | N° Página | desplazamiento página ]
+uint32_t leer_de_memoria(uint32_t direccion_fisica) {
+    t_paquete* paquete = crear_paquete(LEER_DE_MEMORIA); //TODO: aca hay que acordarnos de evaluar este cod_op en memoria
+    agregar_a_paquete(paquete, &direccion_fisica, sizeof(uint32_t));
+    enviar_paquete(paquete, conexion_memoria);
+    eliminar_paquete(paquete);
+
+    t_paquete* paquete_recibido = recibir_paquete(conexion_memoria);
+    uint32_t valor; //= aca tenemos que recibir el valor de memoria
+    eliminar_paquete(paquete_recibido);
+    return valor;
+}
+
 // MOV_OUT (Dirección Lógica, Registro): Lee el valor del Registro y lo escribe en la dirección física de memoria del segmento de Datos obtenida a partir
 // de la Dirección Lógica.
 void ejecutar_MOV_OUT(uint32_t direccion_logica, char* registro) {
     uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica);
     int indice = indice_registro(registro);
-    int valor = registros[indice];
-    escribir_en_memoria(direccion_fisica,valor);
+    uint32_t valor = registros[indice];
+    escribir_en_memoria(direccion_fisica, valor);
 }
+
+void escribir_en_memoria(uint32_t direccion_fisica, uint32_t valor) {
+    t_paquete* paquete = crear_paquete(ESCRIBIR_EN_MEMORIA); //TODO: aca hay que acordarnos de evaluar este cod_op en memoria
+    agregar_a_paquete(paquete, &direccion_fisica, sizeof(uint32_t));
+    agregar_a_paquete(paquete, &valor, sizeof(uint32_t));
+    enviar_paquete(paquete, conexion_memoria);
+    eliminar_paquete(paquete);
+}
+
 // EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.
 void ejecutar_EXIT(t_pcb* pcb) {
     // SOLICITUD MEMORIA

@@ -61,6 +61,11 @@ void esperar_kernel_dispatch() { //OJO QUE ESTO ES DE KERNEL, NO DE MEMORIA
             case PCB:
                 pcb_recibido = recibir_pcb(cliente_servidor_dispatch);
                 copiar_valores_registros((pcb_recibido->registro), registros);
+                
+                if(pcb_actual->pid != pcb_recibido->pid && list_size(tlb->traducciones) != 0){
+        		    vaciar_tlb();
+        		    log_info(logger,"Se vacio TLB\n");
+        	    }
                 ciclo_de_instruccion(pcb_recibido);  // INICIA EL CICLO DE INSTRUCCION
                 eliminar_pcb(pcb_recibido);
                 break;
