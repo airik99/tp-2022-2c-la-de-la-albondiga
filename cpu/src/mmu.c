@@ -28,7 +28,7 @@ uint32_t traducir_direccion_logica(uint32_t direccion_logica) {
 				generaron_page_fault->num_pagina = num_pagina;
 				generaron_page_fault->num_segmento = num_segmento;
 				t_paquete* paquete = crear_paquete(PAGE_FAULT); //TODO: aca hay que acordarnos de evaluar este cod_op en el kernel
-				agregar_a_paquete(paquete, pcb_actual, sizeof(t_pcb));
+				agregar_a_paquete(paquete, pcb_actual, sizeof(t_pcb)); //serializar pcb
 				agregar_a_paquete(paquete, generaron_page_fault, sizeof(t_generaron_page_fault));
 				enviar_paquete(paquete, socket_servidor_dispatch);
 				free(generaron_page_fault);
@@ -59,6 +59,7 @@ int esta_en_memoria(uint32_t num_pagina, uint32_t num_segmento){
 	agregar_a_paquete(paquete, num_pagina, sizeof(uint32_t));
 	agregar_a_paquete(paquete, num_segmento, sizeof(uint32_t));
 	enviar_paquete(paquete, socket_servidor_dispatch);
+	//aca seria el recv
 	return recibir_respuesta(socket_servidor_dispatch); //esto nos deberia devolver un cod_op (que puede ser: ESTA_EN_MEMORIA ó PAGE_FAULT)
 }
 
@@ -69,8 +70,8 @@ bool es_direccion_fisica_valida(uint32_t desplazamiento_segmento, uint32_t tam_m
 		agregar_a_paquete(paquete, pcb_actual, sizeof(t_pcb));
 		enviar_paquete(paquete, socket_servidor_dispatch);
 		//TODO: aca tenemos que enviar el contexto de ejecucion para que el kernel lo finalice, revisar si se envia así el pcb
-		return true;
-	} else {
 		return false;
+	} else {
+		return true;
 	}
 }

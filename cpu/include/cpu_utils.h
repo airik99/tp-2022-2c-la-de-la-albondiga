@@ -5,7 +5,8 @@
 #include "tests.h"
 #include "conexion.h"
 #include "serializacion.h"
-#include <time.h>
+//#include <time.h>
+#include <math.h>
 
 typedef struct config_cpu {
 	int entradas_tlb;

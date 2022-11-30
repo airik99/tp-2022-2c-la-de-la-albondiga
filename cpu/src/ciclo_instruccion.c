@@ -115,15 +115,15 @@ void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
 }
 
 uint32_t leer_de_memoria(uint32_t direccion_fisica) {
+    uint32_t respuesta;
     t_paquete* paquete = crear_paquete(LEER_DE_MEMORIA); //TODO: aca hay que acordarnos de evaluar este cod_op en memoria
     agregar_a_paquete(paquete, &direccion_fisica, sizeof(uint32_t));
     enviar_paquete(paquete, conexion_memoria);
     eliminar_paquete(paquete);
-
     t_paquete* paquete_recibido = recibir_paquete(conexion_memoria);
-    uint32_t valor; //= aca tenemos que recibir el valor de memoria
+    recv(conexion_memoria, &respuesta, sizeof(uint32_t), MSG_WAITALL);
     eliminar_paquete(paquete_recibido);
-    return valor;
+    return respuesta;
 }
 
 // MOV_OUT (DL, Registro): Lee el valor del Registro y lo escribe en la dirección física de memoria del segmento de Datos obtenida a partir de la Dirección Lógica.
@@ -136,16 +136,18 @@ void ejecutar_MOV_OUT(uint32_t direccion_logica, char* registro) {
 }
 
 void escribir_en_memoria(uint32_t direccion_fisica, uint32_t valor) {
+    uint32_t respuesta;
     t_paquete* paquete = crear_paquete(ESCRIBIR_EN_MEMORIA); //TODO: aca hay que acordarnos de evaluar este cod_op en memoria
     agregar_a_paquete(paquete, &direccion_fisica, sizeof(uint32_t));
     agregar_a_paquete(paquete, &valor, sizeof(uint32_t));
     enviar_paquete(paquete, conexion_memoria);
+    recv(conexion_memoria, &respuesta, sizeof(uint32_t), MSG_WAITALL);
+    //evaluar condicion de error
     eliminar_paquete(paquete);
 }
 
 // EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.
 void ejecutar_EXIT(t_pcb* pcb) {
-    // SOLICITUD MEMORIA
     copiar_valores_registros(registros, (pcb->registro));
     enviar_pcb(pcb, PCB_EXIT, cliente_servidor_dispatch);
     flag_salida = 1;

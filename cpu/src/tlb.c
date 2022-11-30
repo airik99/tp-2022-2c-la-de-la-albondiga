@@ -1,7 +1,8 @@
 #include <cpu_utils.h>
 
 void agregar_a_tlb(t_traduccion* traduccion) {
-	int i = 0;
+	int i = 0; 
+	//hay reemplzar el instante de carga de el restop
 	t_traduccion* aux = malloc(sizeof(t_traduccion));
 	while(list_size(tlb->traducciones) > i) { //corre todos los elementos de la lista una posicion a la derecha y agrega el mas nuevo adelante (posicion 0)
 		aux = list_replace(tlb->traducciones, i, traduccion);
