@@ -1,9 +1,9 @@
-#ifndef CPU_H
-#define CPU_H
+#ifndef CICLO_INSTRUCCION_H
+#define CICLO_INSTRUCCION_H
 
 #include "cpu_utils.h"
 
-void ciclo_de_instruccion(t_pcb* pcb);  // ciclo de instruccion completo, hace el fetch, decode, execute
+void ciclo_de_instruccion(t_pcb*);  // ciclo de instruccion completo, hace el fetch, decode, execute
 
 int check_interrupt();  // chequea que el proceso no esté bloqueado para seguir o no, devuelve 1 si para y devuelve 0 si sigue
 
