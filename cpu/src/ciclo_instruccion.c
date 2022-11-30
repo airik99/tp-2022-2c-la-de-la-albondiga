@@ -26,45 +26,45 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
     if (strcmp(instruccion->nombre, "SET") == 0) {
         char* registro = list_get(instruccion->params, 0);
         uint32_t valor = atoi(list_get(instruccion->params, 1));
-        log_info(logger, "PID: <%d> - Ejecutando: <SET> - <%s> - <%d>", pcb->pid, registro, valor);
+        log_info(logger, "PID: <%d> - Ejecutando: <SET> - <%s> - <%d>\n", pcb->pid, registro, valor); //log obligatorio
         ejecutar_SET(registro, valor);
     }
 
     else if (strcmp(instruccion->nombre, "ADD") == 0) {
         char* destino = list_get(instruccion->params, 0);
         char* origen = list_get(instruccion->params, 1);
-        log_info(logger, "PID: <%d> - Ejecutando: <ADD> - <%s> - <%s>", pcb->pid, destino, origen);
+        log_info(logger, "PID: <%d> - Ejecutando: <ADD> - <%s> - <%s>\n", pcb->pid, destino, origen); //log obligatorio
         ejecutar_ADD(destino, origen);
     }
 
     else if (strcmp(instruccion->nombre, "MOV_IN") == 0) {
-        log_info(logger, "PID: <%d> - Ejecutando: <MOV_IN> - <PENDIENTE> - <PENDIENTE>", pcb->pid);
         uint32_t direccion_logica = list_get(instruccion->params, 1);
         char* registro = list_get(instruccion->params, 0);
         pcb_actual = pcb;
+        log_info(logger, "PID: <%d> - Ejecutando: <MOV_IN> - <%d> - <%s>\n", pcb->pid, direccion_logica, registro); //log obligatorio
         ejecutar_MOV_IN(registro, direccion_logica); 
     }
 
     else if (strcmp(instruccion->nombre, "MOV_OUT") == 0) {
-        log_info(logger, "PID: <%d> - Ejecutando: <MOV_OUT> - <PENDIENTE> - <PENDIENTE>", pcb->pid);
         uint32_t direccion_logica = list_get(instruccion->params, 0);
         char* registro = list_get(instruccion->params, 1);
         pcb_actual = pcb;
+        log_info(logger, "PID: <%d> - Ejecutando: <MOV_OUT> - <%d> - <%s>\n", pcb->pid, direccion_logica, registro); //log obligatorio
         ejecutar_MOV_OUT(direccion_logica, registro);
     }
 
     else if (strcmp(instruccion->nombre, "I/O") == 0) {
         char* dispositivo = list_get(instruccion->params, 0);
         char* param2 = list_get(instruccion->params, 1);
-        log_info(logger, "PID: <%d> - Ejecutando: <I/O> - <%s> - <%s>", pcb->pid, dispositivo, param2);
+        log_info(logger, "PID: <%d> - Ejecutando: <I/O> - <%s> - <%s>\n", pcb->pid, dispositivo, param2); //log obligatorio
         ejecutar_IO(dispositivo, param2, pcb);
     }
 
     else if (strcmp(instruccion->nombre, "EXIT") == 0) {
-        log_info(logger, "PID: <%d> - Ejecutando: <EXIT> -", pcb->pid);
+        log_info(logger, "PID: <%d> - Ejecutando: <EXIT> -\n", pcb->pid);
         ejecutar_EXIT(pcb);
     } else {
-        log_error(logger, "PID: <%d> - INSTRUCCION NO RECONOCIDA", pcb->pid);
+        log_error(logger, "PID: <%d> - INSTRUCCION NO RECONOCIDA\n", pcb->pid);
     }
 }
 

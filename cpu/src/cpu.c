@@ -21,15 +21,15 @@ int main(int argc, char** argv) {
 
     log_info(logger, "Iniciando conexion con kernel por interrupt\n");
     socket_servidor_interrupt = iniciar_servidor(config_valores.puerto_escucha_interrupt);
-    log_info(logger, "Esperando cliente por Interrupt");
+    log_info(logger, "Esperando cliente por Interrupt\n");
     cliente_servidor_interrupt = esperar_cliente(socket_servidor_interrupt);
-    log_info(logger, "Conexión con Kernel en puerto Interrupt establecida.");
+    log_info(logger, "Conexión con Kernel en puerto Interrupt establecida.\n");
 
     log_info(logger, "Iniciando conexion con kernel por dispatch\n");
     socket_servidor_dispatch = iniciar_servidor(config_valores.puerto_escucha_dispatch);
-    log_info(logger, "Esperando cliente por dispatch");
+    log_info(logger, "Esperando cliente por dispatch\n");
     cliente_servidor_dispatch = esperar_cliente(socket_servidor_dispatch);
-    log_info(logger, "Conexión con Kernel en puerto Dispatch establecida.");
+    log_info(logger, "Conexión con Kernel en puerto Dispatch establecida.\n");
 
     // error_conexion(socket_servidor_dispatch);
     
@@ -70,7 +70,7 @@ void esperar_kernel_dispatch() { //OJO QUE ESTO ES DE KERNEL, NO DE MEMORIA
                 eliminar_pcb(pcb_recibido);
                 break;
             default:
-                log_error(logger, "Fallo la comunicacion con kernel. Abortando");
+                log_error(logger, "Fallo la comunicacion con kernel. Abortando\n");
                 finalizar();
                 break;
         }
@@ -82,19 +82,19 @@ void recibir_de_memoria() {
         op_code operacion = recibir_operacion(conexion_memoria);
         switch (operacion) {
             case HANDSHAKE:
-                log_info(logger, "Se recibio la configuracion por handshake");
+                log_info(logger, "Se recibio la configuracion por handshake\n");
                 t_handshake* configuracion_tabla = recibir_handshake(conexion_memoria);
                 break;
             case TAM_PAGINA:
-                log_info(logger, "Se recibe el tamaño de paginas");
+                log_info(logger, "Se recibe el tamaño de paginas\n");
                 tam_pagina = recibir_numero(conexion_memoria);
                 break;
             case ENTRADAS_POR_TABLA:
-                log_info(logger, "Se recibe la cantidad de entradas por tabla");
+                log_info(logger, "Se recibe la cantidad de entradas por tabla\n");
                 cant_entradas_por_tabla = recibir_numero(conexion_memoria);
                 break;
             default:
-                log_error(logger, "Fallo la comunicacion con kernel. Abortando");
+                log_error(logger, "Fallo la comunicacion con kernel. Abortando\n");
                 finalizar();
                 break;
         }
@@ -105,34 +105,18 @@ void esperar_kernel_interrupt() {
     while (1) {
         recv(cliente_servidor_interrupt, &interrupcion, sizeof(uint32_t), MSG_WAITALL);
         if (interrupcion != 1) {
-            log_error(logger, "Operacion desconocida por interrupt");
+            log_error(logger, "Operacion desconocida por interrupt\n");
             finalizar();
         }
-        log_info(logger, "Recibi interrupt");
+        log_info(logger, "Recibi interrupt\n");
     }
 }
 
 void error_conexion(int socket) {
     if (socket == -1) {
-        log_info(logger, "Error en la conexion al servidor.");
+        log_info(logger, "Error en la conexion al servidor.\n");
         exit(EXIT_FAILURE);
     }
-}
-
-int leer_de_memoria(uint32_t direccion_logica) {
-    // TODO
-    return 0;
-}
-
-char* traducir_direccion_logica(char* direccion_logica) {
-    char* direccion_fisica;
-    return direccion_fisica;
-}
-
-void escribir_en_memoria(char* direccion_fisica, int valor) {
-    // int indice = indice_registro(direccion_fisica);
-    // memoria[indice] = valor;
-    // log_info(logger, "Se guarda el valor %d en la direccion %s \n", valor, direccion_fisica);  // hay que ver si devuelve un numero o el enum en sí
 }
 
 void* conexion_inicial_memoria() {

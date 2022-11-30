@@ -18,14 +18,15 @@ uint32_t traducir_direccion_logica(uint32_t direccion_logica) {
 
 	if(esta_en_tlb(num_pagina, num_segmento)) { //si la pagina está en la tlb
 		marco = buscar_en_tlb(num_pagina, num_segmento); //tlb hit
-	} else { //si la pagina no está en la tlb, tlb miss
+	} else { 
+		log_info(logger, "PID: <%d> - TLB MISS - Segmento: <%d> - Pagina: <%d>\n", pcb_actual->pid, num_segmento, num_pagina); //log obligatorio
 		if(es_direccion_fisica_valida(desplazamiento_segmento, tam_max_segmento)) { 
 		respuesta = esta_en_memoria(num_pagina, num_segmento);
 			if(respuesta == PAGE_FAULT) { //TODO: aca hay que acordarnos de evaluar este cod_op en memoria
+				log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb_actual->pid, num_segmento, num_pagina); //log obligatorio
 				t_generaron_page_fault* generaron_page_fault = malloc(sizeof(t_generaron_page_fault));
 				generaron_page_fault->num_pagina = num_pagina;
 				generaron_page_fault->num_segmento = num_segmento;
-				
 				t_paquete* paquete = crear_paquete(PAGE_FAULT); //TODO: aca hay que acordarnos de evaluar este cod_op en el kernel
 				agregar_a_paquete(paquete, pcb_actual, sizeof(t_pcb));
 				agregar_a_paquete(paquete, generaron_page_fault, sizeof(t_generaron_page_fault));
