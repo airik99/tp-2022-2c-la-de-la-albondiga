@@ -108,6 +108,7 @@ void ejecutar_IO(char* dispositivo, char* parametro, t_pcb* pcb) {
 void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
     uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica);
     uint32_t valor = leer_de_memoria(direccion_fisica);
+    log_info(logger, "PID: <%d> - Acción: <LEER> - Segmento: <FALTA PONER> - Pagina: <FALTA PONER> - Dirección Fisica: <%d> \n", pcb_actual->pid, direccion_fisica); //log obligatorio
     int indice = indice_registro(registro);
     registros[indice] = valor;
     log_info(logger, "Se guarda el valor %d en el registro %s \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
@@ -125,12 +126,12 @@ uint32_t leer_de_memoria(uint32_t direccion_fisica) {
     return valor;
 }
 
-// MOV_OUT (Dirección Lógica, Registro): Lee el valor del Registro y lo escribe en la dirección física de memoria del segmento de Datos obtenida a partir
-// de la Dirección Lógica.
+// MOV_OUT (DL, Registro): Lee el valor del Registro y lo escribe en la dirección física de memoria del segmento de Datos obtenida a partir de la Dirección Lógica.
 void ejecutar_MOV_OUT(uint32_t direccion_logica, char* registro) {
     uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica);
     int indice = indice_registro(registro);
     uint32_t valor = registros[indice];
+    log_info(logger, "PID: <%d> - Acción: <ESCRIBIR> - Segmento: <FALTA PONER> - Pagina: <FALTA PONER> - Dirección Fisica: <%d> \n", pcb_actual->pid, direccion_fisica); //log obligatorio
     escribir_en_memoria(direccion_fisica, valor);
 }
 
