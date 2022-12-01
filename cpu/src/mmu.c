@@ -55,7 +55,7 @@ uint32_t traducir_direccion_logica(uint32_t direccion_logica) {
 }
 
 int esta_en_memoria(uint32_t num_pagina, uint32_t num_segmento){
-	t_paquete* paquete = crear_paquete(ESTA_EN_MEMORIA); //TODO: aca hay que acordarnos de evaluar este cod_op en memoria
+	t_paquete* paquete = crear_paquete(ACCESO_TABLA_PAGINAS); //TODO: aca hay que acordarnos de evaluar este cod_op en memoria
 	agregar_a_paquete(paquete, num_pagina, sizeof(uint32_t));
 	agregar_a_paquete(paquete, num_segmento, sizeof(uint32_t));
 	enviar_paquete(paquete, conexion_memoria);

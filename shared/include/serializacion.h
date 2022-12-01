@@ -22,10 +22,11 @@ typedef enum
 	TAM_PAGINA,
 	ENTRADAS_POR_TABLA,
 	SEGMENTATION_FAULT,
-	ESTA_EN_MEMORIA,
 	PAGE_FAULT,
 	ESCRIBIR_EN_MEMORIA,
-	LEER_DE_MEMORIA
+	LEER_DE_MEMORIA,
+	ACCESO_TABLA_PAGINAS,
+	INICIAR_PROCESO
 } op_code;
 
 typedef struct{
@@ -152,6 +153,8 @@ int recibir_operacion(int socket_cliente);
 void *recibir_buffer(int *size, int socket_cliente);
 
 t_proceso* recibir_proceso(int socket_cliente);
+
+t_list* recibir_segmentos(int socket_cliente);//TODO recibe la lista de segmentos del proceso
 
 int enviar_datos(int socket_fd, void *source, uint32_t size);
 

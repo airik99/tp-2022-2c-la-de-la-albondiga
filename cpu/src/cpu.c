@@ -7,11 +7,10 @@ int main(int argc, char** argv) {
     t_pcb* pcb_actual = malloc(sizeof(t_pcb)); //TODO: ver si esto esta bien
 
     // CONEXION CON MEMORIA
-    // log_info(logger, "Cpu iniciado. Intentando conectarse con la memoria \n");
+    log_info(logger, "Cpu iniciado. Intentando conectarse con la memoria \n");
 
-    // conexion_memoria = conectarse_a_servidor(ip, config_valores.puerto_memoria);
-    // error_conexion(conexion_memoria);
-
+    conexion_memoria = conectarse_a_servidor(config_valores.ip_memoria, config_valores.puerto_memoria);
+    error_conexion(conexion_memoria);
     // pthread_create(&conexion_memoria_i, NULL, conexion_inicial_memoria, NULL);
     // log_info(logger, "Conexion con memoria exitosa \n");
 
