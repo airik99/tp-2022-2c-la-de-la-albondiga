@@ -217,6 +217,20 @@ t_pcb *deserializar_pcb(void *buffer, int *desplazamiento) {
     return pcb;
 }
 
+void serializar_handshake(t_paquete *paquete, t_handshake *han) {
+    agregar_a_paquete(paquete, &(han->tam_pagina), sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &(han->entradas), sizeof(u_int32_t));
+}
+
+t_handshake *deserializar_handshake(void *buffer, int *desplazamiento) {
+    t_handshake *han = malloc(sizeof(t_handshake));
+    memcpy(&(han->tam_pagina), buffer + *desplazamiento, sizeof(int));
+    *desplazamiento += sizeof(u_int32_t);
+    memcpy(&(han->entradas), buffer + *desplazamiento, sizeof(u_int32_t));
+    *desplazamiento += sizeof(u_int32_t);
+    return han;
+}
+
 t_pcb *recibir_pcb(int socket_cliente) {
     int size;
     int desplazamiento = 0;

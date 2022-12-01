@@ -10,8 +10,6 @@ int ultimo_pid = 0;
 int registros[] = {0, 0, 0, 0};
 int flag_salida, interrupcion;
 t_pcb* pcb_actual;
-time_t tiempo;
-
 
 void cargar_configuracion() {
     config = config_create("cfg/Cpu.config");

@@ -2,13 +2,13 @@
 
 void agregar_a_tlb(t_traduccion* traduccion) {
 	int i = 0; 
-	//hay reemplzar el instante de carga de el restop
 	t_traduccion* aux = malloc(sizeof(t_traduccion));
 	while(list_size(tlb->traducciones) > i) { //corre todos los elementos de la lista una posicion a la derecha y agrega el mas nuevo adelante (posicion 0)
 		aux = list_replace(tlb->traducciones, i, traduccion);
 		traduccion = aux;
 		i++;
 	} 
+	actualizar_ultima_referencia(traduccion);
 	imprimir_entradas_tlb(); //log obligatorio
 	free(aux);
 	free(traduccion);
@@ -32,21 +32,25 @@ void reemplazo_tlb(t_traduccion* traduccion) {
 		log_error(logger, "No se reconoce el algoritmo de reemplazo de la TLB\n");
 	}
 	
+	free(traduccion);
 	free(traduccion_reemplazada);
 }
 
 void imprimir_entradas_tlb() {
 	log_info(logger, "Entradas de la TLB:\n");
+	int i = 0;
+	t_traduccion* t = malloc(sizeof(t_traduccion));
 
 	if(tlb->traducciones == NULL) {
 		log_info(logger, "La TLB esta vacia\n");
+	} else {
+		while(list_size(tlb->traducciones) > i) {
+			t = list_get(tlb->traducciones, i);
+			log_info(logger, "<ENTRADA: %d> | PID: <%d> | SEGMENTO: <%d> | PAGINA: <%d> | MARCO: <%d>\n", i, t->pid, t->segmento, t->pagina, t->marco); //log obligatorio
+			i++;
+		}
 	}
-
-	void imprimir_traduccion(t_traduccion* t) {
-		log_info(logger,"<NUMERO DE ENTRADA(chequear)> | PID: <%d> | SEGMENTO: <%d> | PAGINA: <%d> | MARCO: <%d>\n", t->pid, t->segmento, t->pagina, t->marco); //log obligatorio
-	}
-
-	list_iterate(tlb->traducciones, (void*) imprimir_traduccion);
+	free(t);
 }
 
 uint32_t buscar_el_maximo_instante_de_carga(t_list* traducciones) {
@@ -68,13 +72,13 @@ uint32_t buscar_el_maximo_instante_de_carga(t_list* traducciones) {
 void inicializar_tlb() {
 	tlb = malloc(sizeof(t_tlb*));
 	tlb->traducciones = list_create();
-	log_info(logger, "Se inicializo la TLB\n"); //log obligatorio
+	log_info(logger, "Se inicializo la TLB\n"); 
 }
 
 void vaciar_tlb() {
 	log_info(logger, "Se vaciara la TLB\n");
 	imprimir_entradas_tlb(); //log obligatorio
-	list_clean(tlb->traducciones);
+	list_clean_and_destroy_elements(tlb->traducciones, free);
 }
 
 bool tlb_llena() {
@@ -92,10 +96,13 @@ uint32_t buscar_en_tlb(uint32_t num_pagina, uint32_t  num_segmento) {
 			return trad;
 		}
 	}
-	traduccion = list_find(tlb->traducciones, (void*) buscar_traduccion_en_tlb); //TODO: ver como pasar los paremetros para sacar la funcion afuera
+	traduccion = list_find(tlb->traducciones, (void*) buscar_traduccion_en_tlb);
+	uint32_t marco = traduccion->marco;
 	actualizar_ultima_referencia(traduccion);
 	imprimir_entradas_tlb(); //log obligatorio
-	return traduccion->marco;
+	free(traduccion);
+	//free(trad);
+	return marco;
 }
 
 bool esta_en_tlb(uint32_t num_pagina, uint32_t num_segmento) {

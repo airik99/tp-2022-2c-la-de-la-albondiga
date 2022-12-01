@@ -1,7 +1,7 @@
 #include <ciclo_instruccion.h>
 
 void ciclo_de_instruccion(t_pcb* pcb) {
-    t_instruccion* instruccionProxima;
+    t_instruccion* instruccionProxima = malloc(sizeof(t_instruccion));
     flag_salida = 0;
     interrupcion = 0;
 
@@ -10,6 +10,7 @@ void ciclo_de_instruccion(t_pcb* pcb) {
         pcb->program_counter++;
         decode(instruccionProxima, pcb);  // DECODE (CON EXECUTE INCLUIDO)
         if (flag_salida) {
+            eliminar_pcb(pcb);
             return;
         }
         if (check_interrupt()) {  // SE FIJA QUE NO HAYA UNA INTERRUPCION ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
@@ -17,9 +18,13 @@ void ciclo_de_instruccion(t_pcb* pcb) {
             t_paquete* paquete = crear_paquete(INTERRUPCION);
             serializar_pcb(paquete, pcb);
             enviar_paquete(paquete, cliente_servidor_dispatch);
+            eliminar_paquete(paquete);
             return;
         }
     }
+
+    free(instruccionProxima);
+    eliminar_pcb(pcb);
 }
 
 void decode(t_instruccion* instruccion, t_pcb* pcb) {
@@ -28,6 +33,7 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         uint32_t valor = atoi(list_get(instruccion->params, 1));
         log_info(logger, "PID: <%d> - Ejecutando: <SET> - <%s> - <%d>\n", pcb->pid, registro, valor); //log obligatorio
         ejecutar_SET(registro, valor);
+        free(registro);
     }
 
     else if (strcmp(instruccion->nombre, "ADD") == 0) {
@@ -35,6 +41,8 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         char* origen = list_get(instruccion->params, 1);
         log_info(logger, "PID: <%d> - Ejecutando: <ADD> - <%s> - <%s>\n", pcb->pid, destino, origen); //log obligatorio
         ejecutar_ADD(destino, origen);
+        free(origen);
+        free(destino);
     }
 
     else if (strcmp(instruccion->nombre, "MOV_IN") == 0) {
@@ -43,6 +51,7 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         pcb_actual = pcb;
         log_info(logger, "PID: <%d> - Ejecutando: <MOV_IN> - <%d> - <%s>\n", pcb->pid, direccion_logica, registro); //log obligatorio
         ejecutar_MOV_IN(registro, direccion_logica); 
+        free(registro);
     }
 
     else if (strcmp(instruccion->nombre, "MOV_OUT") == 0) {
@@ -51,6 +60,7 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         pcb_actual = pcb;
         log_info(logger, "PID: <%d> - Ejecutando: <MOV_OUT> - <%d> - <%s>\n", pcb->pid, direccion_logica, registro); //log obligatorio
         ejecutar_MOV_OUT(direccion_logica, registro);
+        free(registro);
     }
 
     else if (strcmp(instruccion->nombre, "I/O") == 0) {
@@ -58,6 +68,8 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         char* param2 = list_get(instruccion->params, 1);
         log_info(logger, "PID: <%d> - Ejecutando: <I/O> - <%s> - <%s>\n", pcb->pid, dispositivo, param2); //log obligatorio
         ejecutar_IO(dispositivo, param2, pcb);
+        free(dispositivo);
+        free(param2);
     }
 
     else if (strcmp(instruccion->nombre, "EXIT") == 0) {
@@ -108,7 +120,7 @@ void ejecutar_IO(char* dispositivo, char* parametro, t_pcb* pcb) {
 void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
     uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica);
     uint32_t valor = leer_de_memoria(direccion_fisica);
-    log_info(logger, "PID: <%d> - Acción: <LEER> - Segmento: <FALTA PONER> - Pagina: <FALTA PONER> - Dirección Fisica: <%d> \n", pcb_actual->pid, direccion_fisica); //log obligatorio
+    log_info(logger, "PID: <%d> - Acción: <LEER> - Segmento: <%d> - Pagina: <%d> - Dirección Fisica: <%d> \n", pcb_actual->pid, num_segmento_actual, num_pagina_actual, direccion_fisica); //log obligatorio
     int indice = indice_registro(registro);
     registros[indice] = valor;
     log_info(logger, "Se guarda el valor %d en el registro %s \n", valor, registro);  // hay que ver si devuelve un numero o el enum en sí
@@ -120,9 +132,7 @@ uint32_t leer_de_memoria(uint32_t direccion_fisica) {
     agregar_a_paquete(paquete, &direccion_fisica, sizeof(uint32_t));
     enviar_paquete(paquete, conexion_memoria);
     eliminar_paquete(paquete);
-    t_paquete* paquete_recibido = recibir_paquete(conexion_memoria);
     recv(conexion_memoria, &respuesta, sizeof(uint32_t), MSG_WAITALL);
-    eliminar_paquete(paquete_recibido);
     return respuesta;
 }
 
@@ -131,7 +141,7 @@ void ejecutar_MOV_OUT(uint32_t direccion_logica, char* registro) {
     uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica);
     int indice = indice_registro(registro);
     uint32_t valor = registros[indice];
-    log_info(logger, "PID: <%d> - Acción: <ESCRIBIR> - Segmento: <FALTA PONER> - Pagina: <FALTA PONER> - Dirección Fisica: <%d> \n", pcb_actual->pid, direccion_fisica); //log obligatorio
+    log_info(logger, "PID: <%d> - Acción: <ESCRIBIR> - Segmento: <%d> - Pagina: <%d> - Dirección Fisica: <%d> \n", pcb_actual->pid, num_segmento_actual, num_pagina_actual, direccion_fisica); //log obligatorio
     escribir_en_memoria(direccion_fisica, valor);
 }
 
@@ -142,8 +152,10 @@ void escribir_en_memoria(uint32_t direccion_fisica, uint32_t valor) {
     agregar_a_paquete(paquete, &valor, sizeof(uint32_t));
     enviar_paquete(paquete, conexion_memoria);
     recv(conexion_memoria, &respuesta, sizeof(uint32_t), MSG_WAITALL);
-    //evaluar condicion de error
     eliminar_paquete(paquete);
+    if (respuesta == -1) { //TODO: aca hay que acordarnos que la memoria nos tiene que devolver esto cuando no se pudo escribir
+        log_error(logger, "No se pudo escribir en memoria");
+    }
 }
 
 // EXIT Esta instrucción representa la syscall de finalización del proceso. Se deberá devolver el PCB actualizado al Kernel para su finalización.

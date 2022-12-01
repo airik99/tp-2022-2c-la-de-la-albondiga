@@ -40,18 +40,18 @@ extern t_log* logger;
 extern t_handshake* configuracion_tabla;
 extern int conexion_memoria, parar_proceso, cliente_servidor_interrupt, cliente_servidor_dispatch, socket_servidor_dispatch, socket_servidor_interrupt;
 extern pthread_t conexion_memoria_i, hilo_dispatch, hilo_interrupt, pedidofin;
-extern int ultimo_pid;
+extern int ultimo_pid; //esto creo que no se usa
 extern int registros[4];
 extern int flag_salida, interrupcion;
 extern int tam_pagina, cant_entradas_por_tabla;
 extern t_list* cola_lru;
 extern t_queue* cola_fifo;
 extern t_pcb* pcb_actual;
-
+extern u_int32_t num_pagina_actual, num_segmento_actual;
 
 void cargar_configuracion(); //carga todo lo del archivo de configuracion del cpu
 
-void liberar_todo(); //liber conexiones, estructuras, logger, etc...
+void liberar_todo(); //libera conexiones, estructuras, logger, etc...
 
 void copiar_valores_registros(int* origen, int* destino);
 
