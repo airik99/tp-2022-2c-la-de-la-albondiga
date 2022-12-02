@@ -26,9 +26,9 @@ void esperar_quantum();
 
 /**
  * @brief Devuelve el primer elemento de la cola, usando su semaforo
- * 
- * @param cola 
- * @param semaforo 
+ *
+ * @param cola
+ * @param semaforo
  * @return void* el primer elemento, se debe castear a lo que sea
  */
 void* tomar_primero(t_queue* cola, pthread_mutex_t semaforo);
@@ -44,12 +44,15 @@ void recibir_pcb_cpu_RR();
 void recibir_pcb_cpu_FIFO();
 
 void manejar_bloqueo(t_solicitud_io* solicitud);
-void manejar_page_fault(t_pcb* pcb);
+void manejar_page_fault();
+void esperar_carga_pagina(t_pcb* pcb);
+void generar_seg_fault();
+void terminar_proceso();
 
 void io_teclado(t_solicitud_io* solicitud);
 
 void io_pantalla(t_solicitud_io* solicitud);
 
-void io_otros_dispositivos(t_cola_bloqueo* cola_bloqueo); 
- //similar a destruir pero mantiene el pcb
+void io_otros_dispositivos(t_cola_bloqueo* cola_bloqueo);
+// similar a destruir pero mantiene el pcb
 #endif

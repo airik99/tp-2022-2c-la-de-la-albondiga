@@ -8,10 +8,6 @@ int traducir_direccion_logica(int direccion_logica) {
     int num_pagina = floor(desplazamiento_segmento / tam_pagina);
     int desplazamiento_pagina = desplazamiento_segmento % tam_pagina;
 
-    log_info(logger, "La MMU realizo la siguiente traduccion de la direccion logica\n");
-    log_info(logger, "Numero de pagina: %d \n", num_pagina);
-    log_info(logger, "Desplazamiento: %d \n", desplazamiento_pagina);
-
     int respuesta;
     int marco;
     int direccion_fisica;
@@ -19,11 +15,11 @@ int traducir_direccion_logica(int direccion_logica) {
     num_pagina_actual = num_pagina;
     num_segmento_actual = num_segmento;
 
-    if (!es_direccion_fisica_valida(desplazamiento_segmento, tam_max_segmento)) {
+    if (!es_direccion_fisica_valida(desplazamiento_segmento, num_segmento)) {
         copiar_valores_registros(registros, (pcb_actual->registro));
         t_paquete* paquete = crear_paquete(SEGMENTATION_FAULT);
         serializar_pcb(paquete, pcb_actual);
-        enviar_paquete(paquete, socket_servidor_dispatch);
+        enviar_paquete(paquete, cliente_servidor_dispatch);
         eliminar_paquete(paquete);
         return -1;
     }
@@ -33,39 +29,38 @@ int traducir_direccion_logica(int direccion_logica) {
         marco = acceder_tlb(trad);  // tlb hit
     } else {
         log_info(logger, "PID: <%d> - TLB MISS - Segmento: <%d> - Pagina: <%d>\n", pcb_actual->pid, num_segmento, num_pagina);  // log obligatorio
-        {
-            respuesta = esta_en_memoria(num_pagina, num_segmento);
-            if (respuesta == -1) {
-                log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb_actual->pid, num_segmento, num_pagina);  // log obligatorio
-                copiar_valores_registros(registros, (pcb_actual->registro));
-                t_paquete* paquete = crear_paquete(PAGE_FAULT);
-                serializar_pcb(paquete, pcb_actual);
-                agregar_a_paquete(paquete, num_pagina, sizeof(u_int32_t));
-                agregar_a_paquete(paquete, num_segmento, sizeof(u_int32_t));
-                enviar_paquete(paquete, socket_servidor_dispatch);
-                eliminar_paquete(paquete);
-                return -1;                 
-            } else {
-                marco = respuesta;
-                t_traduccion* traduccion = malloc(sizeof(t_traduccion));
-                traduccion->pagina = num_pagina;
-                traduccion->marco = marco;
-                traduccion->segmento = num_segmento;
-                traduccion->pid = pcb_actual->pid;
-                traduccion->instante_ultima_referencia = time(NULL);
+        respuesta = esta_en_memoria(num_pagina, num_segmento);
+        if (respuesta == -1) {
+            log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb_actual->pid, num_segmento, num_pagina);  // log obligatorio
+            copiar_valores_registros(registros, (pcb_actual->registro));
+            t_paquete* paquete = crear_paquete(PAGE_FAULT);
+            agregar_a_paquete(paquete, &num_segmento, sizeof(int));
+            agregar_a_paquete(paquete, &num_pagina, sizeof(int));
+            serializar_pcb(paquete, pcb_actual);
+            enviar_paquete(paquete, cliente_servidor_dispatch);
+            eliminar_paquete(paquete);
+            return -1;
+        }
+        marco = respuesta;
+        if (list_size(tlb) > 0) {
+            t_traduccion* traduccion = malloc(sizeof(t_traduccion));
+            traduccion->pagina = num_pagina;
+            traduccion->marco = marco;
+            traduccion->segmento = num_segmento;
+            traduccion->pid = pcb_actual->pid;
+            traduccion->instante_ultima_referencia = time(NULL);
 
-                bool _mismo_marco(t_traduccion * entrada_tlb) {
-                    return entrada_tlb->marco = traduccion->marco;
-                }
-
-                list_remove_and_destroy_by_condition(tlb, _mismo_marco, free);
-                if (tlb_llena()) {
-                    reemplazo_tlb(traduccion);
-                } else {
-                    agregar_a_tlb(traduccion);
-                }
-                free(traduccion);
+            bool _mismo_marco(t_traduccion * entrada_tlb) {
+                return entrada_tlb->marco = traduccion->marco;
             }
+
+            list_remove_and_destroy_by_condition(tlb, _mismo_marco, free);
+            if (tlb_llena()) {
+                reemplazo_tlb(traduccion);
+            } else {
+                agregar_a_tlb(traduccion);
+            }
+            free(traduccion);
         }
     }
     direccion_fisica = marco * tam_pagina + desplazamiento_pagina;
@@ -73,13 +68,15 @@ int traducir_direccion_logica(int direccion_logica) {
 }
 
 int esta_en_memoria(u_int32_t num_pagina, u_int32_t num_segmento) {
-    u_int32_t respuesta;
+    int respuesta;
+    t_segmento* seg = list_get(pcb_actual->tabla_segmentos, num_segmento);
+    u_int32_t indice = seg->indice_tabla_paginas;
     t_paquete* paquete = crear_paquete(ACCESO_TABLA_PAGINAS);  // TODO: aca hay que acordarnos de evaluar este cod_op en memoria
-    agregar_a_paquete(paquete, num_pagina, sizeof(u_int32_t));
-    agregar_a_paquete(paquete, num_segmento, sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &indice, sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &num_pagina, sizeof(u_int32_t));
     enviar_paquete(paquete, conexion_memoria);
     eliminar_paquete(paquete);
-    recv(conexion_memoria, &respuesta, sizeof(u_int32_t), MSG_WAITALL);
+    recv(conexion_memoria, &respuesta, sizeof(int), MSG_WAITALL);
     return respuesta;  // esto nos deberia devolver un marco ó -1
 }
 

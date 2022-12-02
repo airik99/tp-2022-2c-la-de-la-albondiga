@@ -47,7 +47,7 @@ void destruir_estructuras() {
     string_array_destroy(config_valores.tiempos_io);
 }
 
-t_pcb *crear_nuevo_pcb(int socket) {
+t_pcb *crear_nuevo_pcb(int socket, t_list* espacios_memoria, t_list* instrucciones) {
     t_pcb *nuevo_pcb = malloc(sizeof(t_pcb));
     nuevo_pcb->pid = contador_pid;
     contador_pid++;
@@ -57,7 +57,8 @@ t_pcb *crear_nuevo_pcb(int socket) {
     nuevo_pcb->program_counter = 0;
     nuevo_pcb->estado_actual = NEW;
     nuevo_pcb->estado_anterior = NEW;
-    nuevo_pcb->tabla_segmentos = list_create();
+    nuevo_pcb->tabla_segmentos = espacios_memoria;
+    nuevo_pcb->instrucciones = instrucciones;
     return nuevo_pcb;
 }
 

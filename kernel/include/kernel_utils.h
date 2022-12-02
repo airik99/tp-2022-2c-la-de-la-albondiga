@@ -3,7 +3,6 @@
 
 #include "shared_utils.h"
 
-
 typedef struct {
     char *ip_memoria;
     char *puerto_memoria;
@@ -18,16 +17,14 @@ typedef struct {
     char **tiempos_io;
 } config_kernel;
 
-
 typedef struct {
     char *dispositivo;
     int tiempo_dispositivo;
     pthread_t t_bloqueo;
     sem_t procesos_bloqueado;
     pthread_mutex_t mx_cola_bloqueados;
-    t_queue* cola_bloqueados;
+    t_queue *cola_bloqueados;
 } t_cola_bloqueo;
-
 
 // variables
 extern config_kernel config_valores;
@@ -45,7 +42,6 @@ extern t_list *lista_colas_bloqueo;
 extern pthread_mutex_t mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda;
 extern pthread_t t_quantum, t_largo_plazo, t_corto_plazo, t_manejo_consola;
 extern sem_t sem_procesos_new, sem_procesos_ready, sem_grado_multiprogramacion, sem_page_fault;
-
 
 /**
  * @brief Crea el logger del kernel
@@ -68,12 +64,13 @@ void destruir_estructuras();
 /**
  * @brief Crea un pcb
  *
- * @param proceso proceso que mando una consola
  * @param socket socket de la consola que manda el paquete
+ * @param lista_de_segmentos lista de segmentos de memoria
+ * @param instrucciones lista de instrucciones
  *
  * @return El pcb de un proceso.
  */
-t_pcb *crear_nuevo_pcb(int socket);
+t_pcb *crear_nuevo_pcb(int socket, t_list *lista_de_segmentos, t_list *instrucciones);
 
 /**
  * @brief Destruye todas las colas y los pcb que tengan
@@ -84,17 +81,17 @@ void liberar_colas();
 void destruir_cola_bloqueo();
 /**
  * @brief Free de los campos dispositivo, parametro y de la solicitud pero mantiene el pcb, se usa cuando un proceso termino su I/O
- * 
- * @param solicitud 
+ *
+ * @param solicitud
  */
-void liberar_solicitud(t_solicitud_io* solicitud); 
+void liberar_solicitud(t_solicitud_io *solicitud);
 /**
  * @brief Hace free de los campos dispositivo, parametro y de la solicitud pero tambien destruye el pcb asociado.
  * Solo se usa cuando se termina la ejecucion del kernel para destruir cualquier elemento que puede haber quedado en la cola
- * 
- * @param solicitud 
+ *
+ * @param solicitud
  */
-void destruir_solicitud_bloqueo(t_solicitud_io* solicitud); 
+void destruir_solicitud_bloqueo(t_solicitud_io *solicitud);
 
 /**
  * @brief Cierra todos los hilos al enviar SIGINT (ctrl+c en la consola) para poder liberar todas las estructuras y conexiones correctamente

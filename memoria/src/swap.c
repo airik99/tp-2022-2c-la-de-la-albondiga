@@ -11,7 +11,7 @@ void cargar_pagina(int id_tabla, int num_pagina) {
     pagina->uso = 1;
     pagina->presencia = 1;
 
-    t_marco* marco = list_get(marcos_libres, numero_marco);
+    t_marco* marco = list_get(lista_marcos, numero_marco);
     marco->pagina = pagina;
     marco->numero_pagina = num_pagina;
     marco->segmento = entrada_tp->segmento;
@@ -27,8 +27,8 @@ void cargar_pagina(int id_tabla, int num_pagina) {
 }
 
 int elegir_marco(proceso_en_memoria* proceso, int num_segmento, int num_pagina) {
-    int numero_marco;
     t_marco* marco;
+    int numero_marco;
     if (hay_marcos_disponibles(proceso)) {
         numero_marco = primero_libre(bit_array_marcos_libres, ceil(config_valores.tam_memoria / config_valores.tam_pagina));
         list_add(proceso->lista_marcos_asignados, numero_marco);
@@ -37,12 +37,12 @@ int elegir_marco(proceso_en_memoria* proceso, int num_segmento, int num_pagina) 
         cantidad_marcos_libres--;
     } else {
         numero_marco = (*algoritmo_reemplazo)(proceso);
-        t_marco* marco = list_get(lista_marcos, numero_marco);
+        marco = list_get(lista_marcos, numero_marco);
         log_info(logger, "REEMPLAZO - PID : <%d> - Marco : <%d> - Page Out : <%d> | <%d> - Page In : <%d> | <%d> ",
                  proceso->pid, numero_marco, marco->segmento, marco->numero_pagina, num_segmento, num_pagina);
         descargar_pagina(marco->pagina);
     }
-    return marco;
+    return numero_marco;
 }
 
 int algoritmo_clock(proceso_en_memoria* proceso) {
@@ -82,6 +82,7 @@ int algoritmo_clock_mejorado(proceso_en_memoria* proceso) {
                 numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
                 marco = list_get(lista_marcos, numero_marco);
                 pagina = marco->pagina;
+                pagina->uso = 0;
                 proceso->indice_ptro_remplazo++;
             }
             if (proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados))  // encontro 0/1

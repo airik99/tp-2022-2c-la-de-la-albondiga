@@ -6,7 +6,8 @@ int main(int argc, char** argv) {
     pcb_actual = malloc(sizeof(t_pcb));
     pthread_mutex_init(&mx_traduccion_direccion_logica, NULL);
     log_info(logger, "Cpu iniciado. Intentando conectarse con la memoria \n");
-
+    inicializar_tlb();
+    
     conexion_memoria = conectarse_a_servidor(config_valores.ip_memoria, config_valores.puerto_memoria);
     error_conexion(conexion_memoria);
     // pthread_create(&t_conexion_memoria, NULL, conexion_inicial_memoria, NULL);

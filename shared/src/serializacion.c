@@ -149,24 +149,24 @@ t_proceso *recibir_proceso(int socket_cliente) {
     int size;
     int desplazamiento = 0;
     void *buffer;
-
-    t_proceso *proceso_consola = malloc(sizeof(t_proceso));
-    proceso_consola->espacios_memoria = list_create();
     buffer = recibir_buffer(&size, socket_cliente);
 
-    proceso_consola->instrucciones = deserializar_instrucciones(buffer, &desplazamiento);
+    t_proceso *proceso = malloc(sizeof(t_proceso));
+    proceso->espacios_memoria = list_create();
+    proceso->instrucciones = deserializar_instrucciones(buffer, &desplazamiento);
 
-    while (desplazamiento < size) {
-        int valor;
-        memcpy(&valor, buffer + desplazamiento, sizeof(int));
-        list_add(proceso_consola->espacios_memoria, valor);
+    for (int i = 0; desplazamiento < size; i++) {
+        t_segmento *segmento = malloc(sizeof(t_segmento));
+        segmento->nro_segmento = i;
+        memcpy(&(segmento->tamanio_segmento), buffer + desplazamiento, sizeof(int));
+        list_add(proceso->espacios_memoria, segmento);
         desplazamiento += sizeof(int);
     }
     free(buffer);
-    return proceso_consola;
+    return proceso;
 }
 
-int recibir_numero (int socket_cliente) { //TODO ver si funciona esto
+int recibir_numero(int socket_cliente) {  // TODO ver si funciona esto
     int size;
     int desplazamiento = 0;
     void *buffer;
@@ -194,7 +194,14 @@ void serializar_pcb(t_paquete *paquete, t_pcb *pcb) {
     }
     agregar_a_paquete(paquete, &(pcb->estado_actual), sizeof(t_estado));
     agregar_a_paquete(paquete, &(pcb->estado_anterior), sizeof(t_estado));
-    // TODO: Tabla de segmentos
+    int cant_segmentos = list_size(pcb->tabla_segmentos);
+    agregar_a_paquete(paquete, &cant_segmentos, sizeof(int));
+    for (int i = 0; i < cant_segmentos; i++) {
+        t_segmento *s = list_get(pcb->tabla_segmentos, i);
+        agregar_a_paquete(paquete, &(s->nro_segmento), sizeof(u_int32_t));
+        agregar_a_paquete(paquete, &(s->indice_tabla_paginas), sizeof(u_int32_t));
+        agregar_a_paquete(paquete, &(s->tamanio_segmento), sizeof(u_int32_t));
+    }
 }
 
 t_pcb *deserializar_pcb(void *buffer, int *desplazamiento) {
@@ -214,6 +221,24 @@ t_pcb *deserializar_pcb(void *buffer, int *desplazamiento) {
     *desplazamiento += sizeof(t_estado);
     memcpy(&(pcb->estado_anterior), buffer + *desplazamiento, sizeof(t_estado));
     *desplazamiento += sizeof(t_estado);
+
+    pcb->tabla_segmentos = list_create();
+    int cantidad_segmentos;
+    memcpy(&(cantidad_segmentos), buffer + *desplazamiento, sizeof(int));
+    *desplazamiento += sizeof(int);
+
+    for (int i = 0; i < cantidad_segmentos; i++) {
+        t_segmento *s = malloc(sizeof(t_segmento));
+        memcpy(&(s->nro_segmento), buffer + *desplazamiento, sizeof(u_int32_t));
+        *desplazamiento += sizeof(u_int32_t);
+
+        memcpy(&(s->indice_tabla_paginas), buffer + *desplazamiento, sizeof(u_int32_t));
+        *desplazamiento += sizeof(u_int32_t);
+
+        memcpy(&(s->tamanio_segmento), buffer + *desplazamiento, sizeof(u_int32_t));
+        *desplazamiento += sizeof(u_int32_t);
+        list_add(pcb->tabla_segmentos, s);
+    }
     return pcb;
 }
 
@@ -277,7 +302,7 @@ void enviar_pid_tamanio_segmentos(int socket_cliente, t_pcb *pcb) {
     t_paquete *paquete = crear_paquete(INICIAR_PROCESO);
     agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
     for (int i = 0; i < list_size(pcb->tabla_segmentos); i++) {
-        t_segmento* entrada_ts = list_get(pcb->tabla_segmentos, i);
+        t_segmento *entrada_ts = list_get(pcb->tabla_segmentos, i);
         agregar_a_paquete(paquete, &(entrada_ts->tamanio_segmento), sizeof(u_int32_t));
     }
     enviar_paquete(paquete, socket_cliente);
@@ -286,8 +311,8 @@ void enviar_pid_tamanio_segmentos(int socket_cliente, t_pcb *pcb) {
 
 void serializar_lista(t_paquete *paquete, t_list *lista) {
     for (int i = 0; i < list_size(lista); i++) {
-        u_int32_t valor = list_get(lista, i);
-        agregar_a_paquete(paquete, &valor, sizeof(u_int32_t));
+        int valor = list_get(lista, i);
+        agregar_a_paquete(paquete, &valor, sizeof(int));
     }
 }
 
@@ -297,7 +322,7 @@ t_list *recibir_lista(int socket_cliente) {
     void *buffer;
 
     buffer = recibir_buffer(&size, socket_cliente);
-    t_list *lista= list_create();
+    t_list *lista = list_create();
     while (desplazamiento < size) {
         u_int32_t *valor = malloc(sizeof(u_int32_t));
         memcpy(valor, buffer + desplazamiento, sizeof(u_int32_t));

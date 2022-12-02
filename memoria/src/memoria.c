@@ -61,9 +61,9 @@ int main(int argc, char** argv) {
     log_info(logger, "Kernel conectado");
 
     pthread_create(&manejar_conexion_kernel, NULL, (void*)escuchar_clientes, (void*)socket_kernel);
-    // pthread_create(&manejar_conexion_cpu, NULL, (void*)escuchar_clientes, (void*)socket_cpu);
+    pthread_create(&manejar_conexion_cpu, NULL, (void*)escuchar_clientes, (void*)socket_cpu);
     pthread_join(manejar_conexion_kernel, NULL);
-    // pthread_join(manejar_conexion_cpu, NULL);
+    pthread_join(manejar_conexion_cpu, NULL);
 
     liberar_conexion(socket_cpu);
     liberar_conexion(socket_kernel);
@@ -78,7 +78,8 @@ int main(int argc, char** argv) {
 int escuchar_clientes(int socket) {
     t_list* lista;
     t_paquete* paquete;
-    int cod_op, id_tabla, pagina;
+    int cod_op, id_tabla, pagina, respuesta;
+    u_int32_t direccion, valor;
     while (1) {
         // pthread_mutex_lock(&mx_conexion);
         cod_op = recibir_operacion(socket);
@@ -95,24 +96,29 @@ int escuchar_clientes(int socket) {
                 id_tabla = list_get(lista, 0);
                 pagina = list_get(lista, 1);
                 cargar_pagina(id_tabla, pagina);
-                int respuesta = 0;
+                respuesta = 0;
                 send(socket, &respuesta, sizeof(int), MSG_WAITALL);
                 break;
             case ACCESO_TABLA_PAGINAS:
-                t_list* lista = recibir_lista(socket);
                 id_tabla = list_get(lista, 0);
                 pagina = list_get(lista, 1);
                 int numero_marco = obtener_marco(id_tabla, pagina);
                 send(socket, &numero_marco, sizeof(int), MSG_WAITALL);
                 break;
             case LEER_DE_MEMORIA:
-                lista = recibir_lista(socket);
+                direccion = list_get(lista, 0);
+                u_int32_t leido = leer_memoria(direccion);
+                send(socket, &leido, sizeof(u_int32_t), MSG_WAITALL);
                 break;
             case ESCRIBIR_EN_MEMORIA:
-                lista = recibir_lista(socket);
+                direccion = list_get(lista, 0);
+                valor = list_get(lista, 1);
+                escribir_en_memoria(valor, direccion);
+                respuesta = 0;
+                send(socket, &respuesta, sizeof(int), MSG_WAITALL);
                 break;
             case EXIT:
-                int pid = id_tabla = list_get(lista, 0);
+                int pid = list_get(lista, 0);
                 finalizar_proceso(pid);
                 break;
             case -1:
@@ -122,6 +128,7 @@ int escuchar_clientes(int socket) {
                 log_warning(logger, "Operacion desconocida. No quieras meter la pata");
                 break;
         }
+        free(lista);
         // pthread_mutex_unlock(&mx_conexion);
     }
     return 0;
@@ -129,6 +136,7 @@ int escuchar_clientes(int socket) {
 
 t_list* iniciar_estructuras(t_list* tamanios_segmentos) {
     int pid = list_get(tamanios_segmentos, 0);
+
     proceso_en_memoria* proceso = malloc(sizeof(proceso_en_memoria));
     proceso->pid = pid;
     proceso->lista_marcos_asignados = list_create();
@@ -146,7 +154,7 @@ t_list* iniciar_estructuras(t_list* tamanios_segmentos) {
         entrada_tp->tabla_de_paginas = list_create();
 
         int cantidad_paginas = crear_tabla_paginas(entrada_tp->tabla_de_paginas, tamanio);
-        list_add(tablas_paginas, entrada_tp->tabla_de_paginas);
+        list_add(tablas_paginas, entrada_tp);
         list_add(lista_id_tp, list_size(tablas_paginas) - 1);
         log_info(logger, "Tablas creadas PID: <%d> - Segmento: <%d> -TAMAÑO: <%d> paginas", pid, i - 1, cantidad_paginas);
     }
@@ -202,9 +210,11 @@ int obtener_marco(int id_tabla, int num_pagina) {
     entrada_tablas_paginas* entrada_tp = list_get(tablas_paginas, id_tabla);
     t_pagina* pagina = list_get(entrada_tp->tabla_de_paginas, num_pagina);
     if (pagina->presencia == 1) {
-        log_info(logger, "PID: <%d> - Página: <%d> - Marco: <%d>", entrada_tp->pid, num_pagina, pagina->marco);
+        pagina->uso = 1;
+        log_info(logger, "ACCESO TABLA PAGINAS PID: <%d> - Página: <%d> - Marco: <%d>", entrada_tp->pid, num_pagina, pagina->marco);
+        return pagina->marco;
     }
-    return pagina->marco;
+
     return -1;
 }
 

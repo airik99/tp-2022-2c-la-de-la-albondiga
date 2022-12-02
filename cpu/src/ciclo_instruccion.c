@@ -1,28 +1,27 @@
 #include <ciclo_instruccion.h>
 
 void ciclo_de_instruccion(t_pcb* pcb) {
-    t_instruccion* instruccionProxima = malloc(sizeof(t_instruccion));
+    t_instruccion* instruccion;
     flag_salida = 0;
     interrupcion = 0;
     pcb_actual = pcb;
 
     while (pcb->program_counter < list_size(pcb->instrucciones)) {
-        instruccionProxima = list_get(pcb->instrucciones, pcb->program_counter);  // FETCH
-        decode(instruccionProxima, pcb);                                          // DECODE (CON EXECUTE INCLUIDO)
+        instruccion = list_get(pcb->instrucciones, pcb->program_counter);  // FETCH
+        decode(instruccion, pcb);                                          // DECODE (CON EXECUTE INCLUIDO)
         if (flag_salida) {
-            eliminar_pcb(pcb);
             return;
         }
-        if (check_interrupt()) {  // SE FIJA QUE NO HAYA UNA INTERRUPCION ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
+        if (interrupcion) {  // SE FIJA QUE NO HAYA UNA INTERRUPCION ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
             t_paquete* paquete = crear_paquete(INTERRUPCION);
+            copiar_valores_registros(registros, (pcb->registro));
+            pcb_actual->program_counter++;
             serializar_pcb(paquete, pcb);
             enviar_paquete(paquete, cliente_servidor_dispatch);
             eliminar_paquete(paquete);
             return;
         }
     }
-
-    free(instruccionProxima);
     eliminar_pcb(pcb);
 }
 
@@ -32,7 +31,6 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         uint32_t valor = atoi(list_get(instruccion->params, 1));
         log_info(logger, "PID: <%d> - Ejecutando: <SET> - <%s> - <%d>\n", pcb->pid, registro, valor);  // log obligatorio
         ejecutar_SET(registro, valor);
-        free(registro);
     }
 
     else if (strcmp(instruccion->nombre, "ADD") == 0) {
@@ -40,8 +38,6 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         char* origen = list_get(instruccion->params, 1);
         log_info(logger, "PID: <%d> - Ejecutando: <ADD> - <%s> - <%s>\n", pcb->pid, destino, origen);  // log obligatorio
         ejecutar_ADD(destino, origen);
-        free(origen);
-        free(destino);
     }
 
     else if (strcmp(instruccion->nombre, "MOV_IN") == 0) {
@@ -49,7 +45,6 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         char* registro = list_get(instruccion->params, 0);
         log_info(logger, "PID: <%d> - Ejecutando: <MOV_IN> - <%d> - <%s>\n", pcb->pid, direccion_logica, registro);  // log obligatorio
         ejecutar_MOV_IN(registro, direccion_logica);
-        free(registro);
     }
 
     else if (strcmp(instruccion->nombre, "MOV_OUT") == 0) {
@@ -57,7 +52,6 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         char* registro = list_get(instruccion->params, 1);
         log_info(logger, "PID: <%d> - Ejecutando: <MOV_OUT> - <%d> - <%s>\n", pcb->pid, direccion_logica, registro);  // log obligatorio
         ejecutar_MOV_OUT(direccion_logica, registro);
-        free(registro);
     }
 
     else if (strcmp(instruccion->nombre, "I/O") == 0) {
@@ -65,8 +59,6 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         char* param2 = list_get(instruccion->params, 1);
         log_info(logger, "PID: <%d> - Ejecutando: <I/O> - <%s> - <%s>\n", pcb->pid, dispositivo, param2);  // log obligatorio
         ejecutar_IO(dispositivo, param2, pcb);
-        free(dispositivo);
-        free(param2);
     }
 
     else if (strcmp(instruccion->nombre, "EXIT") == 0) {
@@ -77,7 +69,6 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
     }
 }
 
-// SET (Registro, Valor): Asigna al registro el valor pasado como parámetro.
 void ejecutar_SET(char* registro, uint32_t valor) {
     usleep(config_valores.retardo_instruccion * 1000);
     int indice = indice_registro(registro);
@@ -86,7 +77,6 @@ void ejecutar_SET(char* registro, uint32_t valor) {
     pcb_actual->program_counter++;
 }
 
-// ADD (Registro Destino, Registro Origen): Suma ambos registros y deja el resultado en el Registro Destino.
 void ejecutar_ADD(char* destino, char* origen) {
     usleep(config_valores.retardo_instruccion * 1000);
     int registro_origen = indice_registro(origen);
@@ -98,25 +88,24 @@ void ejecutar_ADD(char* destino, char* origen) {
 }
 
 void ejecutar_IO(char* dispositivo, char* parametro, t_pcb* pcb) {
-    copiar_valores_registros(registros, (pcb->registro));
     t_paquete* paquete = crear_paquete(PCB_BLOCK);
     int largo_nombre = strlen(dispositivo) + 1;
     int largo_parametro = strlen(parametro) + 1;
+    copiar_valores_registros(registros, (pcb->registro));
     pcb_actual->program_counter++;
     serializar_pcb(paquete, pcb);
     agregar_a_paquete(paquete, &largo_nombre, sizeof(int));
     agregar_a_paquete(paquete, dispositivo, largo_nombre);
     agregar_a_paquete(paquete, &largo_parametro, sizeof(int));
     agregar_a_paquete(paquete, parametro, largo_parametro);
-    enviar_paquete(paquete, cliente_servidor_dispatch);  // dispatch
+    enviar_paquete(paquete, cliente_servidor_dispatch);
     eliminar_paquete(paquete);
     flag_salida = 1;
 }
 
 void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
-    pthread_mutex_lock(&mx_traduccion_direccion_logica);
+   // pthread_mutex_lock(&mx_traduccion_direccion_logica);
     int direccion_fisica = traducir_direccion_logica(direccion_logica);
-    pthread_mutex_unlock(&mx_traduccion_direccion_logica);
     if (direccion_fisica < 0) {
         flag_salida = 1;
         return;
@@ -125,6 +114,7 @@ void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
     int indice = indice_registro(registro);
     registros[indice] = valor;
     pcb_actual->program_counter++;
+    //pthread_mutex_unlock(&mx_traduccion_direccion_logica);
 }
 
 uint32_t leer_de_memoria(int direccion_fisica) {
@@ -139,9 +129,8 @@ uint32_t leer_de_memoria(int direccion_fisica) {
 }
 
 void ejecutar_MOV_OUT(uint32_t direccion_logica, char* registro) {
-    pthread_mutex_lock(&mx_traduccion_direccion_logica);
+    //pthread_mutex_lock(&mx_traduccion_direccion_logica);
     int direccion_fisica = traducir_direccion_logica(direccion_logica);
-    pthread_mutex_unlock(&mx_traduccion_direccion_logica);
     if (direccion_fisica < 0) {
         flag_salida = 1;
         return;
@@ -150,6 +139,7 @@ void ejecutar_MOV_OUT(uint32_t direccion_logica, char* registro) {
     uint32_t valor = registros[indice];
     escribir_en_memoria(direccion_fisica, valor);
     pcb_actual->program_counter++;
+    //pthread_mutex_unlock(&mx_traduccion_direccion_logica);
 }
 
 void escribir_en_memoria(int direccion_fisica, uint32_t valor) {

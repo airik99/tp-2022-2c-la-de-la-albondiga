@@ -13,6 +13,8 @@ void finalizar_proceso(int);
 int obtener_marco(int, int);
 void liberar_swap_pagina(t_pagina* pag);
 void liberar_marcos_pagina(int);
+void escribir_en_memoria(u_int32_t, int);
+u_int32_t leer_memoria(int);
 
 
 #endif  // MACRO

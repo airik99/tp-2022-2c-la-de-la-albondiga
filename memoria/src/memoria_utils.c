@@ -49,13 +49,12 @@ bool hay_marcos_disponibles(proceso_en_memoria* p) {
     return cantidad_marcos_libres != 0 && (cantidad_marcos_asignados(p) < config_valores.marcos_por_proceso);
 }
 
-
 bool menor_pid(proceso_en_memoria* a, proceso_en_memoria* b) {
     return a->pid < b->pid;
 }
 
 proceso_en_memoria* obtener_proceso_por_pid(int pid) {
-    bool _es_el_que_busco(proceso_en_memoria* proceso) {
+    bool _es_el_que_busco(proceso_en_memoria * proceso) {
         return proceso->pid == pid;
     }
 
@@ -67,7 +66,8 @@ void manejador_seniales(int senial) {
     switch (senial) {
         case SIGINT:
             log_info(logger, "Cerrando hilos");
-            pthread_cancel( manejar_conexion_kernel);
+            pthread_cancel(manejar_conexion_kernel);
+            pthread_cancel(manejar_conexion_cpu);
             break;
     }
 }

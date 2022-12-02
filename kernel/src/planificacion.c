@@ -8,7 +8,6 @@ void iniciar_planificador_largo_plazo(void) {
 
     sem_init(&sem_procesos_new, 0, 0);
     sem_init(&sem_grado_multiprogramacion, 0, config_valores.grado_max_multiprogramacion);
-
     pthread_create(&t_largo_plazo, NULL, (void*)planificar_largo, NULL);
     pthread_detach(t_largo_plazo);
 }
@@ -51,7 +50,7 @@ void planificar_largo() {
         sem_wait(&sem_grado_multiprogramacion);
         t_pcb* pcb = tomar_primero(cola_new, mx_cola_new);
         enviar_pid_tamanio_segmentos(conexion_memoria, pcb);
-        recibir_operacion(PAQUETE);
+        recibir_operacion(conexion_memoria);
         t_list* lista_ids = recibir_lista(conexion_memoria);
         for (int i = 0; i < list_size(lista_ids); i++) {
             int valor = list_get(lista_ids, i);
@@ -85,24 +84,21 @@ void recibir_pcb_cpu_FIFO() {
     op_code cod_op = recibir_operacion(conexion_cpu_dispatch);
     t_pcb* pcb;
     t_solicitud_io* solicitud;
+    t_paquete* paquete;
     switch (cod_op) {
         case PCB_EXIT:
-            pcb = recibir_pcb(conexion_cpu_dispatch);
-            actualizar_estado(pcb, EXIT);
-            sem_post(&sem_grado_multiprogramacion);
-            op_code codigo_exit = PCB_EXIT;
-            send(pcb->socket_consola, &codigo_exit, sizeof(op_code), MSG_WAITALL);
-            eliminar_pcb(pcb);
+            terminar_proceso();
             break;
         case PCB_BLOCK:
             solicitud = recibir_pcb_io(conexion_cpu_dispatch);
             manejar_bloqueo(solicitud);
             break;
         case PAGE_FAULT:
-            pcb = recibir_pcb(conexion_cpu_dispatch);
-            pthread_t t_page_fault;
-            pthread_create(&t_page_fault, NULL, (void*)manejar_page_fault, pcb);
-            pthread_detach(t_page_fault);
+            manejar_page_fault();
+            break;
+        case SEGMENTATION_FAULT:
+            generar_seg_fault();
+            break;
         default:
             log_warning(logger, "Operacion desconocida.");
             break;
@@ -136,12 +132,7 @@ void recibir_pcb_cpu_RR() {
     switch (cod_op) {
         case PCB_EXIT:
             pthread_cancel(t_quantum);
-            pcb = recibir_pcb(conexion_cpu_dispatch);
-            actualizar_estado(pcb, EXIT);
-            sem_post(&sem_grado_multiprogramacion);
-            op_code codigo_exit = PCB_EXIT;
-            send(pcb->socket_consola, &codigo_exit, sizeof(uint32_t), MSG_WAITALL);
-            eliminar_pcb(pcb);
+            terminar_proceso();
             break;
         case PCB_BLOCK:
             pthread_cancel(t_quantum);
@@ -159,20 +150,11 @@ void recibir_pcb_cpu_RR() {
             break;
         case PAGE_FAULT:
             pthread_cancel(t_quantum);
-            pcb = recibir_pcb(conexion_cpu_dispatch);
-            pthread_t t_page_fault;
-            pthread_create(&t_page_fault, NULL, (void*)manejar_page_fault, pcb);
-            pthread_detach(t_page_fault);
+            manejar_page_fault();
+            break;
         case SEGMENTATION_FAULT:
             pthread_cancel(t_quantum);
-            pcb = recibir_pcb(conexion_cpu_dispatch);
-            t_paquete* paquete = crear_paquete(EXIT);
-            agregar_a_paquete(paquete, pcb->pid, sizeof(int));
-            enviar_paquete(paquete, conexion_memoria);
-            eliminar_paquete(paquete);
-            paquete = crear_paquete(SEGMENTATION_FAULT);
-            enviar_paquete(paquete, pcb->socket_consola);
-            eliminar_pcb(pcb);
+            generar_seg_fault();
             break;
         default:
             log_warning(logger, "Operacion desconocida.");
@@ -231,18 +213,31 @@ void manejar_bloqueo(t_solicitud_io* solicitud) {
     }
 }
 
-void manejar_page_fault(t_pcb* pcb /*,int segmento, int pagina*/) {
-    int segmento = 0;
-    int pagina = 0;
+void manejar_page_fault() {
+    t_paquete* paquete;
+    int size, desplazamiento = 0;
+    void* buffer;
+    int num_pag, num_seg;
+    buffer = recibir_buffer(&size, conexion_cpu_dispatch);
+    memcpy(&num_seg, buffer + desplazamiento, sizeof(int));
+    desplazamiento += sizeof(int);
+    memcpy(&num_pag, buffer + desplazamiento, sizeof(int));
+    desplazamiento += sizeof(int);
+    t_pcb* pcb = deserializar_pcb(buffer, &desplazamiento);
     actualizar_estado(pcb, BLOCKED);
-    log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb->pid, segmento, pagina);
-    t_paquete* paquete = crear_paquete(PAGE_FAULT);
-    t_segmento* entrada = list_get(pcb->tabla_segmentos, segmento);
-    agregar_a_paquete(paquete, pcb->pid, sizeof(u_int32_t));
-    agregar_a_paquete(paquete, entrada->indice_tabla_paginas, sizeof(u_int32_t));
-    agregar_a_paquete(paquete, pagina, sizeof(u_int32_t));
+    log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb->pid, num_seg, num_pag);
+    paquete = crear_paquete(PAGE_FAULT);
+    t_segmento* entrada = list_get(pcb->tabla_segmentos, num_seg);
+    agregar_a_paquete(paquete, &(entrada->indice_tabla_paginas), sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &(num_pag), sizeof(u_int32_t));
     enviar_paquete(paquete, conexion_memoria);
     eliminar_paquete(paquete);
+    pthread_t t_page_fault;
+    pthread_create(&t_page_fault, NULL, (void*)esperar_carga_pagina, pcb);
+    pthread_detach(t_page_fault);
+}
+
+void esperar_carga_pagina(t_pcb* pcb) {
     int respuesta;
     recv(conexion_memoria, &respuesta, sizeof(int), MSG_WAITALL);
     actualizar_estado(pcb, READY);
@@ -251,6 +246,27 @@ void manejar_page_fault(t_pcb* pcb /*,int segmento, int pagina*/) {
     sem_post(&sem_procesos_ready);
 }
 
+void generar_seg_fault() {
+    t_pcb* pcb = recibir_pcb(conexion_cpu_dispatch);
+    t_paquete* paquete = crear_paquete(EXIT);
+    agregar_a_paquete(paquete, &(pcb->pid), sizeof(int));
+    enviar_paquete(paquete, conexion_memoria);
+    eliminar_paquete(paquete);
+    paquete = crear_paquete(SEGMENTATION_FAULT);
+    enviar_paquete(paquete, pcb->socket_consola);
+    eliminar_pcb(pcb);
+    eliminar_paquete(paquete);
+    sem_post(&sem_grado_multiprogramacion);
+}
+
+void terminar_proceso() {
+    t_pcb* pcb = recibir_pcb(conexion_cpu_dispatch);
+    actualizar_estado(pcb, EXIT);
+    sem_post(&sem_grado_multiprogramacion);
+    op_code codigo_exit = PCB_EXIT;
+    send(pcb->socket_consola, &codigo_exit, sizeof(op_code), MSG_WAITALL);
+    eliminar_pcb(pcb);
+}
 void io_teclado(t_solicitud_io* solicitud) {
     int respuesta;
     op_code codigo = IO_TECLADO;

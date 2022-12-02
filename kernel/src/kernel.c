@@ -30,15 +30,23 @@ int main(int argc, char **argv) {
 
     // CONEXION CON CPU
     conexion_cpu_interrupt = conectarse_a_servidor(config_valores.ip_cpu, config_valores.puerto_cpu_interrupt);
-    log_info(logger, "Conexion con cpu interrupt exitosa");
-    conexion_cpu_dispatch = conectarse_a_servidor(config_valores.ip_cpu, config_valores.puerto_cpu_dispatch);
-    log_info(logger, "Conexion con cpu dispatch exitosa");
-
-    if (conexion_cpu_dispatch == -1 || conexion_cpu_interrupt == -1) {
-        log_error(logger, "Error en la conexion al servidor. Terminando kernel");
+    if (conexion_cpu_interrupt == -1) {
+        log_error(logger, "Error en la conexion al por interrupt. Terminando kernel");
         destruir_estructuras();
+        liberar_conexion(conexion_memoria);
         return EXIT_FAILURE;
     }
+    log_info(logger, "Conexion con cpu interrupt exitosa");
+    conexion_cpu_dispatch = conectarse_a_servidor(config_valores.ip_cpu, config_valores.puerto_cpu_dispatch);
+    if (conexion_cpu_dispatch == -1) {
+        log_error(logger, "Error en la conexion al por interrupt. Terminando kernel");
+        destruir_estructuras();
+        liberar_conexion(conexion_memoria);
+        liberar_conexion(conexion_cpu_interrupt);
+        return EXIT_FAILURE;
+    }
+    log_info(logger, "Conexion con cpu dispatch exitosa");
+
     iniciar_planificador_largo_plazo();
     iniciar_planificador_corto_plazo();
 
@@ -47,7 +55,7 @@ int main(int argc, char **argv) {
 
     liberar_conexion(conexion_cpu_dispatch);
     liberar_conexion(conexion_cpu_interrupt);
-    //  liberar_conexion(conexion_memoria);
+    liberar_conexion(conexion_memoria);
 
     liberar_colas();
     eliminar_semaforos();
@@ -57,10 +65,11 @@ int main(int argc, char **argv) {
 
 void manejar_consolas(int socket_servidor) {
     while (1) {
+        //int *socket_cliente = malloc(sizeof(int));
         int socket_cliente = esperar_cliente(socket_servidor);
         // se crea thread por cada consola
         pthread_t t;
-        pthread_create(&t, NULL, (void *)escuchar_consola, (void *)socket_cliente);
+        pthread_create(&t, NULL, (void *)escuchar_consola, socket_cliente);
         pthread_join(t, NULL);
     }
 }
@@ -71,8 +80,9 @@ void escuchar_consola(int socket_cliente) {
     uint32_t respuesta;
     switch (cod_op) {
         case INSTRUCCIONES:
-            t_pcb *pcb = crear_nuevo_pcb(socket_cliente);
-            recibir_proceso(socket_cliente);
+            t_proceso *p = recibir_proceso(socket_cliente);
+            t_pcb *pcb = crear_nuevo_pcb(socket_cliente, p->espacios_memoria, p->instrucciones);
+            free(p);
             log_info(logger, "Se crea el proceso <%d> en NEW", pcb->pid);
             pthread_mutex_lock(&mx_cola_new);
             queue_push(cola_new, pcb);
