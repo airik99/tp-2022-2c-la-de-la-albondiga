@@ -9,6 +9,12 @@ void print_instruccion(t_instruccion* instruccion) {
     printf("\n");
 }
 
+
+void destructor_tabla_segmentos(t_list* segmentos) {
+    list_destroy_and_destroy_elements(segmentos, free);
+}
+
+
 void destructor_instrucciones(t_list* instrucciones) {
     list_destroy_and_destroy_elements(instrucciones, (void*)destructor_instruccion);
 }
@@ -21,6 +27,7 @@ void destructor_instruccion(t_instruccion* instruccion) {
 
 void eliminar_pcb(t_pcb *pcb) {
     destructor_instrucciones(pcb->instrucciones);
+    destructor_tabla_segmentos(pcb->tabla_segmentos);
     free(pcb);
 }
 

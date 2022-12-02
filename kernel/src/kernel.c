@@ -53,8 +53,6 @@ int main(int argc, char **argv) {
     pthread_create(&t_manejo_consola, NULL, (void *)manejar_consolas, (void *)socket_servidor);
     pthread_join(t_manejo_consola, NULL);
 
-    liberar_conexion(conexion_cpu_dispatch);
-    liberar_conexion(conexion_cpu_interrupt);
     liberar_conexion(conexion_memoria);
 
     liberar_colas();
@@ -65,12 +63,12 @@ int main(int argc, char **argv) {
 
 void manejar_consolas(int socket_servidor) {
     while (1) {
-        //int *socket_cliente = malloc(sizeof(int));
-        int socket_cliente = esperar_cliente(socket_servidor);
+        int *socket_cliente = malloc(sizeof(int));
+        *socket_cliente = esperar_cliente(socket_servidor);
         // se crea thread por cada consola
         pthread_t t;
-        pthread_create(&t, NULL, (void *)escuchar_consola, socket_cliente);
-        pthread_join(t, NULL);
+        pthread_create(&t, NULL, (void *)escuchar_consola, *socket_cliente);
+        pthread_detach(t);
     }
 }
 

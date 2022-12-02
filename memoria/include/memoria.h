@@ -4,10 +4,9 @@
 #include <memoria_utils.h>
 #include <swap.h>
 
-pthread_mutex_t mx_conexion; 
 
 t_list* iniciar_estructuras(t_list* segmentos);
-int escuchar_clientes(int);
+void escuchar_clientes(int);
 int crear_tabla_paginas(t_list*, int);
 void finalizar_proceso(int);
 int obtener_marco(int, int);

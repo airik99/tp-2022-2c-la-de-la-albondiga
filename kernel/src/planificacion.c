@@ -235,6 +235,7 @@ void manejar_page_fault() {
     pthread_t t_page_fault;
     pthread_create(&t_page_fault, NULL, (void*)esperar_carga_pagina, pcb);
     pthread_detach(t_page_fault);
+    free(buffer);
 }
 
 void esperar_carga_pagina(t_pcb* pcb) {

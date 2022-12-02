@@ -73,5 +73,6 @@ extern t_bitarray* bit_array_swap;
 extern t_bitarray* bit_array_marcos_libres;
 extern pthread_t manejar_conexion_cpu, manejar_conexion_kernel;
 extern int socket_cpu, socket_kernel, socket_servidor;
+extern pthread_mutex_t mx_conexion; 
 
 #endif

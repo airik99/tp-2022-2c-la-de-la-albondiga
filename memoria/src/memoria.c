@@ -40,10 +40,11 @@ int main(int argc, char** argv) {
     ftruncate(fileno(fp), config_valores.tam_swap);
     tablas_paginas = list_create();  // TODO Falta el tipo de dato de lista_tablas
 
-    int socket_servidor = iniciar_servidor(config_valores.puerto);
+    socket_servidor = iniciar_servidor(config_valores.puerto);
 
     if (socket_servidor == -1) {
         log_info(logger, "Error al iniciar el servidor");
+        liberar_conexion(socket_servidor);
         return EXIT_FAILURE;
     }
 
@@ -58,15 +59,18 @@ int main(int argc, char** argv) {
     eliminar_paquete(paquete);
 
     socket_kernel = esperar_cliente(socket_servidor);
+
+    if (socket_kernel == -1) {
+        log_info(logger, "Error al iniciar el servidor");
+        return EXIT_FAILURE;
+    }
     log_info(logger, "Kernel conectado");
 
     pthread_create(&manejar_conexion_kernel, NULL, (void*)escuchar_clientes, (void*)socket_kernel);
     pthread_create(&manejar_conexion_cpu, NULL, (void*)escuchar_clientes, (void*)socket_cpu);
+
     pthread_join(manejar_conexion_kernel, NULL);
     pthread_join(manejar_conexion_cpu, NULL);
-
-    liberar_conexion(socket_cpu);
-    liberar_conexion(socket_kernel);
 
     config_destroy(config);
     log_destroy(logger);
@@ -75,14 +79,14 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
-int escuchar_clientes(int socket) {
+void escuchar_clientes(int socket) {
     t_list* lista;
     t_paquete* paquete;
     int cod_op, id_tabla, pagina, respuesta;
     u_int32_t direccion, valor;
     while (1) {
-        // pthread_mutex_lock(&mx_conexion);
         cod_op = recibir_operacion(socket);
+        pthread_mutex_lock(&mx_conexion);
         lista = recibir_lista(socket);
         switch (cod_op) {
             case INICIAR_PROCESO:
@@ -123,13 +127,13 @@ int escuchar_clientes(int socket) {
                 break;
             case -1:
                 log_error(logger, "El cliente se desconecto. Terminando servidor");
-                return EXIT_FAILURE;
+                return;
             default:
                 log_warning(logger, "Operacion desconocida. No quieras meter la pata");
                 break;
         }
         free(lista);
-        // pthread_mutex_unlock(&mx_conexion);
+        pthread_mutex_unlock(&mx_conexion);
     }
     return 0;
 }
@@ -214,7 +218,6 @@ int obtener_marco(int id_tabla, int num_pagina) {
         log_info(logger, "ACCESO TABLA PAGINAS PID: <%d> - Página: <%d> - Marco: <%d>", entrada_tp->pid, num_pagina, pagina->marco);
         return pagina->marco;
     }
-
     return -1;
 }
 

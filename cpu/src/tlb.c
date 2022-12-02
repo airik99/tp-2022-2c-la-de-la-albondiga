@@ -14,7 +14,7 @@ void reemplazo_tlb(t_traduccion* traduccion) {
     } else if (es_algoritmo("LRU")) {
         traduccion_reemplazada = list_get_minimum(tlb, traduccion_con_referencia_mas_lejana);
         bool es_la_buscada(t_traduccion * t2) {
-            return traduccion == t2;
+            return traduccion_reemplazada == t2;
         }
         list_remove_and_destroy_by_condition(tlb, es_la_buscada, free);
         agregar_a_tlb(traduccion);
@@ -62,7 +62,8 @@ t_traduccion* obtener_entrada_tlb(uint32_t pid, uint32_t num_pagina, uint32_t nu
     bool buscar_traduccion_en_tlb(t_traduccion * traduccion) {
         return traduccion->pid == pid && traduccion->pagina == num_pagina && traduccion->segmento == num_segmento;
     }
-    return list_find(tlb, (void*)buscar_traduccion_en_tlb);
+    t_traduccion* buscada = list_find(tlb, (void*)buscar_traduccion_en_tlb);
+    return buscada;
 }
 
 bool esta_en_tlb(uint32_t pid, uint32_t num_pagina, uint32_t num_segmento) {

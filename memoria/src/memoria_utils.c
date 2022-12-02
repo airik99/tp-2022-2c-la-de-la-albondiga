@@ -10,6 +10,7 @@ FILE* fp;
 t_bitarray* bit_array_swap;
 t_bitarray* bit_array_marcos_libres;
 int (*algoritmo_reemplazo)(proceso_en_memoria*);
+pthread_mutex_t mx_conexion; 
 
 pthread_t manejar_conexion_cpu, manejar_conexion_kernel;
 int socket_cpu, socket_kernel, socket_servidor;
@@ -65,9 +66,9 @@ proceso_en_memoria* obtener_proceso_por_pid(int pid) {
 void manejador_seniales(int senial) {
     switch (senial) {
         case SIGINT:
-            log_info(logger, "Cerrando hilos");
             pthread_cancel(manejar_conexion_kernel);
             pthread_cancel(manejar_conexion_cpu);
+            liberar_conexion(socket_servidor);
             break;
     }
 }

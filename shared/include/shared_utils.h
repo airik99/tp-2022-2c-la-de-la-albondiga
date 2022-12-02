@@ -99,5 +99,6 @@ void pushear_semaforizado(t_queue* q, void* dato, pthread_mutex_t mx);
  */
 void eliminar_pcb(t_pcb* pcb);
 int indice_registro(char* registro);
+void destructor_tabla_segmentos(t_list* );
 
 #endif
