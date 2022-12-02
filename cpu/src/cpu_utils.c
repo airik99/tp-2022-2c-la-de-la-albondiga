@@ -4,6 +4,7 @@ config_cpu config_valores;
 t_config* config;
 t_log* logger;
 t_handshake* configuracion_tabla;
+pthread_mutex_t mx_traduccion_direccion_logica;
 int conexion_memoria, parar_proceso, cliente_servidor_interrupt, cliente_servidor_dispatch, socket_servidor_dispatch, socket_servidor_interrupt, tam_pagina, cant_entradas_por_tabla;
 pthread_t conexion_memoria_i, hilo_dispatch, hilo_interrupt, pedidofin;
 int ultimo_pid = 0;

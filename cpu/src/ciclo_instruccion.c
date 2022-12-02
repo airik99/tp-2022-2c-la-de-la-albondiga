@@ -118,7 +118,9 @@ void ejecutar_IO(char* dispositivo, char* parametro, t_pcb* pcb) {
 
 // MOV_IN (Registro, Dirección Lógica): Lee el valor de memoria del segmento de Datos correspondiente a la Dirección Lógica y lo almacena en el Registro.
 void ejecutar_MOV_IN(char* registro, uint32_t direccion_logica) {
+    pthread_mutex_lock(&mx_traduccion_direccion_logica);
     uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica);
+    pthread_mutex_unlock(&mx_traduccion_direccion_logica);
     uint32_t valor = leer_de_memoria(direccion_fisica);
     log_info(logger, "PID: <%d> - Acción: <LEER> - Segmento: <%d> - Pagina: <%d> - Dirección Fisica: <%d> \n", pcb_actual->pid, num_segmento_actual, num_pagina_actual, direccion_fisica); //log obligatorio
     int indice = indice_registro(registro);
@@ -138,7 +140,9 @@ uint32_t leer_de_memoria(uint32_t direccion_fisica) {
 
 // MOV_OUT (DL, Registro): Lee el valor del Registro y lo escribe en la dirección física de memoria del segmento de Datos obtenida a partir de la Dirección Lógica.
 void ejecutar_MOV_OUT(uint32_t direccion_logica, char* registro) {
+    pthread_mutex_lock(&mx_traduccion_direccion_logica);
     uint32_t direccion_fisica = traducir_direccion_logica(direccion_logica);
+    pthread_mutex_unlock(&mx_traduccion_direccion_logica);
     int indice = indice_registro(registro);
     uint32_t valor = registros[indice];
     log_info(logger, "PID: <%d> - Acción: <ESCRIBIR> - Segmento: <%d> - Pagina: <%d> - Dirección Fisica: <%d> \n", pcb_actual->pid, num_segmento_actual, num_pagina_actual, direccion_fisica); //log obligatorio

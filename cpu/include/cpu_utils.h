@@ -38,6 +38,7 @@ extern config_cpu config_valores;
 extern t_config* config;
 extern t_log* logger;
 extern t_handshake* configuracion_tabla;
+extern pthread_mutex_t mx_traduccion_direccion_logica;
 extern int conexion_memoria, parar_proceso, cliente_servidor_interrupt, cliente_servidor_dispatch, socket_servidor_dispatch, socket_servidor_interrupt;
 extern pthread_t conexion_memoria_i, hilo_dispatch, hilo_interrupt, pedidofin;
 extern int ultimo_pid; //esto creo que no se usa

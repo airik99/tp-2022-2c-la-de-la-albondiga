@@ -127,7 +127,6 @@ void actualizar_ultima_referencia(t_traduccion* traduccion) {
 			trad->instante_de_carga++;
 			return trad;
 		}	
-
 		tlb->traducciones = list_map(tlb->traducciones, actualizar_instante_de_carga);
 	}
 }
