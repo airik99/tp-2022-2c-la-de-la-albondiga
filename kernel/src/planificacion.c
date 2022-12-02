@@ -48,12 +48,17 @@ void iniciar_planificador_corto_plazo(void) {
 void planificar_largo() {
     while (1) {
         sem_wait(&sem_procesos_new);
-        t_pcb* pcb = tomar_primero(cola_new, mx_cola_new);
-
         sem_wait(&sem_grado_multiprogramacion);
-
+        t_pcb* pcb = tomar_primero(cola_new, mx_cola_new);
+        enviar_pid_tamanio_segmentos(conexion_memoria, pcb);
+        recibir_operacion(PAQUETE);
+        t_list* lista_ids = recibir_lista(conexion_memoria);
+        for (int i = 0; i < list_size(lista_ids); i++) {
+            int valor = list_get(lista_ids, i);
+            t_segmento* segmento = list_get(pcb->tabla_segmentos, i);
+            segmento->indice_tabla_paginas = valor;
+        }
         pushear_semaforizado(cola_ready_prioritaria, pcb, mx_cola_ready_prioritaria);
-
         actualizar_estado(pcb, READY);
         loggear_colas_ready();
         sem_post(&sem_procesos_ready);
@@ -93,6 +98,11 @@ void recibir_pcb_cpu_FIFO() {
             solicitud = recibir_pcb_io(conexion_cpu_dispatch);
             manejar_bloqueo(solicitud);
             break;
+        case PAGE_FAULT:
+            pcb = recibir_pcb(conexion_cpu_dispatch);
+            pthread_t t_page_fault;
+            pthread_create(&t_page_fault, NULL, (void*)manejar_page_fault, pcb);
+            pthread_detach(t_page_fault);
         default:
             log_warning(logger, "Operacion desconocida.");
             break;
@@ -122,6 +132,7 @@ void recibir_pcb_cpu_RR() {
     int cod_op = recibir_operacion(conexion_cpu_dispatch);
     t_pcb* pcb;
     t_solicitud_io* solicitud;
+    t_paquete* paquete;
     switch (cod_op) {
         case PCB_EXIT:
             pthread_cancel(t_quantum);
@@ -146,6 +157,23 @@ void recibir_pcb_cpu_RR() {
             loggear_colas_ready();
             sem_post(&sem_procesos_ready);  // hago el post despues para que muestre bien las colas ready
             break;
+        case PAGE_FAULT:
+            pthread_cancel(t_quantum);
+            pcb = recibir_pcb(conexion_cpu_dispatch);
+            pthread_t t_page_fault;
+            pthread_create(&t_page_fault, NULL, (void*)manejar_page_fault, pcb);
+            pthread_detach(t_page_fault);
+        case SEGMENTATION_FAULT:
+            pthread_cancel(t_quantum);
+            pcb = recibir_pcb(conexion_cpu_dispatch);
+            t_paquete* paquete = crear_paquete(EXIT);
+            agregar_a_paquete(paquete, pcb->pid, sizeof(int));
+            enviar_paquete(paquete, conexion_memoria);
+            eliminar_paquete(paquete);
+            paquete = crear_paquete(SEGMENTATION_FAULT);
+            enviar_paquete(paquete, pcb->socket_consola);
+            eliminar_pcb(pcb);
+            break;
         default:
             log_warning(logger, "Operacion desconocida.");
             break;
@@ -154,7 +182,6 @@ void recibir_pcb_cpu_RR() {
 
 void esperar_quantum() {
     usleep(config_valores.quantum_rr * 1000);
-    //TODO Ya hay una variable "interrupcion" que se usa en cpu que es global
     int interrupcion = 1;
     send(conexion_cpu_interrupt, &interrupcion, sizeof(uint32_t), MSG_WAITALL);
     log_info(logger, "Interrupcion por quantum enviada.");
@@ -199,9 +226,29 @@ void manejar_bloqueo(t_solicitud_io* solicitud) {
             return strcmp(solicitud->dispositivo, una_cola->dispositivo) == 0;
         }
         t_cola_bloqueo* cola = list_find(lista_colas_bloqueo, (void*)_coincide_nombre_cola);
-        pushear_semaforizado(cola->cola_bloqueados, solicitud, cola->mx_cola_bloqueados); //funciona por mas que vscode lo marque como error
+        pushear_semaforizado(cola->cola_bloqueados, solicitud, cola->mx_cola_bloqueados);  // funciona por mas que vscode lo marque como error
         sem_post(&(cola->procesos_bloqueado));
     }
+}
+
+void manejar_page_fault(t_pcb* pcb /*,int segmento, int pagina*/) {
+    int segmento = 0;
+    int pagina = 0;
+    actualizar_estado(pcb, BLOCKED);
+    log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb->pid, segmento, pagina);
+    t_paquete* paquete = crear_paquete(PAGE_FAULT);
+    t_segmento* entrada = list_get(pcb->tabla_segmentos, segmento);
+    agregar_a_paquete(paquete, pcb->pid, sizeof(u_int32_t));
+    agregar_a_paquete(paquete, entrada->indice_tabla_paginas, sizeof(u_int32_t));
+    agregar_a_paquete(paquete, pagina, sizeof(u_int32_t));
+    enviar_paquete(paquete, conexion_memoria);
+    eliminar_paquete(paquete);
+    int respuesta;
+    recv(conexion_memoria, &respuesta, sizeof(int), MSG_WAITALL);
+    actualizar_estado(pcb, READY);
+    pushear_semaforizado(cola_ready_prioritaria, pcb, mx_cola_ready_prioritaria);
+    loggear_colas_ready();
+    sem_post(&sem_procesos_ready);
 }
 
 void io_teclado(t_solicitud_io* solicitud) {
@@ -245,21 +292,3 @@ void io_otros_dispositivos(t_cola_bloqueo* cola_bloqueo) {
         liberar_solicitud(solicitud);
     }
 }
-
-/*void atender_page_fault(t_pcb* pcb_pf, int nro_pagina) {
-    sem_init(&sem_page_fault, 0, 1);
-    actualizar_estado(pcb_pf, BLOCKED);
-    // sem_wait(sem_page_fault);
-    solicitar_pagina_a_memoria(nro_pagina);    malloc()
-}
-
-t_pcb* page_fault(t_pcb* pcb_pf, int nro_pagina) {
-    pthread_create(t_page_fault, NULL, atender_page_fault, (pcb_pf, nro_pagina));
-}
-
-void solicitar_pagina_a_memoria(int nro_pagina) {
-    // Solicitar al modulo memoria que se cargue en memoria principal la pagina correspondiente, la misma sera obtenida desde el mensaje recibido de la CPU
-    // sem_post(sem_page_fault);
-}
-
-*/

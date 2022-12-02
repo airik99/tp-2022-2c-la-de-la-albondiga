@@ -7,8 +7,8 @@ t_queue *cola_new, *cola_ready_prioritaria, *cola_ready_segundo_nivel;
 t_list *lista_colas_bloqueo;
 
 pthread_mutex_t mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda;
-sem_t sem_procesos_new, sem_procesos_ready, sem_grado_multiprogramacion, sem_page_fault;
-pthread_t t_page_fault, t_largo_plazo, t_quantum, t_corto_plazo, t_manejo_consola;
+sem_t sem_procesos_new, sem_procesos_ready, sem_grado_multiprogramacion;
+pthread_t t_largo_plazo, t_quantum, t_corto_plazo, t_manejo_consola;
 
 
 char *estado_a_string[] = {"NEW", "READY", "EXEC", "BLOCKED", "EXIT"};
@@ -47,17 +47,17 @@ void destruir_estructuras() {
     string_array_destroy(config_valores.tiempos_io);
 }
 
-t_pcb *crear_nuevo_pcb(t_proceso *proceso_consola, int socket) {
+t_pcb *crear_nuevo_pcb(int socket) {
     t_pcb *nuevo_pcb = malloc(sizeof(t_pcb));
     nuevo_pcb->pid = contador_pid;
     contador_pid++;
     nuevo_pcb->socket_consola = socket;
-    nuevo_pcb->instrucciones = proceso_consola->instrucciones;
     for (int i = 0; i < 4; i++)
         nuevo_pcb->registro[i] = 0;
     nuevo_pcb->program_counter = 0;
     nuevo_pcb->estado_actual = NEW;
     nuevo_pcb->estado_anterior = NEW;
+    nuevo_pcb->tabla_segmentos = list_create();
     return nuevo_pcb;
 }
 

@@ -272,3 +272,38 @@ void enviar_pcb(t_pcb *pcb, op_code codigo_op, int socket) {
     enviar_paquete(paquete, socket);
     eliminar_paquete(paquete);
 }
+
+void enviar_pid_tamanio_segmentos(int socket_cliente, t_pcb *pcb) {
+    t_paquete *paquete = crear_paquete(INICIAR_PROCESO);
+    agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
+    for (int i = 0; i < list_size(pcb->tabla_segmentos); i++) {
+        t_segmento* entrada_ts = list_get(pcb->tabla_segmentos, i);
+        agregar_a_paquete(paquete, &(entrada_ts->tamanio_segmento), sizeof(u_int32_t));
+    }
+    enviar_paquete(paquete, socket_cliente);
+    eliminar_paquete(paquete);
+}
+
+void serializar_lista(t_paquete *paquete, t_list *lista) {
+    for (int i = 0; i < list_size(lista); i++) {
+        u_int32_t valor = list_get(lista, i);
+        agregar_a_paquete(paquete, &valor, sizeof(u_int32_t));
+    }
+}
+
+t_list *recibir_lista(int socket_cliente) {
+    int size;
+    int desplazamiento = 0;
+    void *buffer;
+
+    buffer = recibir_buffer(&size, socket_cliente);
+    t_list *lista= list_create();
+    while (desplazamiento < size) {
+        u_int32_t *valor = malloc(sizeof(u_int32_t));
+        memcpy(valor, buffer + desplazamiento, sizeof(u_int32_t));
+        list_add(lista, *valor);
+        desplazamiento += sizeof(u_int32_t);
+    }
+    free(buffer);
+    return lista;
+}

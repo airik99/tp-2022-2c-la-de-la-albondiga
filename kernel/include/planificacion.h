@@ -44,6 +44,7 @@ void recibir_pcb_cpu_RR();
 void recibir_pcb_cpu_FIFO();
 
 void manejar_bloqueo(t_solicitud_io* solicitud);
+void manejar_page_fault(t_pcb* pcb);
 
 void io_teclado(t_solicitud_io* solicitud);
 

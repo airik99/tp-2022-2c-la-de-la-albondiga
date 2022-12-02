@@ -68,23 +68,16 @@ void manejar_consolas(int socket_servidor) {
 void escuchar_consola(int socket_cliente) {
     log_info(logger, "Se conecto una consola");
     int cod_op = recibir_operacion(socket_cliente);
-    t_proceso *proceso;
     uint32_t respuesta;
     switch (cod_op) {
         case INSTRUCCIONES:
-            proceso = recibir_proceso(socket_cliente);
-            t_pcb *pcb = crear_nuevo_pcb(proceso, socket_cliente);
+            t_pcb *pcb = crear_nuevo_pcb(socket_cliente);
+            recibir_proceso(socket_cliente);
             log_info(logger, "Se crea el proceso <%d> en NEW", pcb->pid);
             pthread_mutex_lock(&mx_cola_new);
             queue_push(cola_new, pcb);
             pthread_mutex_unlock(&mx_cola_new);
             sem_post(&sem_procesos_new);
-            //  Por ahora borro estas cosas para que no salten MemLeaks con Valgrind despues hay
-            list_destroy(proceso->espacios_memoria);
-            free(proceso);
-            break;
-        case SEGMENTATION_FAULT:
-            log_info(logger, "Segmentation fault");
             break;
         default:
             respuesta = 1;

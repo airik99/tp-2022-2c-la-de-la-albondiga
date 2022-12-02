@@ -1,34 +1,48 @@
 #include "memoria.h"
 
-config_memoria config_valores;
-t_config* config;
-t_log* logger;
-t_list* tablas_segmentos;
-void* espacio_memoria;
-pthread_t manejar_conexion_cpu, manejar_conexion_kernel;
-int socket_cpu, socket_kernel, socket_servidor;
-char* ip;
-
-int main(int argc, char ** argv){
-	espacio_memoria = malloc(config_valores.tam_memoria);
-
+int main(int argc, char** argv) {
+    signal(SIGINT, manejador_seniales);
+    espacio_memoria = malloc(config_valores.tam_memoria);
     logger = log_create("cfg/memoria.log", "MEMORIA", true, LOG_LEVEL_INFO);
-	ip = "127.0.0.1";
+    cargar_configuracion();
+    pthread_mutex_init(&mx_conexion, NULL);
 
-    cargar_configuracion(); 
+    if (strcmp(config_valores.algoritmo_reemplazo, "CLOCK") == 0)
+        algoritmo_reemplazo = &algoritmo_clock;
+    else
+        algoritmo_reemplazo = &algoritmo_clock_mejorado;
 
-	FILE * fp;
+    espacio_memoria = malloc(config_valores.tam_memoria);
+    memset(espacio_memoria, '0', config_valores.tam_memoria);
 
-	fp = fopen (config_valores.path_swap, "w+");
+    cantidad_marcos_libres = ceil(config_valores.tam_memoria / config_valores.tam_pagina);
+    lista_marcos = list_create();
+    for (int i = 0; i < cantidad_marcos_libres; i++) {
+        t_marco* marco = malloc(sizeof(marco));
+        list_add(lista_marcos, marco);
+    }
 
-	//Si no funca el ftruncate, usar el truncate normal
-	ftruncate(fileno(fp), config_valores.tam_swap);
-	//lista_tablas = list_create(); //TODO Falta el tipo de dato de lista_tablas
-	
-	int socket_servidor = iniciar_servidor(config_valores.puerto);
+    int nro_bytes = ceil((double)cantidad_marcos_libres / 8);
+    marcos_libres = malloc(nro_bytes);
+    memset(marcos_libres, '0', nro_bytes);
+    nro_bytes = ceil((double)config_valores.tam_swap / (config_valores.tam_pagina * 8));
+    swap_libre = malloc(nro_bytes);
+    memset(swap_libre, '0', nro_bytes);
 
-    if (socket_servidor == -1)
-    {
+    bit_array_swap = bitarray_create_with_mode(marcos_libres, nro_bytes, LSB_FIRST);
+    bit_array_marcos_libres = bitarray_create_with_mode(swap_libre, nro_bytes, LSB_FIRST);
+
+    procesos_cargados = list_create();
+
+    fp = fopen(config_valores.path_swap, "w+");
+
+    // Si no funca el ftruncate, usar el truncate normal
+    ftruncate(fileno(fp), config_valores.tam_swap);
+    tablas_paginas = list_create();  // TODO Falta el tipo de dato de lista_tablas
+
+    int socket_servidor = iniciar_servidor(config_valores.puerto);
+
+    if (socket_servidor == -1) {
         log_info(logger, "Error al iniciar el servidor");
         return EXIT_FAILURE;
     }
@@ -36,184 +50,186 @@ int main(int argc, char ** argv){
     log_info(logger, "Memoria lista para recibir clientes");
 
     socket_cpu = esperar_cliente(socket_servidor);
+    log_info(logger, "CPU conectada");
+    t_paquete* paquete = crear_paquete(HANDSHAKE);
+    agregar_a_paquete(paquete, &config_valores.entradas_por_tabla, sizeof(int));
+    agregar_a_paquete(paquete, &config_valores.tam_pagina, sizeof(int));
+    enviar_paquete(paquete, socket_cpu);
+    eliminar_paquete(paquete);
 
-    log_info(logger, "CPU conectada. Cerrando programa");
+    socket_kernel = esperar_cliente(socket_servidor);
+    log_info(logger, "Kernel conectado");
 
-	socket_kernel = esperar_cliente(socket_servidor);
-
-	log_info(logger, "Kernel conectado. Cerrando programa");
-
-	//escuchar_clientes();
-
-	
-    pthread_create(&manejar_conexion_cpu, NULL, (void*) escuchar_clientes, (void*) socket_cpu);
-    pthread_create(&manejar_conexion_kernel, NULL, (void*) escuchar_clientes, (void*) socket_kernel);
-
-    pthread_join(manejar_conexion_cpu, NULL);
+    pthread_create(&manejar_conexion_kernel, NULL, (void*)escuchar_clientes, (void*)socket_kernel);
+    // pthread_create(&manejar_conexion_cpu, NULL, (void*)escuchar_clientes, (void*)socket_cpu);
     pthread_join(manejar_conexion_kernel, NULL);
+    // pthread_join(manejar_conexion_cpu, NULL);
 
-	liberar_conexion(socket_cpu);
-	config_destroy(config);
-	log_destroy(logger);
-	fclose(fp);
-	free(espacio_memoria);
-	return EXIT_SUCCESS;
+    liberar_conexion(socket_cpu);
+    liberar_conexion(socket_kernel);
+
+    config_destroy(config);
+    log_destroy(logger);
+    fclose(fp);
+    free(espacio_memoria);
+    return EXIT_SUCCESS;
 }
 
-void cargar_configuracion() {
-    
-	config = config_create("cfg/Memoria.config");
-    log_info(logger, "Arranco a leer el archivo de configuracion");
-
-	config_valores.entradas_por_tabla = config_get_int_value(config, "ENTRADAS_POR_TABLA");
-	config_valores.marcos_por_proceso = config_get_int_value(config, "MARCOS_POR_PROCESO");
-	config_valores.path_swap = config_get_string_value(config, "PATH_SWAP");
-	config_valores.puerto = config_get_string_value(config, "PUERTO_ESCUCHA");
-	config_valores.retardo_memoria = config_get_int_value(config, "RETARDO_MEMORIA");
-	config_valores.retardo_swap = config_get_int_value(config, "RETARDO_SWAP");
-	config_valores.tam_memoria = config_get_int_value(config, "TAM_MEMORIA");
-	config_valores.tam_pagina = config_get_int_value(config, "TAM_PAGINA");
-    config_valores.tam_swap = config_get_int_value(config, "TAMANIO_SWAP");
-
-    log_info(logger, "Termino de leer el archivo de configuracion");
-
+int escuchar_clientes(int socket) {
+    t_list* lista;
+    t_paquete* paquete;
+    int cod_op, id_tabla, pagina;
+    while (1) {
+        // pthread_mutex_lock(&mx_conexion);
+        cod_op = recibir_operacion(socket);
+        lista = recibir_lista(socket);
+        switch (cod_op) {
+            case INICIAR_PROCESO:
+                log_info(logger, "Recibi solicitud de iniciar proceso");
+                t_list* lista_id_tp = iniciar_estructuras(lista);
+                paquete = crear_paquete(INICIAR_PROCESO);
+                serializar_lista(paquete, lista_id_tp);
+                enviar_paquete(paquete, socket);
+                break;
+            case PAGE_FAULT:
+                id_tabla = list_get(lista, 0);
+                pagina = list_get(lista, 1);
+                cargar_pagina(id_tabla, pagina);
+                int respuesta = 0;
+                send(socket, &respuesta, sizeof(int), MSG_WAITALL);
+                break;
+            case ACCESO_TABLA_PAGINAS:
+                t_list* lista = recibir_lista(socket);
+                id_tabla = list_get(lista, 0);
+                pagina = list_get(lista, 1);
+                int numero_marco = obtener_marco(id_tabla, pagina);
+                send(socket, &numero_marco, sizeof(int), MSG_WAITALL);
+                break;
+            case LEER_DE_MEMORIA:
+                lista = recibir_lista(socket);
+                break;
+            case ESCRIBIR_EN_MEMORIA:
+                lista = recibir_lista(socket);
+                break;
+            case EXIT:
+                int pid = id_tabla = list_get(lista, 0);
+                finalizar_proceso(pid);
+                break;
+            case -1:
+                log_error(logger, "El cliente se desconecto. Terminando servidor");
+                return EXIT_FAILURE;
+            default:
+                log_warning(logger, "Operacion desconocida. No quieras meter la pata");
+                break;
+        }
+        // pthread_mutex_unlock(&mx_conexion);
+    }
+    return 0;
 }
 
-int escuchar_clientes(int socket){
-	t_pcb* paquete;
-	t_list* lista;
-	int cod_op;
-		while(1){
-			cod_op = recibir_operacion(socket);
-			switch (cod_op) {
-			case HANDSHAKE:
-				log_info(logger, "Recibi un handshake");
-				break;
-			case INICIAR_PROCESO:
-				log_info(logger, "Recibi solicitud de iniciar proceso");
-				lista = recibir_segmentos(socket);
-				iniciar_estructuras(lista);
-				break;
-			case PAGE_FAULT_REQUEST:
-				log_info(logger, "Recibi un page fault");
-				//TODO Deberia recibir un pcb o un numero de pagina?
-				paquete = recibir_pcb(socket);
-				obtener_pagina(paquete);
-				//TODO manejar la page fault de planificacion de kernel
-				break;
-			case ACCESO_TABLA_PAGINAS:
-				log_info(logger, "Recibi un acceso a tabla de paginas");
-				paquete = recibir_pcb(socket); //En paquete creo que recibo tablo y entrada
-				devolver_marco(paquete);
-				break;
-			case EXIT:
-				log_info(logger, "Salgo del programa");
-				paquete = recibir_pcb(socket);
-				finalizar_proceso(paquete);
-				break;
-			case TAM_PAGINA:
-				log_info(logger, "Le envio el tamanio de pagina a cpu");
-				enviar_configuracion_a_cpu(TAM_PAGINA, config_valores.tam_pagina);
-				break;
-			case ENTRADAS_POR_TABLA:
-				log_info(logger, "Le envio la cantidad de entradas por tabla a cpu");
-				enviar_configuracion_a_cpu(ENTRADAS_POR_TABLA, config_valores.entradas_por_tabla);
-				break;
-			case -1:
-				log_error(logger, "El cliente se desconecto. Terminando servidor");
-				return EXIT_FAILURE;
-			default:
-				log_warning(logger,"Operacion desconocida. No quieras meter la pata");
-				break;
-		}
-	}
-		return 0;
+t_list* iniciar_estructuras(t_list* tamanios_segmentos) {
+    int pid = list_get(tamanios_segmentos, 0);
+    proceso_en_memoria* proceso = malloc(sizeof(proceso_en_memoria));
+    proceso->pid = pid;
+    proceso->lista_marcos_asignados = list_create();
+    proceso->indice_ptro_remplazo = 0;
+    list_add_sorted(procesos_cargados, proceso, menor_pid);
+
+    t_list* lista_id_tp = list_create();
+    for (int i = 1; i < list_size(tamanios_segmentos); i++) {
+        int tamanio = list_get(tamanios_segmentos, i);
+
+        entrada_tablas_paginas* entrada_tp = malloc(sizeof(entrada_tablas_paginas));
+
+        entrada_tp->pid = pid;
+        entrada_tp->segmento = i - 1;
+        entrada_tp->tabla_de_paginas = list_create();
+
+        int cantidad_paginas = crear_tabla_paginas(entrada_tp->tabla_de_paginas, tamanio);
+        list_add(tablas_paginas, entrada_tp->tabla_de_paginas);
+        list_add(lista_id_tp, list_size(tablas_paginas) - 1);
+        log_info(logger, "Tablas creadas PID: <%d> - Segmento: <%d> -TAMAÑO: <%d> paginas", pid, i - 1, cantidad_paginas);
+    }
+    return lista_id_tp;
 }
 
-//TODO revisar que esto funcione
-void enviar_configuracion_a_cpu(int cod_op, int valor) {
-	t_paquete* paquete = crear_paquete(cod_op);
-	agregar_a_paquete(paquete, valor, sizeof(int));
-	enviar_paquete(paquete, socket_cpu);
+int crear_tabla_paginas(t_list* tabla_paginas, int tamanio_segmento) {
+    int cantidad_paginas = ceil((double)tamanio_segmento / config_valores.tam_pagina);
+    for (int i = 0; i < cantidad_paginas; i++) {
+        t_pagina* pagina = malloc(sizeof(t_pagina));
+        pagina->marco = 0;
+        pagina->presencia = 0;
+        pagina->uso = 0;
+        pagina->modificado = 0;
+        pagina->posicion_swap = asginar_espacio_swap();
+        list_add(tabla_paginas, pagina);
+    }
+    return cantidad_paginas;
 }
 
-void conectar_con_clientes() {
-	log_info(logger, "Iniciando servidor...");
+void finalizar_proceso(int pid) {
+    int i;
+    entrada_tablas_paginas* entrada = list_get(tablas_paginas, 0);
 
-	socket_servidor = iniciar_servidor(config_valores.puerto);
+    for (int i = 1; i < list_size(tablas_paginas) && entrada->pid != pid; i++)
+        entrada = list_get(tablas_paginas, i);
 
-	sleep(5);
+    while (entrada->pid == pid) {
+        list_iterate(entrada->tabla_de_paginas, (void*)liberar_swap_pagina);
+        entrada = list_get(tablas_paginas, i);
+        i++;
+    }
 
-	log_info(logger, "Memoria lista para recibir un cliente\n");
-
-	socket_cpu = esperar_cliente(socket_servidor);
-
+    proceso_en_memoria* proceso = obtener_proceso_por_pid(pid);
+    list_iterate(proceso->lista_marcos_asignados, (void*)liberar_marcos_pagina);
+    list_destroy(proceso->lista_marcos_asignados);
+    free(proceso);
 }
 
-void iterator(char* value) {
-	log_info(logger,"%s", value);
+void liberar_swap_pagina(t_pagina* pag) {
+    int pos_swap = pag->posicion_swap;
+    int bit = floor((double)pos_swap / config_valores.tam_pagina);
+    bitarray_clean_bit(bit_array_swap, bit);
 }
 
-void recibir_mensaje(int socket_cliente) {
-	int size;
-	char* buffer = recibir_buffer(&size, socket_cliente);
-	free(buffer);
+void liberar_marcos_pagina(int numero_marco) {
+    bitarray_clean_bit(bit_array_marcos_libres, numero_marco);
+    cantidad_marcos_libres++;
 }
 
-void iniciar_estructuras(t_list* segmentos){
-	/*t_list* direcciones = list_create();
-	for(int i = 0, i < list_size(segmentos), i++){
-		int tamanio_segmento = list_get(segmentos, i);
-		entrada_tabla_paginas* entrada = malloc(sizeof(entrada_tabla_paginas));
-		entrada->marco = 0;
-		entrada->presencia = 0;
-		entrada->uso = 0;
-		entrada->modificado = 0;
-		entrada->posicion_swap = cargar_en_swap(tamanio_segmento); 
-		list_add(lista)
-	}*/
+int obtener_marco(int id_tabla, int num_pagina) {
+    usleep(config_valores.retardo_memoria * 1000);
+    entrada_tablas_paginas* entrada_tp = list_get(tablas_paginas, id_tabla);
+    t_pagina* pagina = list_get(entrada_tp->tabla_de_paginas, num_pagina);
+    if (pagina->presencia == 1) {
+        log_info(logger, "PID: <%d> - Página: <%d> - Marco: <%d>", entrada_tp->pid, num_pagina, pagina->marco);
+    }
+    return pagina->marco;
+    return -1;
 }
 
-void finalizar_proceso(t_pcb* pcb){
-	//TODO Liberar espacio en memoria y el espacio en swap
+uint32_t leer_memoria(int direccion) {
+    uint32_t leido;
+    void* posicion = direccion + espacio_memoria;
+    int num_marco = floor((double)direccion / config_valores.tam_pagina);
+    t_marco* marco = list_get(lista_marcos, num_marco);
+    memcpy(&leido, posicion, sizeof(uint32_t));
+    marco->pagina->modificado = 1;
+    marco->pagina->uso = 1;
+
+    log_info(logger, "PID: <%d> - Acción: <LEER> - Dirección física: <%d>", marco->pid, direccion);
+    return leido;
 }
 
-void obtener_pagina(t_pcb* pcb){
-	//TODO Buscar la pagina en el SWAP y escribirla en memoria
-	bool memoria_llena = true;
-	if(memoria_llena){
-		int pagina_victima = algoritmo_reemplazo();
-		//if(pagina_victima_fue_modificada){
-			//TODO Guardar en swap la pagina victima
-		// }
-		usleep(config_valores.retardo_memoria);
-		//TODO Eliminar de memoria la pagina victima y poner la pagina nueva
-	}
-}
+void escribir_en_memoria(u_int32_t valor, int direccion) {
+    void* posicion = espacio_memoria + direccion;
+    memcpy(posicion, &valor, sizeof(u_int32_t));
 
-int algoritmo_reemplazo(){
-	//TODO
-	return 0;
-}
+    int num_marco = floor((double)direccion / config_valores.tam_pagina);
+    t_marco* marco = list_get(lista_marcos, num_marco);
 
-void devolver_marco(t_paquete* paquete){
-	usleep(config_valores.retardo_memoria);
-	uint32_t tabla = list_get(paquete, 0);
-	uint32_t entrada = list_get(paquete, 1);
-	//TODO
-}
+    marco->pagina->modificado = 1;
+    marco->pagina->uso = 1;
 
-void devolver_valor(t_paquete* paquete){
-	usleep(config_valores.retardo_memoria);
-	//TODO
-}
-
-void guardar_valor(t_paquete* paquete){
-	usleep(config_valores.retardo_memoria);
-	//TODO
-}
-
-//TODO
-int cargar_en_swap(int tamanio_segmento){
-	return 0;
+    log_info(logger, "PID: <%d> - Acción: <ESCRIBIR> - Dirección física: <%d>", marco->pid, direccion);
 }

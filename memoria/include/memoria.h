@@ -1,41 +1,18 @@
 #ifndef MEMORIA_H
 #define MEMORIA_H
 
-#include "shared_utils.h"
-#include "conexion.h"
-#include "serializacion.h"
-#include "tests.h"
+#include <memoria_utils.h>
+#include <swap.h>
 
-typedef struct config_memoria {
-	char* puerto;
-	int tam_memoria;
-	int tam_pagina;
-	int tam_swap;
-	int entradas_por_tabla;
-	int retardo_memoria;
-	char* algoritmo_reemplazo;
-	int marcos_por_proceso;
-	int retardo_swap;
-	char* path_swap;
-	int tam_swap;
-} config_memoria;
+pthread_mutex_t mx_conexion; 
 
-typedef struct entrada_tabla_paginas {
-	int marco;
-	int presencia;
-	int uso;
-	int modificado;
-	int posicion_swap;
-} entrada_tabla_paginas;
-
-void cargar_configuracion();
-void conectar_con_clientes(void);
+t_list* iniciar_estructuras(t_list* segmentos);
 int escuchar_clientes(int);
-void iniciar_tabla(t_list* segmentos);
-void iterator(char*);
+int crear_tabla_paginas(t_list*, int);
+void finalizar_proceso(int);
+int obtener_marco(int, int);
+void liberar_swap_pagina(t_pagina* pag);
+void liberar_marcos_pagina(int);
 
-/*Agrega un segmento de cierto tamaño al swap y devuelve la posicion de inicio*/
-int cargar_segmento_en_swap(int ); 
 
-#endif
-
+#endif  // MACRO

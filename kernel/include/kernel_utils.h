@@ -2,7 +2,7 @@
 #define KERNEL_UTILS_H
 
 #include "shared_utils.h"
-#include <signal.h>
+
 
 typedef struct {
     char *ip_memoria;
@@ -43,8 +43,9 @@ extern char *estado_a_string[5];
 extern t_queue *cola_new, *cola_ready_prioritaria, *cola_ready_segundo_nivel;
 extern t_list *lista_colas_bloqueo;
 extern pthread_mutex_t mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda;
-extern pthread_t t_page_fault, t_quantum, t_largo_plazo, t_corto_plazo, t_manejo_consola;
+extern pthread_t t_quantum, t_largo_plazo, t_corto_plazo, t_manejo_consola;
 extern sem_t sem_procesos_new, sem_procesos_ready, sem_grado_multiprogramacion, sem_page_fault;
+
 
 /**
  * @brief Crea el logger del kernel
@@ -72,7 +73,7 @@ void destruir_estructuras();
  *
  * @return El pcb de un proceso.
  */
-t_pcb *crear_nuevo_pcb(t_proceso *proceso, int socket);
+t_pcb *crear_nuevo_pcb(int socket);
 
 /**
  * @brief Destruye todas las colas y los pcb que tengan

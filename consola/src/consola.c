@@ -127,6 +127,9 @@ void esperar_respuesta(int socket) {
         case PCB_EXIT:
             log_info(logger, "Ejecucion finalizada");
             break;
+        case SEGMENTATION_FAULT:
+            log_error(logger, "SEGMENTATION FAULT");
+            break;
         default:
             log_error(logger, "Error en la respuesta del kernel");
             break;
