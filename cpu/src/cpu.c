@@ -14,10 +14,9 @@ int main(int argc, char** argv) {
     
     conexion_memoria = conectarse_a_servidor(config_valores.ip_memoria, config_valores.puerto_memoria);
     error_conexion(conexion_memoria);
-    // pthread_create(&t_conexion_memoria, NULL, conexion_inicial_memoria, NULL);
+    int id_handshake = 0;
+    send(conexion_memoria, &id_handshake, sizeof(int), MSG_WAITALL);
     log_info(logger, "Conexion con memoria exitosa \n");
-
-
     op_code operacion = recibir_operacion(conexion_memoria);
     t_list* lista = recibir_lista(conexion_memoria);
     cant_entradas_por_tabla = list_get(lista, 0);

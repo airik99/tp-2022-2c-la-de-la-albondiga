@@ -27,7 +27,9 @@ int main(int argc, char **argv) {
         log_destroy(logger);
         return EXIT_FAILURE;
     }
-
+    int id_handshake = 1;
+    send(conexion_memoria, &id_handshake, sizeof(int), MSG_WAITALL);
+    recv(conexion_memoria, &id_handshake, sizeof(int), MSG_WAITALL);
     log_info(logger, "Conexion con memoria exitosa");
 
     // CONEXION CON CPU
@@ -69,13 +71,13 @@ int main(int argc, char **argv) {
 
 void manejar_consolas(int socket_servidor) {
     while (1) {
-        //int socket_cliente = malloc(sizeof(int));
+        // int socket_cliente = malloc(sizeof(int));
         //*socket_cliente = esperar_cliente(socket_servidor);
         int socket_cliente = esperar_cliente(socket_servidor);
         pthread_t t;
         pthread_create(&t, NULL, (void *)escuchar_consola, socket_cliente);
         pthread_detach(t);
-        //free(socket_cliente);
+        // free(socket_cliente);
     }
 }
 

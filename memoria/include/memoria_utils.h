@@ -53,11 +53,13 @@ int primero_libre(t_bitarray* bitarray, int cantidad_elementos);
 bool coincide_pid(proceso_en_memoria* a, proceso_en_memoria* b);
 bool menor_pid(proceso_en_memoria* a, proceso_en_memoria* b);
 proceso_en_memoria* obtener_proceso_por_pid(int pid);
-void manejador_seniales(int senial); 
 void borrar_todo();
 void eliminar_proceso_en_memoria(proceso_en_memoria* p);
 void eliminar_entrada_tabla_pagina(entrada_tablas_paginas* tp);
 void eliminar_tabla_pagina(t_pagina* p);
+void handshake_cliente(int);
+void escuchar_kernel(int);
+void escuchar_cpu(int);
 
 /**
  * @brief Puntero a funcion de reemplazo, se asigna segun el valor de config;
@@ -76,7 +78,7 @@ extern FILE* fp;
 extern t_bitarray* bit_array_swap;
 extern t_bitarray* bit_array_marcos_libres;
 extern pthread_t manejar_conexion_cpu, manejar_conexion_kernel;
-extern int socket_cpu, socket_kernel, socket_servidor;
+extern int socket_cliente_1, socket_cliente_2, socket_servidor;
 extern pthread_mutex_t mx_conexion; 
 
 #endif

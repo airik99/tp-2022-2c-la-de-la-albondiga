@@ -6,7 +6,6 @@
 
 
 t_list* iniciar_estructuras(t_list* segmentos);
-void escuchar_clientes(int);
 int crear_tabla_paginas(t_list*, int);
 void finalizar_proceso(int);
 int obtener_marco(int, int);

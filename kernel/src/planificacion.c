@@ -41,7 +41,6 @@ void iniciar_planificador_corto_plazo(void) {
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_RR, NULL);
 
     pthread_detach(t_corto_plazo);
-    log_info(logger, "Iniciado el Planificador de corto plazo con algoritmo %s", config_valores.algoritmo_planificacion);
 }
 
 void planificar_largo() {
@@ -167,7 +166,6 @@ void esperar_quantum() {
     usleep(config_valores.quantum_rr * 1000);
     int interrupcion = 1;
     send(conexion_cpu_interrupt, &interrupcion, sizeof(uint32_t), MSG_WAITALL);
-    log_info(logger, "Interrupcion por quantum enviada.");
 }
 
 //--------------------FEEDBACK--------------------------------

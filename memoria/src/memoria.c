@@ -5,45 +5,15 @@ int main(int argc, char** argv) {
         puts("FALTO CONFIG");
         return EXIT_FAILURE;
     }
-    signal(SIGINT, manejador_seniales);
-    char* path_config = argv[1];
 
+    char* path_config = argv[1];
     logger = log_create("cfg/memoria.log", "MEMORIA", true, LOG_LEVEL_INFO);
     cargar_configuracion(path_config);
-    pthread_mutex_init(&mx_conexion, NULL);
-
+    iniciar_estructuras_memoria();
     if (strcmp(config_valores.algoritmo_reemplazo, "CLOCK") == 0)
         algoritmo_reemplazo = &algoritmo_clock;
     else
         algoritmo_reemplazo = &algoritmo_clock_mejorado;
-
-    espacio_memoria = malloc(config_valores.tam_memoria);
-    memset(espacio_memoria, '0', config_valores.tam_memoria);
-
-    cantidad_marcos_libres = ceil(config_valores.tam_memoria / config_valores.tam_pagina);
-    lista_marcos = list_create();
-    for (int i = 0; i < cantidad_marcos_libres; i++) {
-        t_marco* marco = malloc(sizeof(t_marco));
-        list_add(lista_marcos, marco);
-    }
-
-    int nro_bytes = ceil((double)cantidad_marcos_libres / 8);
-    marcos_libres = malloc(nro_bytes);
-    memset(marcos_libres, '0', nro_bytes);
-    nro_bytes = ceil((double)config_valores.tam_swap / (config_valores.tam_pagina * 8));
-    swap_libre = malloc(nro_bytes);
-    memset(swap_libre, '0', nro_bytes);
-
-    bit_array_swap = bitarray_create_with_mode(marcos_libres, nro_bytes, LSB_FIRST);
-    bit_array_marcos_libres = bitarray_create_with_mode(swap_libre, nro_bytes, LSB_FIRST);
-
-    procesos_cargados = list_create();
-
-    fp = fopen(config_valores.path_swap, "w+");
-
-    // Si no funca el ftruncate, usar el truncate normal
-    ftruncate(fileno(fp), config_valores.tam_swap);
-    tablas_paginas = list_create();  // TODO Falta el tipo de dato de lista_tablas
 
     socket_servidor = iniciar_servidor(config_valores.puerto);
     if (socket_servidor == -1) {
@@ -54,36 +24,33 @@ int main(int argc, char** argv) {
 
     log_info(logger, "Memoria lista para recibir clientes");
 
-    socket_cpu = esperar_cliente(socket_servidor);
-    log_info(logger, "CPU conectada");
-    t_paquete* paquete = crear_paquete(HANDSHAKE);
-    agregar_a_paquete(paquete, &config_valores.entradas_por_tabla, sizeof(int));
-    agregar_a_paquete(paquete, &config_valores.tam_pagina, sizeof(int));
-    enviar_paquete(paquete, socket_cpu);
-    eliminar_paquete(paquete);
-
-    socket_kernel = esperar_cliente(socket_servidor);
-
-    if (socket_kernel == -1) {
-        log_info(logger, "Error al iniciar el servidor");
+    int socket_cliente_1 = esperar_cliente(socket_servidor);
+    if (socket_cliente_1 == -1) {
+        log_info(logger, "Error de conexion con cliente");
         borrar_todo();
         return EXIT_FAILURE;
     }
-    log_info(logger, "Kernel conectado");
+    handshake_cliente(socket_cliente_1);
 
-    pthread_create(&manejar_conexion_kernel, NULL, (void*)escuchar_clientes, (void*)socket_kernel);
-    pthread_create(&manejar_conexion_cpu, NULL, (void*)escuchar_clientes, (void*)socket_cpu);
+    int socket_cliente_2 = esperar_cliente(socket_servidor);
+    if (socket_cliente_2 == -1) {
+        log_info(logger, "Error de conexion con cliente");
+        borrar_todo();
+        return EXIT_FAILURE;
+    }
+    handshake_cliente(socket_cliente_2);
 
     pthread_join(manejar_conexion_kernel, NULL);
     pthread_join(manejar_conexion_cpu, NULL);
 
     liberar_conexion(socket_servidor);
-    liberar_conexion(socket_cpu);
+    liberar_conexion(socket_cliente_1);
+    liberar_conexion(socket_cliente_2);
     borrar_todo();
     return EXIT_SUCCESS;
 }
 
-void escuchar_clientes(int socket) {
+void escuchar_kernel(int socket) {
     t_list* lista;
     t_paquete* paquete;
     int cod_op, id_tabla, pagina, respuesta;
@@ -111,6 +78,33 @@ void escuchar_clientes(int socket) {
                 send(socket, &respuesta, sizeof(int), MSG_WAITALL);
                 list_destroy(lista);
                 break;
+            case EXIT:
+                lista = recibir_lista(socket);
+                int pid = list_get(lista, 0);
+                finalizar_proceso(pid);
+                list_destroy(lista);
+                break;
+            case -1:
+                log_error(logger, "El cliente se desconecto. Terminando servidor");
+                pthread_mutex_unlock(&mx_conexion);
+                return;
+            default:
+                log_warning(logger, "Operacion desconocida. No quieras meter la pata");
+                break;
+        }
+        pthread_mutex_unlock(&mx_conexion);
+    }
+}
+
+void escuchar_cpu(int socket) {
+    t_list* lista;
+    t_paquete* paquete;
+    int cod_op, id_tabla, pagina, respuesta;
+    u_int32_t direccion, valor;
+    while (1) {
+        cod_op = recibir_operacion(socket);
+        pthread_mutex_lock(&mx_conexion);
+        switch (cod_op) {
             case ACCESO_TABLA_PAGINAS:
                 lista = recibir_lista(socket);
                 id_tabla = list_get(lista, 0);
@@ -133,12 +127,6 @@ void escuchar_clientes(int socket) {
                 escribir_en_memoria(valor, direccion);
                 respuesta = 0;
                 send(socket, &respuesta, sizeof(int), MSG_WAITALL);
-                list_destroy(lista);
-                break;
-            case EXIT:
-                lista = recibir_lista(socket);
-                int pid = list_get(lista, 0);
-                finalizar_proceso(pid);
                 list_destroy(lista);
                 break;
             case -1:
