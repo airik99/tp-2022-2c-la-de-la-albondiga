@@ -46,7 +46,7 @@ typedef struct proceso_en_memoria {
     int indice_ptro_remplazo;
 } proceso_en_memoria;
 
-void cargar_configuracion();
+void cargar_configuracion(char* path);
 bool hay_marcos_disponibles(proceso_en_memoria*);
 int cantidad_marcos_asignados(proceso_en_memoria*);
 int primero_libre(t_bitarray* bitarray, int cantidad_elementos);
@@ -54,6 +54,10 @@ bool coincide_pid(proceso_en_memoria* a, proceso_en_memoria* b);
 bool menor_pid(proceso_en_memoria* a, proceso_en_memoria* b);
 proceso_en_memoria* obtener_proceso_por_pid(int pid);
 void manejador_seniales(int senial); 
+void borrar_todo();
+void eliminar_proceso_en_memoria(proceso_en_memoria* p);
+void eliminar_entrada_tabla_pagina(entrada_tablas_paginas* tp);
+void eliminar_tabla_pagina(t_pagina* p);
 
 /**
  * @brief Puntero a funcion de reemplazo, se asigna segun el valor de config;

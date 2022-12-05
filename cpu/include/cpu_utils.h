@@ -44,7 +44,7 @@ extern t_pcb* pcb_actual;
 extern int num_pagina_actual, num_segmento_actual;
 extern pthread_mutex_t mx_traduccion_direccion_logica;
 
-void cargar_configuracion(); //carga todo lo del archivo de configuracion del cpu
+void cargar_configuracion(char* path); //carga todo lo del archivo de configuracion del cpu
 
 void liberar_todo(); //libera conexiones, estructuras, logger, etc...
 

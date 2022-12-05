@@ -324,9 +324,9 @@ t_list *recibir_lista(int socket_cliente) {
     buffer = recibir_buffer(&size, socket_cliente);
     t_list *lista = list_create();
     while (desplazamiento < size) {
-        u_int32_t *valor = malloc(sizeof(u_int32_t));
-        memcpy(valor, buffer + desplazamiento, sizeof(u_int32_t));
-        list_add(lista, *valor);
+        u_int32_t valor;
+        memcpy(&valor, buffer + desplazamiento, sizeof(u_int32_t));
+        list_add(lista, valor);
         desplazamiento += sizeof(u_int32_t);
     }
     free(buffer);

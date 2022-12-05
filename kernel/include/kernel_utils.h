@@ -53,7 +53,7 @@ void iniciar_logger();
  * @brief Carga los valores del archivo config
  *
  */
-void cargar_configuracion();
+void cargar_configuracion(char* path);
 
 /**
  * @brief Libera memoria asignada a logs, config y otras estructuras

@@ -22,8 +22,8 @@ void iniciar_logger() {
     logger = log_create("cfg/kernel.log", "KERNEL", true, LOG_LEVEL_INFO);
 }
 
-void cargar_configuracion() {
-    config = config_create("cfg/Kernel.config");
+void cargar_configuracion(char* path) {
+    config = config_create(path);
     log_info(logger, "Arranco a leer el archivo de configuracion");
     config_valores.ip_memoria = config_get_string_value(config, "IP_MEMORIA");
     config_valores.puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
@@ -154,9 +154,7 @@ void manejador_seniales(int senial) {
     switch (senial) {
         case SIGINT:
             log_info(logger, "Cerrando hilos");
-            pthread_cancel(t_corto_plazo);
             pthread_cancel(t_manejo_consola);
-            pthread_cancel(t_largo_plazo);
             break;
     }
 }

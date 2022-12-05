@@ -57,6 +57,7 @@ void planificar_largo() {
             t_segmento* segmento = list_get(pcb->tabla_segmentos, i);
             segmento->indice_tabla_paginas = valor;
         }
+        list_destroy(lista_ids);
         pushear_semaforizado(cola_ready_prioritaria, pcb, mx_cola_ready_prioritaria);
         actualizar_estado(pcb, READY);
         loggear_colas_ready();
@@ -250,7 +251,7 @@ void esperar_carga_pagina(t_pcb* pcb) {
 void generar_seg_fault() {
     t_pcb* pcb = recibir_pcb(conexion_cpu_dispatch);
     t_paquete* paquete = crear_paquete(EXIT);
-    agregar_a_paquete(paquete, &(pcb->pid), sizeof(int));
+    agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
     enviar_paquete(paquete, conexion_memoria);
     eliminar_paquete(paquete);
     paquete = crear_paquete(SEGMENTATION_FAULT);
@@ -263,10 +264,14 @@ void generar_seg_fault() {
 void terminar_proceso() {
     t_pcb* pcb = recibir_pcb(conexion_cpu_dispatch);
     actualizar_estado(pcb, EXIT);
-    sem_post(&sem_grado_multiprogramacion);
+    t_paquete* paquete = crear_paquete(EXIT);
+    agregar_a_paquete(paquete, &(pcb->pid), sizeof(int));
+    enviar_paquete(paquete, conexion_memoria);
+    eliminar_paquete(paquete);
     op_code codigo_exit = PCB_EXIT;
     send(pcb->socket_consola, &codigo_exit, sizeof(op_code), MSG_WAITALL);
     eliminar_pcb(pcb);
+    sem_post(&sem_grado_multiprogramacion);
 }
 void io_teclado(t_solicitud_io* solicitud) {
     int respuesta;

@@ -11,7 +11,6 @@
 //estructuras
 
 //funciones
-void cargar_configuracion();
 
 /**
  * @brief Funcion que se encarga de esperar la conexion de una consola

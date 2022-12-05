@@ -10,20 +10,18 @@ FILE* fp;
 t_bitarray* bit_array_swap;
 t_bitarray* bit_array_marcos_libres;
 int (*algoritmo_reemplazo)(proceso_en_memoria*);
-pthread_mutex_t mx_conexion; 
+pthread_mutex_t mx_conexion;
 
 pthread_t manejar_conexion_cpu, manejar_conexion_kernel;
 int socket_cpu, socket_kernel, socket_servidor;
 
-void cargar_configuracion() {
-    config = config_create("cfg/Memoria.config");
+void cargar_configuracion(char* path) {
+    config = config_create(path);
     log_info(logger, "Arranco a leer el archivo de configuracion");
-
     config_valores.puerto = config_get_string_value(config, "PUERTO_ESCUCHA");
     config_valores.tam_memoria = config_get_int_value(config, "TAM_MEMORIA");
     config_valores.tam_pagina = config_get_int_value(config, "TAM_PAGINA");
     config_valores.tam_swap = config_get_int_value(config, "TAMANIO_SWAP");
-
     config_valores.entradas_por_tabla = config_get_int_value(config, "ENTRADAS_POR_TABLA");
     config_valores.retardo_memoria = config_get_int_value(config, "RETARDO_MEMORIA");
     config_valores.algoritmo_reemplazo = config_get_string_value(config, "ALGORITMO_REEMPLAZO");
@@ -66,9 +64,35 @@ proceso_en_memoria* obtener_proceso_por_pid(int pid) {
 void manejador_seniales(int senial) {
     switch (senial) {
         case SIGINT:
+            pthread_mutex_unlock(&mx_conexion);
+            pthread_mutex_destroy(&mx_conexion);
             pthread_cancel(manejar_conexion_kernel);
             pthread_cancel(manejar_conexion_cpu);
-            liberar_conexion(socket_servidor);
             break;
     }
+}
+
+void borrar_todo() {
+    free(espacio_memoria);
+    fclose(fp);
+    log_destroy(logger);
+    config_destroy(config);
+    pthread_mutex_destroy(&mx_conexion);
+    free(marcos_libres);
+    free(swap_libre);
+    bitarray_destroy(bit_array_marcos_libres);
+    bitarray_destroy(bit_array_swap);
+    list_destroy_and_destroy_elements(lista_marcos, free);
+    list_destroy_and_destroy_elements(tablas_paginas, eliminar_entrada_tabla_pagina);
+    list_destroy(procesos_cargados);
+}
+
+void eliminar_proceso_en_memoria(proceso_en_memoria* p) {
+    list_destroy(p->lista_marcos_asignados);
+    free(p);
+}
+
+void eliminar_entrada_tabla_pagina(entrada_tablas_paginas* tp) {
+    list_destroy_and_destroy_elements(tp->tabla_de_paginas, free);
+    free(tp);
 }

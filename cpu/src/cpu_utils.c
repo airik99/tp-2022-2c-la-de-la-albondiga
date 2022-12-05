@@ -12,8 +12,8 @@ t_pcb* pcb_actual;
 t_list* tlb;
 pthread_mutex_t mx_traduccion_direccion_logica;
 
-void cargar_configuracion() {
-    config = config_create("cfg/Cpu.config");
+void cargar_configuracion(char* path) {
+    config = config_create(path);
     log_info(logger, "Arranco a leer el archivo de configuracion \n");
 
     config_valores.entradas_tlb = config_get_int_value(config, "ENTRADAS_TLB");
@@ -38,9 +38,4 @@ void liberar_todo() {
 void copiar_valores_registros(int* origen, int* destino) {
     for (int i = 0; i < 4; i++)
         *(destino + i) = *(origen + i);
-}
-
-void finalizar() {
-    pthread_cancel(hilo_dispatch);
-    pthread_cancel(hilo_interrupt);
 }

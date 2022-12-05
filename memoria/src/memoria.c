@@ -1,10 +1,15 @@
 #include "memoria.h"
 
 int main(int argc, char** argv) {
+    if (argc < 2) {
+        puts("FALTO CONFIG");
+        return EXIT_FAILURE;
+    }
     signal(SIGINT, manejador_seniales);
-    espacio_memoria = malloc(config_valores.tam_memoria);
+    char* path_config = argv[1];
+
     logger = log_create("cfg/memoria.log", "MEMORIA", true, LOG_LEVEL_INFO);
-    cargar_configuracion();
+    cargar_configuracion(path_config);
     pthread_mutex_init(&mx_conexion, NULL);
 
     if (strcmp(config_valores.algoritmo_reemplazo, "CLOCK") == 0)
@@ -18,7 +23,7 @@ int main(int argc, char** argv) {
     cantidad_marcos_libres = ceil(config_valores.tam_memoria / config_valores.tam_pagina);
     lista_marcos = list_create();
     for (int i = 0; i < cantidad_marcos_libres; i++) {
-        t_marco* marco = malloc(sizeof(marco));
+        t_marco* marco = malloc(sizeof(t_marco));
         list_add(lista_marcos, marco);
     }
 
@@ -41,10 +46,9 @@ int main(int argc, char** argv) {
     tablas_paginas = list_create();  // TODO Falta el tipo de dato de lista_tablas
 
     socket_servidor = iniciar_servidor(config_valores.puerto);
-
     if (socket_servidor == -1) {
         log_info(logger, "Error al iniciar el servidor");
-        liberar_conexion(socket_servidor);
+        borrar_todo();
         return EXIT_FAILURE;
     }
 
@@ -62,6 +66,7 @@ int main(int argc, char** argv) {
 
     if (socket_kernel == -1) {
         log_info(logger, "Error al iniciar el servidor");
+        borrar_todo();
         return EXIT_FAILURE;
     }
     log_info(logger, "Kernel conectado");
@@ -72,10 +77,9 @@ int main(int argc, char** argv) {
     pthread_join(manejar_conexion_kernel, NULL);
     pthread_join(manejar_conexion_cpu, NULL);
 
-    config_destroy(config);
-    log_destroy(logger);
-    fclose(fp);
-    free(espacio_memoria);
+    liberar_conexion(socket_servidor);
+    liberar_conexion(socket_cpu);
+    borrar_todo();
     return EXIT_SUCCESS;
 }
 
@@ -87,55 +91,66 @@ void escuchar_clientes(int socket) {
     while (1) {
         cod_op = recibir_operacion(socket);
         pthread_mutex_lock(&mx_conexion);
-        lista = recibir_lista(socket);
         switch (cod_op) {
             case INICIAR_PROCESO:
-                log_info(logger, "Recibi solicitud de iniciar proceso");
+                lista = recibir_lista(socket);
                 t_list* lista_id_tp = iniciar_estructuras(lista);
                 paquete = crear_paquete(INICIAR_PROCESO);
                 serializar_lista(paquete, lista_id_tp);
                 enviar_paquete(paquete, socket);
+                eliminar_paquete(paquete);
+                list_destroy(lista);
+                list_destroy(lista_id_tp);
                 break;
             case PAGE_FAULT:
+                lista = recibir_lista(socket);
                 id_tabla = list_get(lista, 0);
                 pagina = list_get(lista, 1);
                 cargar_pagina(id_tabla, pagina);
                 respuesta = 0;
                 send(socket, &respuesta, sizeof(int), MSG_WAITALL);
+                list_destroy(lista);
                 break;
             case ACCESO_TABLA_PAGINAS:
+                lista = recibir_lista(socket);
                 id_tabla = list_get(lista, 0);
                 pagina = list_get(lista, 1);
                 int numero_marco = obtener_marco(id_tabla, pagina);
                 send(socket, &numero_marco, sizeof(int), MSG_WAITALL);
+                list_destroy(lista);
                 break;
             case LEER_DE_MEMORIA:
+                lista = recibir_lista(socket);
                 direccion = list_get(lista, 0);
                 u_int32_t leido = leer_memoria(direccion);
                 send(socket, &leido, sizeof(u_int32_t), MSG_WAITALL);
+                list_destroy(lista);
                 break;
             case ESCRIBIR_EN_MEMORIA:
+                lista = recibir_lista(socket);
                 direccion = list_get(lista, 0);
                 valor = list_get(lista, 1);
                 escribir_en_memoria(valor, direccion);
                 respuesta = 0;
                 send(socket, &respuesta, sizeof(int), MSG_WAITALL);
+                list_destroy(lista);
                 break;
             case EXIT:
+                lista = recibir_lista(socket);
                 int pid = list_get(lista, 0);
                 finalizar_proceso(pid);
+                list_destroy(lista);
                 break;
             case -1:
                 log_error(logger, "El cliente se desconecto. Terminando servidor");
+                pthread_mutex_unlock(&mx_conexion);
                 return;
             default:
                 log_warning(logger, "Operacion desconocida. No quieras meter la pata");
                 break;
         }
-        free(lista);
         pthread_mutex_unlock(&mx_conexion);
     }
-    return 0;
 }
 
 t_list* iniciar_estructuras(t_list* tamanios_segmentos) {
@@ -183,10 +198,10 @@ void finalizar_proceso(int pid) {
     int i;
     entrada_tablas_paginas* entrada = list_get(tablas_paginas, 0);
 
-    for (int i = 1; i < list_size(tablas_paginas) && entrada->pid != pid; i++)
+    for (i = 1; i < list_size(tablas_paginas) && entrada->pid != pid; i++)
         entrada = list_get(tablas_paginas, i);
 
-    while (entrada->pid == pid) {
+    while (entrada->pid == pid && i < list_size(tablas_paginas)) {
         list_iterate(entrada->tabla_de_paginas, (void*)liberar_swap_pagina);
         entrada = list_get(tablas_paginas, i);
         i++;
@@ -194,8 +209,7 @@ void finalizar_proceso(int pid) {
 
     proceso_en_memoria* proceso = obtener_proceso_por_pid(pid);
     list_iterate(proceso->lista_marcos_asignados, (void*)liberar_marcos_pagina);
-    list_destroy(proceso->lista_marcos_asignados);
-    free(proceso);
+    eliminar_proceso_en_memoria(proceso);
 }
 
 void liberar_swap_pagina(t_pagina* pag) {

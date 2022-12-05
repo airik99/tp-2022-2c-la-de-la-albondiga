@@ -30,7 +30,7 @@ int elegir_marco(proceso_en_memoria* proceso, int num_segmento, int num_pagina) 
     t_marco* marco;
     int numero_marco;
     if (hay_marcos_disponibles(proceso)) {
-        numero_marco = primero_libre(bit_array_marcos_libres, ceil(config_valores.tam_memoria / config_valores.tam_pagina));
+        numero_marco = primero_libre(bit_array_marcos_libres, floor(config_valores.tam_memoria / config_valores.tam_pagina));
         list_add(proceso->lista_marcos_asignados, numero_marco);
         marco = list_get(lista_marcos, numero_marco);
         bitarray_set_bit(bit_array_marcos_libres, numero_marco);
@@ -113,11 +113,11 @@ int asginar_espacio_swap() {
     void* vacio = malloc(config_valores.tam_pagina);
     memset(vacio, '0', config_valores.tam_pagina);
 
-    int indice = primero_libre(bit_array_swap, ceil((double)config_valores.tam_swap / config_valores.tam_pagina));
+    int indice = primero_libre(bit_array_swap, floor((double)config_valores.tam_swap / config_valores.tam_pagina));
     int inicio = indice * config_valores.tam_pagina;
     fseek(fp, inicio, SEEK_SET);
     fwrite(vacio, config_valores.tam_pagina, 1, fp);
     bitarray_set_bit(bit_array_swap, indice);
-
+    free(vacio);
     return inicio;
 }
