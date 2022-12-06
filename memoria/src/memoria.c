@@ -83,6 +83,8 @@ void escuchar_kernel(int socket) {
                 int pid = list_get(lista, 0);
                 finalizar_proceso(pid);
                 list_destroy(lista);
+                respuesta = 0;
+                send(socket, &respuesta, sizeof(int), MSG_WAITALL);
                 break;
             case -1:
                 log_error(logger, "El cliente se desconecto. Terminando servidor");

@@ -31,10 +31,10 @@ void eliminar_pcb(t_pcb *pcb) {
     free(pcb);
 }
 
-void pushear_semaforizado(t_queue* q, void* dato, pthread_mutex_t mx){
-    pthread_mutex_lock(&mx);
+void pushear_semaforizado(t_queue* q, void* dato, pthread_mutex_t* mx){
+    pthread_mutex_lock(mx);
     queue_push(q, dato);
-    pthread_mutex_unlock(&mx);
+    pthread_mutex_unlock(mx);
 }
 
 

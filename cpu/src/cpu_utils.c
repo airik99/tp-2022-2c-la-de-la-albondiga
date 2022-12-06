@@ -10,11 +10,10 @@ int registros[] = {0, 0, 0, 0};
 int flag_salida, interrupcion;
 t_pcb* pcb_actual;
 t_list* tlb;
-pthread_mutex_t mx_traduccion_direccion_logica;
+pthread_mutex_t mx_log, mx_interrupcion;
 
 void cargar_configuracion(char* path) {
     config = config_create(path);
-    log_info(logger, "Arranco a leer el archivo de configuracion \n");
 
     config_valores.entradas_tlb = config_get_int_value(config, "ENTRADAS_TLB");
     config_valores.reemplazo_tlb = config_get_string_value(config, "REEMPLAZO_TLB");
@@ -23,16 +22,16 @@ void cargar_configuracion(char* path) {
     config_valores.puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
     config_valores.puerto_escucha_dispatch = config_get_string_value(config, "PUERTO_ESCUCHA_DISPATCH");
     config_valores.puerto_escucha_interrupt = config_get_string_value(config, "PUERTO_ESCUCHA_INTERRUPT");
-
-    log_info(logger, "Termino de leer el archivo de configuracion \n");
 }
 
 void liberar_todo() {
+    config_destroy(config);
+    log_destroy(logger);
+    pthread_mutex_destroy(&mx_interrupcion);
+    pthread_mutex_destroy(&mx_log);
     liberar_conexion(conexion_memoria);
     liberar_conexion(socket_servidor_dispatch);
     liberar_conexion(cliente_servidor_dispatch);
-    config_destroy(config);
-    log_destroy(logger);
 }
 
 void copiar_valores_registros(int* origen, int* destino) {

@@ -6,10 +6,9 @@ t_log *logger;
 t_queue *cola_new, *cola_ready_prioritaria, *cola_ready_segundo_nivel;
 t_list *lista_colas_bloqueo;
 
-pthread_mutex_t mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda;
+pthread_mutex_t mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda, mx_log, mx_cantidad_procesos;
 sem_t sem_procesos_new, sem_procesos_ready, sem_grado_multiprogramacion;
 pthread_t t_largo_plazo, t_quantum, t_corto_plazo, t_manejo_consola;
-
 
 char *estado_a_string[] = {"NEW", "READY", "EXEC", "BLOCKED", "EXIT"};
 int conexion_cpu_dispatch;
@@ -19,12 +18,12 @@ int socket_servidor;
 int contador_pid;
 
 void iniciar_logger() {
+    pthread_mutex_init(&mx_log, NULL);
     logger = log_create("cfg/kernel.log", "KERNEL", true, LOG_LEVEL_INFO);
 }
 
-void cargar_configuracion(char* path) {
+void cargar_configuracion(char *path) {
     config = config_create(path);
-    log_info(logger, "Arranco a leer el archivo de configuracion");
     config_valores.ip_memoria = config_get_string_value(config, "IP_MEMORIA");
     config_valores.puerto_memoria = config_get_string_value(config, "PUERTO_MEMORIA");
     config_valores.ip_cpu = config_get_string_value(config, "IP_CPU");
@@ -36,8 +35,6 @@ void cargar_configuracion(char* path) {
     config_valores.dispositivos_io = config_get_array_value(config, "DISPOSITIVOS_IO");
     config_valores.tiempos_io = config_get_array_value(config, "TIEMPOS_IO");
     config_valores.quantum_rr = config_get_int_value(config, "QUANTUM_RR");
-
-    log_info(logger, "Termino de leer el archivo de configuracion");
 }
 
 void destruir_estructuras() {
@@ -47,10 +44,12 @@ void destruir_estructuras() {
     string_array_destroy(config_valores.tiempos_io);
 }
 
-t_pcb *crear_nuevo_pcb(int socket, t_list* espacios_memoria, t_list* instrucciones) {
+t_pcb *crear_nuevo_pcb(int socket, t_list *espacios_memoria, t_list *instrucciones) {
     t_pcb *nuevo_pcb = malloc(sizeof(t_pcb));
+    pthread_mutex_lock(&mx_cantidad_procesos);
     nuevo_pcb->pid = contador_pid;
     contador_pid++;
+    pthread_mutex_unlock(&mx_cantidad_procesos);
     nuevo_pcb->socket_consola = socket;
     for (int i = 0; i < 4; i++)
         nuevo_pcb->registro[i] = 0;
@@ -63,28 +62,37 @@ t_pcb *crear_nuevo_pcb(int socket, t_list* espacios_memoria, t_list* instruccion
 }
 
 void liberar_colas() {
+    pthread_mutex_lock(&mx_cola_ready_prioritaria);
     queue_destroy_and_destroy_elements(cola_ready_prioritaria, (void *)eliminar_pcb);
-    if (es_algoritmo_FEEDBACK()) queue_destroy_and_destroy_elements(cola_ready_segundo_nivel, (void *)eliminar_pcb);
+    pthread_mutex_unlock(&mx_cola_ready_prioritaria);
+    if (es_algoritmo_FEEDBACK()) {
+        pthread_mutex_lock(&mx_cola_ready_segunda);
+        queue_destroy_and_destroy_elements(cola_ready_segundo_nivel, (void *)eliminar_pcb);
+        pthread_mutex_unlock(&mx_cola_ready_segunda);
+    }
+    pthread_mutex_lock(&mx_cola_new);
     queue_destroy_and_destroy_elements(cola_new, (void *)eliminar_pcb);
+    pthread_mutex_unlock(&mx_cola_new);
     list_destroy_and_destroy_elements(lista_colas_bloqueo, destruir_cola_bloqueo);
 }
 
-void destruir_cola_bloqueo(t_cola_bloqueo* cola){
-    //no hace falta hacer free(cola->dispositivo) porque ya se hace en string_array_destroy(config_valores.dispositivos_io);
-   pthread_mutex_destroy(&(cola->mx_cola_bloqueados)); 
-   sem_destroy(&(cola->procesos_bloqueado));
-   pthread_cancel(cola->t_bloqueo);
-   queue_destroy_and_destroy_elements(cola->cola_bloqueados,destruir_solicitud_bloqueo);
-   free(cola);
+void destruir_cola_bloqueo(t_cola_bloqueo *cola) {
+    // no hace falta hacer free(cola->dispositivo) porque ya se hace en string_array_destroy(config_valores.dispositivos_io);
+    pthread_mutex_lock(&(cola->mx_cola_bloqueados));
+    queue_destroy_and_destroy_elements(cola->cola_bloqueados, destruir_solicitud_bloqueo);
+    pthread_mutex_unlock(&(cola->mx_cola_bloqueados));
+    pthread_mutex_destroy(&(cola->mx_cola_bloqueados));
+    sem_destroy(&(cola->procesos_bloqueado));
+    pthread_cancel(cola->t_bloqueo);
+    free(cola);
 }
 
-void destruir_solicitud_bloqueo(t_solicitud_io* solicitud){
+void destruir_solicitud_bloqueo(t_solicitud_io *solicitud) {
     eliminar_pcb(solicitud->pcb);
     liberar_solicitud(solicitud);
 }
 
-
-void liberar_solicitud(t_solicitud_io* solicitud) {
+void liberar_solicitud(t_solicitud_io *solicitud) {
     free(solicitud->dispositivo);
     free(solicitud->parametro);
     free(solicitud);
@@ -97,12 +105,13 @@ void eliminar_semaforos() {
     sem_destroy(&sem_grado_multiprogramacion);
     sem_destroy(&sem_procesos_new);
     sem_destroy(&sem_grado_multiprogramacion);
-    
 }
 
 void actualizar_estado(t_pcb *pcb, t_estado nuevo_estado) {
+    pthread_mutex_lock(&mx_log);
     log_info(logger, "PID: <%d> - Estado Anterior: <%s> - Estado Actual: <%s>",
              pcb->pid, estado_a_string[pcb->estado_actual], estado_a_string[nuevo_estado]);
+    pthread_mutex_unlock(&mx_log);
     pcb->estado_anterior = pcb->estado_actual;
     pcb->estado_actual = nuevo_estado;
 }
@@ -121,11 +130,27 @@ void loggear_colas_ready() {
     char *pids_primera_cola = string_de_pids(cola_ready_prioritaria);
     if (es_algoritmo_FEEDBACK()) {
         char *pids_segunda_cola = string_de_pids(cola_ready_segundo_nivel);
+        pthread_mutex_lock(&mx_log);
+
+        pthread_mutex_lock(&mx_cola_ready_prioritaria);
         log_info(logger, "Cola Ready <Round Robin>: [%s]", pids_primera_cola);
+        pthread_mutex_unlock(&mx_cola_ready_prioritaria);
+
+        pthread_mutex_lock(&mx_cola_ready_segunda);
         log_info(logger, "Cola Ready <FIFO>: [%s]", pids_segunda_cola);
+        pthread_mutex_unlock(&mx_cola_ready_segunda);
+
+        pthread_mutex_unlock(&mx_log);
         free(pids_segunda_cola);
-    } else
+    } else {
+        pthread_mutex_lock(&mx_log);
+
+        pthread_mutex_lock(&mx_cola_ready_prioritaria);
         log_info(logger, "Cola Ready <%s>: [%s]", config_valores.algoritmo_planificacion, pids_primera_cola);
+        pthread_mutex_unlock(&mx_cola_ready_prioritaria);
+
+        pthread_mutex_unlock(&mx_log);
+    }
     free(pids_primera_cola);
 }
 
@@ -153,7 +178,9 @@ char *string_de_pids(t_queue *cola) {
 void manejador_seniales(int senial) {
     switch (senial) {
         case SIGINT:
+            pthread_mutex_lock(&mx_log);
             log_info(logger, "Cerrando hilos");
+            pthread_mutex_unlock(&mx_log);
             pthread_cancel(t_manejo_consola);
             break;
     }

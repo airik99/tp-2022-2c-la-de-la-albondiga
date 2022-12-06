@@ -91,7 +91,7 @@ void print_instruccion(t_instruccion*);
  * @param mx mutex de la cola
  *
  */
-void pushear_semaforizado(t_queue* q, void* dato, pthread_mutex_t mx);
+void pushear_semaforizado(t_queue* q, void* dato, pthread_mutex_t* mx);
 /**
  * @brief Libera todos los campos de un pcb
  *

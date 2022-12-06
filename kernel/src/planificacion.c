@@ -32,9 +32,9 @@ void iniciar_planificador_corto_plazo(void) {
     sem_init(&sem_procesos_ready, 0, 0);
 
     if (es_algoritmo_FEEDBACK()) {
-        pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_FEEDBACK, NULL);
-        cola_ready_segundo_nivel = queue_create();
         pthread_mutex_init(&mx_cola_ready_segunda, NULL);
+        cola_ready_segundo_nivel = queue_create();
+        pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_FEEDBACK, NULL);
     } else if (es_algoritmo_FIFO())
         pthread_create(&t_corto_plazo, NULL, (void*)planificador_corto_FIFO, NULL);
     else
@@ -47,7 +47,7 @@ void planificar_largo() {
     while (1) {
         sem_wait(&sem_procesos_new);
         sem_wait(&sem_grado_multiprogramacion);
-        t_pcb* pcb = tomar_primero(cola_new, mx_cola_new);
+        t_pcb* pcb = tomar_primero(cola_new, &mx_cola_new);
         enviar_pid_tamanio_segmentos(conexion_memoria, pcb);
         recibir_operacion(conexion_memoria);
         t_list* lista_ids = recibir_lista(conexion_memoria);
@@ -57,7 +57,7 @@ void planificar_largo() {
             segmento->indice_tabla_paginas = valor;
         }
         list_destroy(lista_ids);
-        pushear_semaforizado(cola_ready_prioritaria, pcb, mx_cola_ready_prioritaria);
+        pushear_semaforizado(cola_ready_prioritaria, pcb, &mx_cola_ready_prioritaria);
         actualizar_estado(pcb, READY);
         loggear_colas_ready();
         sem_post(&sem_procesos_ready);
@@ -68,12 +68,12 @@ void planificar_largo() {
 void planificador_corto_FIFO() {
     while (1) {
         sem_wait(&sem_procesos_ready);
-        algoritmo_FIFO(cola_ready_prioritaria, mx_cola_ready_prioritaria);
+        algoritmo_FIFO(cola_ready_prioritaria, &mx_cola_ready_prioritaria);
         recibir_pcb_cpu_FIFO();
     }
 }
 
-void algoritmo_FIFO(t_queue* queue, pthread_mutex_t semaforo) {
+void algoritmo_FIFO(t_queue* queue, pthread_mutex_t* semaforo) {
     t_pcb* pcb = tomar_primero(queue, semaforo);
     actualizar_estado(pcb, EXEC);
     enviar_pcb(pcb, PCB, conexion_cpu_dispatch);
@@ -100,7 +100,9 @@ void recibir_pcb_cpu_FIFO() {
             generar_seg_fault();
             break;
         default:
+            pthread_mutex_lock(&mx_log);
             log_warning(logger, "Operacion desconocida.");
+            pthread_mutex_unlock(&mx_log);
             break;
     }
 }
@@ -110,12 +112,12 @@ void recibir_pcb_cpu_FIFO() {
 void planificador_corto_RR() {
     while (1) {
         sem_wait(&sem_procesos_ready);
-        algoritmo_RR(cola_ready_prioritaria, mx_cola_ready_prioritaria);
+        algoritmo_RR(cola_ready_prioritaria, &mx_cola_ready_prioritaria);
         recibir_pcb_cpu_RR();
     }
 }
 
-void algoritmo_RR(t_queue* queue, pthread_mutex_t semaforo) {
+void algoritmo_RR(t_queue* queue, pthread_mutex_t* semaforo) {
     t_pcb* pcb = tomar_primero(queue, semaforo);
     actualizar_estado(pcb, EXEC);
     enviar_pcb(pcb, PCB, conexion_cpu_dispatch);
@@ -142,9 +144,11 @@ void recibir_pcb_cpu_RR() {
         case INTERRUPCION:
             pcb = recibir_pcb(conexion_cpu_dispatch);
             actualizar_estado(pcb, READY);
+            pthread_mutex_lock(&mx_log);
             log_info(logger, "PID: <%d> - Desalojado por fin de Quantum", pcb->pid);
-            es_algoritmo_FEEDBACK() ? pushear_semaforizado(cola_ready_segundo_nivel, pcb, mx_cola_ready_segunda)
-                                    : pushear_semaforizado(cola_ready_prioritaria, pcb, mx_cola_ready_prioritaria);
+            pthread_mutex_unlock(&mx_log);
+            es_algoritmo_FEEDBACK() ? pushear_semaforizado(cola_ready_segundo_nivel, pcb, &mx_cola_ready_segunda)
+                                    : pushear_semaforizado(cola_ready_prioritaria, pcb, &mx_cola_ready_prioritaria);
             loggear_colas_ready();
             sem_post(&sem_procesos_ready);  // hago el post despues para que muestre bien las colas ready
             break;
@@ -157,7 +161,9 @@ void recibir_pcb_cpu_RR() {
             generar_seg_fault();
             break;
         default:
+            pthread_mutex_lock(&mx_log);
             log_warning(logger, "Operacion desconocida.");
+            pthread_mutex_unlock(&mx_log);
             break;
     }
 }
@@ -173,27 +179,29 @@ void planificador_corto_FEEDBACK() {
     while (1) {
         sem_wait(&sem_procesos_ready);
         if (queue_size(cola_ready_prioritaria) > 0) {
-            algoritmo_RR(cola_ready_prioritaria, mx_cola_ready_prioritaria);
+            algoritmo_RR(cola_ready_prioritaria, &mx_cola_ready_prioritaria);
             recibir_pcb_cpu_RR();
         } else {
-            algoritmo_FIFO(cola_ready_segundo_nivel, mx_cola_ready_segunda);
+            algoritmo_FIFO(cola_ready_segundo_nivel, &mx_cola_ready_segunda);
             recibir_pcb_cpu_FIFO();
         }
     }
 }
 
 //-----------------GENERALES----------------------
-void* tomar_primero(t_queue* queue, pthread_mutex_t semaforo) {
+void* tomar_primero(t_queue* queue, pthread_mutex_t* semaforo) {
     void* dato;
-    pthread_mutex_lock(&semaforo);
+    pthread_mutex_lock(semaforo);
     dato = queue_pop(queue);
-    pthread_mutex_unlock(&semaforo);
+    pthread_mutex_unlock(semaforo);
     return dato;
 }
 
 void manejar_bloqueo(t_solicitud_io* solicitud) {
     actualizar_estado(solicitud->pcb, BLOCKED);
+    pthread_mutex_lock(&mx_log);
     log_info(logger, "PID: <%d> - Bloqueado por: <%s>", solicitud->pcb->pid, solicitud->dispositivo);
+    pthread_mutex_unlock(&mx_log);
     if (strcmp(solicitud->dispositivo, "PANTALLA") == 0) {
         pthread_t t_bloqueo;
         pthread_create(&t_bloqueo, NULL, (void*)io_pantalla, (void*)solicitud);
@@ -207,7 +215,8 @@ void manejar_bloqueo(t_solicitud_io* solicitud) {
             return strcmp(solicitud->dispositivo, una_cola->dispositivo) == 0;
         }
         t_cola_bloqueo* cola = list_find(lista_colas_bloqueo, (void*)_coincide_nombre_cola);
-        pushear_semaforizado(cola->cola_bloqueados, solicitud, cola->mx_cola_bloqueados);  // funciona por mas que vscode lo marque como error
+
+        pushear_semaforizado(cola->cola_bloqueados, solicitud, &(cola->mx_cola_bloqueados));
         sem_post(&(cola->procesos_bloqueado));
     }
 }
@@ -224,7 +233,9 @@ void manejar_page_fault() {
     desplazamiento += sizeof(int);
     t_pcb* pcb = deserializar_pcb(buffer, &desplazamiento);
     actualizar_estado(pcb, BLOCKED);
+    pthread_mutex_lock(&mx_log);
     log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb->pid, num_seg, num_pag);
+    pthread_mutex_unlock(&mx_log);
     paquete = crear_paquete(PAGE_FAULT);
     t_segmento* entrada = list_get(pcb->tabla_segmentos, num_seg);
     agregar_a_paquete(paquete, &(entrada->indice_tabla_paginas), sizeof(u_int32_t));
@@ -241,17 +252,20 @@ void esperar_carga_pagina(t_pcb* pcb) {
     int respuesta;
     recv(conexion_memoria, &respuesta, sizeof(int), MSG_WAITALL);
     actualizar_estado(pcb, READY);
-    pushear_semaforizado(cola_ready_prioritaria, pcb, mx_cola_ready_prioritaria);
+    pushear_semaforizado(cola_ready_prioritaria, pcb, &mx_cola_ready_prioritaria);
     loggear_colas_ready();
     sem_post(&sem_procesos_ready);
 }
 
 void generar_seg_fault() {
     t_pcb* pcb = recibir_pcb(conexion_cpu_dispatch);
+    actualizar_estado(pcb, EXIT);
     t_paquete* paquete = crear_paquete(EXIT);
     agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
     enviar_paquete(paquete, conexion_memoria);
     eliminar_paquete(paquete);
+    int respuesta;
+    recv(conexion_memoria, &respuesta, sizeof(int), MSG_WAITALL);
     paquete = crear_paquete(SEGMENTATION_FAULT);
     enviar_paquete(paquete, pcb->socket_consola);
     eliminar_pcb(pcb);
@@ -266,6 +280,8 @@ void terminar_proceso() {
     agregar_a_paquete(paquete, &(pcb->pid), sizeof(int));
     enviar_paquete(paquete, conexion_memoria);
     eliminar_paquete(paquete);
+    int respuesta;
+    recv(conexion_memoria, &respuesta, sizeof(int), MSG_WAITALL);
     op_code codigo_exit = PCB_EXIT;
     send(pcb->socket_consola, &codigo_exit, sizeof(op_code), MSG_WAITALL);
     eliminar_pcb(pcb);
@@ -277,7 +293,7 @@ void io_teclado(t_solicitud_io* solicitud) {
     send(solicitud->pcb->socket_consola, &codigo, sizeof(uint32_t), MSG_WAITALL);
     recv(solicitud->pcb->socket_consola, &respuesta, sizeof(uint32_t), MSG_WAITALL);
     solicitud->pcb->registro[indice_registro(solicitud->parametro)] = respuesta;
-    pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, mx_cola_ready_prioritaria);
+    pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, &mx_cola_ready_prioritaria);
     actualizar_estado(solicitud->pcb, READY);
     loggear_colas_ready();
     sem_post(&sem_procesos_ready);
@@ -292,7 +308,7 @@ void io_pantalla(t_solicitud_io* solicitud) {
     enviar_paquete(paquete, solicitud->pcb->socket_consola);
     eliminar_paquete(paquete);
     recv(solicitud->pcb->socket_consola, &respuesta, sizeof(uint32_t), MSG_WAITALL);
-    pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, mx_cola_ready_prioritaria);
+    pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, &mx_cola_ready_prioritaria);
     actualizar_estado(solicitud->pcb, READY);
     loggear_colas_ready();
     sem_post(&sem_procesos_ready);
@@ -302,11 +318,11 @@ void io_pantalla(t_solicitud_io* solicitud) {
 void io_otros_dispositivos(t_cola_bloqueo* cola_bloqueo) {
     while (1) {
         sem_wait(&(cola_bloqueo->procesos_bloqueado));
-        t_solicitud_io* solicitud = (t_solicitud_io*)tomar_primero(cola_bloqueo->cola_bloqueados, cola_bloqueo->mx_cola_bloqueados);
+        t_solicitud_io* solicitud = (t_solicitud_io*)tomar_primero(cola_bloqueo->cola_bloqueados, &(cola_bloqueo->mx_cola_bloqueados));
         int tiempo = atoi(solicitud->parametro) * cola_bloqueo->tiempo_dispositivo * 1000;
         usleep(tiempo);
         actualizar_estado(solicitud->pcb, READY);
-        pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, mx_cola_ready_prioritaria);
+        pushear_semaforizado(cola_ready_prioritaria, solicitud->pcb, &mx_cola_ready_prioritaria);
         loggear_colas_ready();
         sem_post(&sem_procesos_ready);
         liberar_solicitud(solicitud);

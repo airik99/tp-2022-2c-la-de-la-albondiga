@@ -25,11 +25,16 @@ void imprimir_tlb() {
     t_traduccion* t;
 
     if (tlb == NULL) {
+        pthread_mutex_lock(&mx_log);
         log_info(logger, "La TLB esta vacia\n");
+        pthread_mutex_unlock(&mx_log);
+
     } else {
         for (int i = 0; i < list_size(tlb); i++) {
             t = list_get(tlb, i);
+            pthread_mutex_lock(&mx_log);
             log_info(logger, "<ENTRADA: %d> | PID: <%d> | SEGMENTO: <%d> | PAGINA: <%d> | MARCO: <%d>\n", i, t->pid, t->segmento, t->pagina, t->marco);
+            pthread_mutex_unlock(&mx_log);
         }
     }
 }
@@ -52,9 +57,10 @@ bool tlb_llena() {
 }
 
 int acceder_tlb(t_traduccion* traduccion) {
+    pthread_mutex_lock(&mx_log);
     log_info(logger, "PID: <%d> - TLB HIT - Segmento: <%d> - Pagina: <%d>\n", traduccion->pid, traduccion->segmento, traduccion->pagina);  // log obligatorio
+    pthread_mutex_unlock(&mx_log);
     actualizar_ultima_referencia(traduccion);
-    imprimir_tlb();  // log obligatorio
     return traduccion->marco;
 }
 

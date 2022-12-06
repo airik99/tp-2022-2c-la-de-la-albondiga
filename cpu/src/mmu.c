@@ -27,10 +27,16 @@ int traducir_direccion_logica(int direccion_logica) {
             eliminar_paquete(paquete);
             return -1;
         }
+        pthread_mutex_lock(&mx_log);
         log_info(logger, "PID: <%d> - TLB MISS - Segmento: <%d> - Pagina: <%d>\n", pcb_actual->pid, num_segmento, num_pagina);  // log obligatorio
+        pthread_mutex_unlock(&mx_log);
+
         respuesta = esta_en_memoria(num_pagina, num_segmento);
         if (respuesta == -1) {
+            pthread_mutex_lock(&mx_log);
             log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb_actual->pid, num_segmento, num_pagina);  // log obligatorio
+            pthread_mutex_unlock(&mx_log);
+
             copiar_valores_registros(registros, (pcb_actual->registro));
             t_paquete* paquete = crear_paquete(PAGE_FAULT);
 
@@ -80,6 +86,8 @@ int esta_en_memoria(u_int32_t num_pagina, u_int32_t num_segmento) {
 }
 
 bool es_direccion_fisica_valida(u_int32_t desplazamiento_segmento, u_int32_t numero_segmento) {
+    if (numero_segmento >= list_size(pcb_actual->tabla_segmentos))
+        return false;
     t_segmento* segmento = list_get(pcb_actual->tabla_segmentos, numero_segmento);
     int tamio_seg = segmento->tamanio_segmento;
     return desplazamiento_segmento < tamio_seg;

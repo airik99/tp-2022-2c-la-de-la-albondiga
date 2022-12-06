@@ -28,14 +28,14 @@ void esperar_quantum();
  * @brief Devuelve el primer elemento de la cola, usando su semaforo
  *
  * @param cola
- * @param semaforo
+ * @param semaforo puntero al semaforo
  * @return void* el primer elemento, se debe castear a lo que sea
  */
-void* tomar_primero(t_queue* cola, pthread_mutex_t semaforo);
+void* tomar_primero(t_queue* cola, pthread_mutex_t* semaforo);
 
-void algoritmo_FIFO(t_queue* cola, pthread_mutex_t semaforo);
+void algoritmo_FIFO(t_queue* cola, pthread_mutex_t* semaforo);
 
-void algoritmo_RR(t_queue* cola, pthread_mutex_t semaforo);
+void algoritmo_RR(t_queue* cola, pthread_mutex_t* semaforo);
 
 void escuchar_mensaje_cpu();
 

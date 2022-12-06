@@ -42,7 +42,7 @@ extern t_list* cola_lru, *tlb;
 extern t_queue* cola_fifo;
 extern t_pcb* pcb_actual;
 extern int num_pagina_actual, num_segmento_actual;
-extern pthread_mutex_t mx_traduccion_direccion_logica;
+extern pthread_mutex_t mx_log, mx_interrupcion;
 
 void cargar_configuracion(char* path); //carga todo lo del archivo de configuracion del cpu
 
