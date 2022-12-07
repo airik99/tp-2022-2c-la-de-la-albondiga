@@ -226,6 +226,7 @@ int obtener_marco(int id_tabla, int num_pagina) {
 }
 
 uint32_t leer_memoria(int direccion) {
+    usleep(config_valores.retardo_memoria * 1000);
     uint32_t leido;
     void* posicion = direccion + espacio_memoria;
     int num_marco = floor((double)direccion / config_valores.tam_pagina);
@@ -239,6 +240,7 @@ uint32_t leer_memoria(int direccion) {
 }
 
 void escribir_en_memoria(u_int32_t valor, int direccion) {
+    usleep(config_valores.retardo_memoria * 1000);
     void* posicion = espacio_memoria + direccion;
     memcpy(posicion, &valor, sizeof(u_int32_t));
 
