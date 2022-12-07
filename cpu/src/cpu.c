@@ -55,6 +55,13 @@ void esperar_kernel_dispatch() {
                 ciclo_de_instruccion(pcb_recibido);
                 eliminar_pcb(pcb_recibido);
                 break;
+            case PCB_EXIT:
+                t_list* lista = recibir_lista(cliente_servidor_dispatch);
+                u_int32_t pid = list_get(lista, 0);
+                borrar_entradas_proceso(pid);
+                list_destroy(lista);
+                send(cliente_servidor_dispatch, &pid, sizeof(u_int32_t), MSG_WAITALL);
+                break;
             default:
                 pthread_mutex_lock(&mx_log);
                 log_error(logger, "Se desconecto kernel. Cerrando server");

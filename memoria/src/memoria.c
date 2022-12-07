@@ -78,7 +78,7 @@ void escuchar_kernel(int socket) {
                 send(socket, &respuesta, sizeof(int), MSG_WAITALL);
                 list_destroy(lista);
                 break;
-            case EXIT:
+            case PCB_EXIT:
                 lista = recibir_lista(socket);
                 int pid = list_get(lista, 0);
                 finalizar_proceso(pid);

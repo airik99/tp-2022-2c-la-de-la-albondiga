@@ -87,7 +87,7 @@ void recibir_pcb_cpu_FIFO() {
     t_paquete* paquete;
     switch (cod_op) {
         case PCB_EXIT:
-            terminar_proceso();
+            terminar_proceso(PCB_EXIT);
             break;
         case PCB_BLOCK:
             solicitud = recibir_pcb_io(conexion_cpu_dispatch);
@@ -97,7 +97,7 @@ void recibir_pcb_cpu_FIFO() {
             manejar_page_fault();
             break;
         case SEGMENTATION_FAULT:
-            generar_seg_fault();
+            terminar_proceso(SEGMENTATION_FAULT);
             break;
         default:
             pthread_mutex_lock(&mx_log);
@@ -134,7 +134,7 @@ void recibir_pcb_cpu_RR() {
     switch (cod_op) {
         case PCB_EXIT:
             pthread_cancel(t_quantum);
-            terminar_proceso();
+            terminar_proceso(PCB_EXIT);
             break;
         case PCB_BLOCK:
             pthread_cancel(t_quantum);
@@ -158,7 +158,7 @@ void recibir_pcb_cpu_RR() {
             break;
         case SEGMENTATION_FAULT:
             pthread_cancel(t_quantum);
-            generar_seg_fault();
+            terminar_proceso(SEGMENTATION_FAULT);
             break;
         default:
             pthread_mutex_lock(&mx_log);
@@ -257,36 +257,28 @@ void esperar_carga_pagina(t_pcb* pcb) {
     sem_post(&sem_procesos_ready);
 }
 
-void generar_seg_fault() {
+void terminar_proceso(op_code caso) {
+    int respuesta;
     t_pcb* pcb = recibir_pcb(conexion_cpu_dispatch);
     actualizar_estado(pcb, EXIT);
-    t_paquete* paquete = crear_paquete(EXIT);
+    t_paquete* paquete = crear_paquete(PCB_EXIT);
     agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
+
     enviar_paquete(paquete, conexion_memoria);
+    recv(conexion_memoria, &respuesta, sizeof(u_int32_t), MSG_WAITALL);
+
+    enviar_paquete(paquete, conexion_cpu_dispatch);
+    recv(conexion_cpu_dispatch, &respuesta, sizeof(u_int32_t), MSG_WAITALL);
+
     eliminar_paquete(paquete);
-    int respuesta;
-    recv(conexion_memoria, &respuesta, sizeof(int), MSG_WAITALL);
-    paquete = crear_paquete(SEGMENTATION_FAULT);
+
+    paquete = crear_paquete(caso);
     enviar_paquete(paquete, pcb->socket_consola);
     eliminar_pcb(pcb);
     eliminar_paquete(paquete);
     sem_post(&sem_grado_multiprogramacion);
 }
 
-void terminar_proceso() {
-    t_pcb* pcb = recibir_pcb(conexion_cpu_dispatch);
-    actualizar_estado(pcb, EXIT);
-    t_paquete* paquete = crear_paquete(EXIT);
-    agregar_a_paquete(paquete, &(pcb->pid), sizeof(int));
-    enviar_paquete(paquete, conexion_memoria);
-    eliminar_paquete(paquete);
-    int respuesta;
-    recv(conexion_memoria, &respuesta, sizeof(int), MSG_WAITALL);
-    op_code codigo_exit = PCB_EXIT;
-    send(pcb->socket_consola, &codigo_exit, sizeof(op_code), MSG_WAITALL);
-    eliminar_pcb(pcb);
-    sem_post(&sem_grado_multiprogramacion);
-}
 void io_teclado(t_solicitud_io* solicitud) {
     int respuesta;
     op_code codigo = IO_TECLADO;

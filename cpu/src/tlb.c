@@ -24,7 +24,7 @@ void reemplazo_tlb(t_traduccion* traduccion) {
 void imprimir_tlb() {
     t_traduccion* t;
 
-    if (tlb == NULL) {
+    if (list_size(tlb) == 0) {
         pthread_mutex_lock(&mx_log);
         log_info(logger, "La TLB esta vacia\n");
         pthread_mutex_unlock(&mx_log);
@@ -84,4 +84,12 @@ void actualizar_ultima_referencia(t_traduccion* traduccion) {
     if (es_algoritmo("LRU")) {
         traduccion->instante_ultima_referencia = time(NULL);
     }
+}
+
+void borrar_entradas_proceso(uint32_t pid) {
+    bool _es_entrada_del_proceso(t_traduccion * traduccion) {
+        return traduccion->pid == pid;
+    }
+    list_remove_and_destroy_all_by_condition(tlb, _es_entrada_del_proceso, free); 
+    imprimir_tlb(); 
 }

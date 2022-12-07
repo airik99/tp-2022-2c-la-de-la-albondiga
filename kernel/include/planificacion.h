@@ -46,8 +46,9 @@ void recibir_pcb_cpu_FIFO();
 void manejar_bloqueo(t_solicitud_io* solicitud);
 void manejar_page_fault();
 void esperar_carga_pagina(t_pcb* pcb);
-void generar_seg_fault();
-void terminar_proceso();
+
+
+void terminar_proceso(op_code caso);
 
 void io_teclado(t_solicitud_io* solicitud);
 

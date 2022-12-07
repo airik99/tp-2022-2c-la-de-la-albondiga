@@ -23,7 +23,7 @@ typedef enum {
     ESCRIBIR_EN_MEMORIA,
     LEER_DE_MEMORIA,
     ACCESO_TABLA_PAGINAS,
-    INICIAR_PROCESO
+    INICIAR_PROCESO,
 } op_code;
 
 typedef struct {

@@ -28,6 +28,6 @@ bool es_la_traduccion_que_busco(t_traduccion*, t_traduccion*);  // recibe dos tr
 
 int obtener_indice_traduccion(t_traduccion*);
 void imprimir_tlb();
-
+void borrar_entradas_proceso(u_int32_t);
 
 #endif
