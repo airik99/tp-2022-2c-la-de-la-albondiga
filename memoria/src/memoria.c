@@ -55,9 +55,11 @@ void escuchar_kernel(int socket) {
     t_paquete* paquete;
     int cod_op, id_tabla, pagina, respuesta;
     u_int32_t direccion, valor;
+    pthread_mutex_t conexion;
+    pthread_mutex_init(&conexion, NULL);
     while (1) {
+        pthread_mutex_lock(&conexion);
         cod_op = recibir_operacion(socket);
-        pthread_mutex_lock(&mx_conexion);
         switch (cod_op) {
             case INICIAR_PROCESO:
                 lista = recibir_lista(socket);
@@ -88,13 +90,13 @@ void escuchar_kernel(int socket) {
                 break;
             case -1:
                 log_error(logger, "El cliente se desconecto. Terminando servidor");
-                pthread_mutex_unlock(&mx_conexion);
+                pthread_mutex_unlock(&conexion);
                 return;
             default:
                 log_warning(logger, "Operacion desconocida. No quieras meter la pata");
                 break;
         }
-        pthread_mutex_unlock(&mx_conexion);
+        pthread_mutex_unlock(&conexion);
     }
 }
 
@@ -103,9 +105,11 @@ void escuchar_cpu(int socket) {
     t_paquete* paquete;
     int cod_op, id_tabla, pagina, respuesta;
     u_int32_t direccion, valor;
+    pthread_mutex_t conexion;
+    pthread_mutex_init(&conexion, NULL);
     while (1) {
+        pthread_mutex_lock(&conexion);
         cod_op = recibir_operacion(socket);
-        pthread_mutex_lock(&mx_conexion);
         switch (cod_op) {
             case ACCESO_TABLA_PAGINAS:
                 lista = recibir_lista(socket);
@@ -133,13 +137,13 @@ void escuchar_cpu(int socket) {
                 break;
             case -1:
                 log_error(logger, "El cliente se desconecto. Terminando servidor");
-                pthread_mutex_unlock(&mx_conexion);
+                pthread_mutex_unlock(&conexion);
                 return;
             default:
                 log_warning(logger, "Operacion desconocida. No quieras meter la pata");
                 break;
         }
-        pthread_mutex_unlock(&mx_conexion);
+        pthread_mutex_unlock(&conexion);
     }
 }
 
