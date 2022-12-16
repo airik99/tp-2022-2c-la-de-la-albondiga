@@ -12,7 +12,7 @@ make all
 sudo make install
 cd $CWD
 echo -e "\n\nHaciendo mkdirsXD...\n\n"
-mkdir obj "$PWD/memoria/"
+mkdir "$PWD/memoria/obj"
 echo -e "\n\nAhi viene el efecto...\n\n"
 make -C ./memoria
 echo -e "\n\nListo maquina!\n\n"
