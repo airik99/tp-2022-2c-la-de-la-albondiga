@@ -1,29 +1,44 @@
 #include <swap.h>
 
 void cargar_pagina(int id_tabla, int num_pagina) {
+    pthread_mutex_lock(&mx_tablas_paginas);
     entrada_tablas_paginas* entrada_tp = list_get(tablas_paginas, id_tabla);
-    t_pagina* pagina = list_get(entrada_tp->tabla_de_paginas, num_pagina);
+    pthread_mutex_unlock(&mx_tablas_paginas);
+
+    pthread_mutex_lock(&mx_procesos_cargados);
     proceso_en_memoria* proceso = obtener_proceso_por_pid(entrada_tp->pid);
+    pthread_mutex_unlock(&mx_procesos_cargados);
+
+    t_pagina* pagina = list_get(entrada_tp->tabla_de_paginas, num_pagina);
 
     int numero_marco = elegir_marco(proceso, entrada_tp->segmento, num_pagina);
-
+    pthread_mutex_lock(&mx_tablas_paginas);
     pagina->marco = numero_marco;
     pagina->uso = 1;
     pagina->presencia = 1;
+    pthread_mutex_unlock(&mx_tablas_paginas);
 
+    pthread_mutex_lock(&mx_lista_marcos);
     t_marco* marco = list_get(lista_marcos, numero_marco);
+    pthread_mutex_unlock(&mx_lista_marcos);
+
     marco->pagina = pagina;
     marco->numero_pagina = num_pagina;
     marco->segmento = entrada_tp->segmento;
     marco->pid = entrada_tp->pid;
 
-    int pos_swap = pagina->posicion_swap;
-    void* posicion_memoria = espacio_memoria + pagina->marco * config_valores.tam_pagina;
     usleep(config_valores.retardo_swap * 1000);
+    int pos_swap = pagina->posicion_swap;
+
+    pthread_mutex_lock(&mx_espacio_memoria);
+    void* posicion_memoria = espacio_memoria + pagina->marco * config_valores.tam_pagina;
     fseek(fp, pos_swap, SEEK_SET);
     fread(posicion_memoria, config_valores.tam_pagina, 1, fp);
+    pthread_mutex_unlock(&mx_espacio_memoria);
+    pthread_mutex_lock(&mx_log);
     log_info(logger, "SWAP IN - PID : <%d> - Marco : <%d> - Page In : <%d> | <%d>",
              proceso->pid, numero_marco, marco->segmento, num_pagina);
+    pthread_mutex_unlock(&mx_log);
 }
 
 int elegir_marco(proceso_en_memoria* proceso, int num_segmento, int num_pagina) {
@@ -32,14 +47,22 @@ int elegir_marco(proceso_en_memoria* proceso, int num_segmento, int num_pagina) 
     if (hay_marcos_disponibles(proceso)) {
         numero_marco = primero_libre(bit_array_marcos_libres, floor(config_valores.tam_memoria / config_valores.tam_pagina));
         list_add(proceso->lista_marcos_asignados, numero_marco);
+
+        pthread_mutex_lock(&mx_lista_marcos);
         marco = list_get(lista_marcos, numero_marco);
+        pthread_mutex_unlock(&mx_lista_marcos);
+
         bitarray_set_bit(bit_array_marcos_libres, numero_marco);
         cantidad_marcos_libres--;
     } else {
         numero_marco = (*algoritmo_reemplazo)(proceso);
+        pthread_mutex_lock(&mx_lista_marcos);
         marco = list_get(lista_marcos, numero_marco);
+        pthread_mutex_unlock(&mx_lista_marcos);
+        pthread_mutex_lock(&mx_log);
         log_info(logger, "REEMPLAZO - PID : <%d> - Marco : <%d> - Page Out : <%d> | <%d> - Page In : <%d> | <%d> ",
                  proceso->pid, numero_marco, marco->segmento, marco->numero_pagina, num_segmento, num_pagina);
+        pthread_mutex_unlock(&mx_log);
         descargar_pagina(marco->pagina);
     }
     return numero_marco;
@@ -47,7 +70,9 @@ int elegir_marco(proceso_en_memoria* proceso, int num_segmento, int num_pagina) 
 
 int algoritmo_clock(proceso_en_memoria* proceso) {
     int numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
+    pthread_mutex_lock(&mx_lista_marcos);
     t_marco* marco = list_get(lista_marcos, numero_marco);
+    pthread_mutex_unlock(&mx_lista_marcos);
     t_pagina* pagina = pagina = marco->pagina;
 
     while (pagina->uso != 0) {
@@ -56,7 +81,9 @@ int algoritmo_clock(proceso_en_memoria* proceso) {
         if (proceso->indice_ptro_remplazo >= list_size(proceso->lista_marcos_asignados))
             proceso->indice_ptro_remplazo = 0;
         int numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
+        pthread_mutex_lock(&mx_lista_marcos);
         marco = list_get(lista_marcos, numero_marco);
+        pthread_mutex_unlock(&mx_lista_marcos);
         pagina = marco->pagina;
     }
     return numero_marco;
@@ -70,7 +97,9 @@ int algoritmo_clock_mejorado(proceso_en_memoria* proceso) {
     while (!selecciono_marco) {
         while (pagina->uso != 0 && pagina->modificado != 0 && proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados)) {
             numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
+            pthread_mutex_lock(&mx_lista_marcos);
             marco = list_get(lista_marcos, numero_marco);
+            pthread_mutex_unlock(&mx_lista_marcos);
             pagina = marco->pagina;
             proceso->indice_ptro_remplazo++;
         }
@@ -80,7 +109,9 @@ int algoritmo_clock_mejorado(proceso_en_memoria* proceso) {
             proceso->indice_ptro_remplazo = 0;  // Dio vuelta completa no encontro 0/0 reinicio el puntero
             while (pagina->uso != 0 && proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados)) {
                 numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
+                pthread_mutex_lock(&mx_lista_marcos);
                 marco = list_get(lista_marcos, numero_marco);
+                pthread_mutex_unlock(&mx_lista_marcos);
                 pagina = marco->pagina;
                 pagina->uso = 0;
                 proceso->indice_ptro_remplazo++;
@@ -95,14 +126,20 @@ int algoritmo_clock_mejorado(proceso_en_memoria* proceso) {
 }
 
 void descargar_pagina(t_pagina* pagina) {
+    pthread_mutex_lock(&mx_lista_marcos);
     t_marco* marco = list_get(lista_marcos, pagina->marco);
+    pthread_mutex_unlock(&mx_lista_marcos);
     if (pagina->modificado) {
         int inicio = pagina->marco * config_valores.tam_pagina;
+        pthread_mutex_lock(&mx_espacio_memoria);
         void* datos = espacio_memoria + inicio;
         usleep(config_valores.retardo_swap * 1000);
         fseek(fp, pagina->posicion_swap, SEEK_SET);
         fwrite(datos, config_valores.tam_pagina, 1, fp);
+        pthread_mutex_unlock(&mx_espacio_memoria);
+        pthread_mutex_lock(&mx_log);
         log_info(logger, "SWAP OUT - PID: <%d> - Marco: <%d> - Page Out:<%d>|<%d>", marco->pid, pagina->marco, marco->segmento, marco->numero_pagina);
+        pthread_mutex_unlock(&mx_log);
     }
     pagina->presencia = 0;
     pagina->modificado = 0;

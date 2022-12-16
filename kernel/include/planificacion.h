@@ -45,7 +45,7 @@ void recibir_pcb_cpu_FIFO();
 
 void manejar_bloqueo(t_solicitud_io* solicitud);
 void manejar_page_fault();
-void esperar_carga_pagina(t_pcb* pcb);
+void esperar_carga_pagina(t_pf_request* pf);
 
 
 void terminar_proceso(op_code caso);

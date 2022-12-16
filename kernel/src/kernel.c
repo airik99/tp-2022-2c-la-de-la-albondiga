@@ -1,5 +1,6 @@
 #include "kernel.h"
 
+
 int main(int argc, char **argv) {
     if (argc < 2) {
         puts("FALTO CONFIG");
@@ -8,8 +9,9 @@ int main(int argc, char **argv) {
     iniciar_logger();
     char *path_config = argv[1];
     cargar_configuracion(path_config);
-    signal(SIGINT, manejador_seniales);
     pthread_mutex_init(&mx_cantidad_procesos, NULL);
+    pthread_mutex_init(&mx_memoria, NULL);
+    pthread_mutex_init(&mx_cpu, NULL);
 
     // CONEXION CON CONSOLAS
     socket_servidor = iniciar_servidor(config_valores.puerto_escucha);
@@ -88,11 +90,11 @@ void manejar_consolas(int socket_servidor) {
     while (1) {
         int *socket_cliente = malloc(sizeof(int));
         *socket_cliente = esperar_cliente(socket_servidor);
-        // int socket_cliente = esperar_cliente(socket_servidor);
+        //int socket_cliente = esperar_cliente(socket_servidor);
         pthread_t t;
         pthread_create(&t, NULL, (void *)escuchar_consola, *socket_cliente);
         pthread_detach(t);
-        // free(socket_cliente);
+        free(socket_cliente);
     }
 }
 

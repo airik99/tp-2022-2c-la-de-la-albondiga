@@ -26,6 +26,12 @@ typedef struct {
     t_queue *cola_bloqueados;
 } t_cola_bloqueo;
 
+typedef struct {
+    t_pcb* pcb;
+    int numero_pag;
+    int numero_seg;
+} t_pf_request;
+
 // variables
 extern config_kernel config_valores;
 extern t_config *config;
@@ -39,7 +45,7 @@ extern char *estado_a_string[5];
 
 extern t_queue *cola_new, *cola_ready_prioritaria, *cola_ready_segundo_nivel;
 extern t_list *lista_colas_bloqueo;
-extern pthread_mutex_t mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda, mx_log, mx_cantidad_procesos;
+extern pthread_mutex_t mx_cpu, mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda, mx_log, mx_cantidad_procesos, mx_memoria;
 extern pthread_t t_quantum, t_largo_plazo, t_corto_plazo, t_manejo_consola;
 extern sem_t sem_procesos_new, sem_procesos_ready, sem_grado_multiprogramacion, sem_page_fault;
 

@@ -48,9 +48,11 @@ void planificar_largo() {
         sem_wait(&sem_procesos_new);
         sem_wait(&sem_grado_multiprogramacion);
         t_pcb* pcb = tomar_primero(cola_new, &mx_cola_new);
+        pthread_mutex_lock(&mx_memoria);
         enviar_pid_tamanio_segmentos(conexion_memoria, pcb);
         recibir_operacion(conexion_memoria);
         t_list* lista_ids = recibir_lista(conexion_memoria);
+        pthread_mutex_unlock(&mx_memoria);
         for (int i = 0; i < list_size(lista_ids); i++) {
             int valor = list_get(lista_ids, i);
             t_segmento* segmento = list_get(pcb->tabla_segmentos, i);
@@ -95,6 +97,9 @@ void recibir_pcb_cpu_FIFO() {
             break;
         case PAGE_FAULT:
             manejar_page_fault();
+            //pthread_t t_pf;
+            //pthread_create(&t_pf, NULL, (void*)manejar_page_fault, NULL);
+            //pthread_detach(t_pf);
             break;
         case SEGMENTATION_FAULT:
             terminar_proceso(SEGMENTATION_FAULT);
@@ -222,39 +227,42 @@ void manejar_bloqueo(t_solicitud_io* solicitud) {
 }
 
 void manejar_page_fault() {
-    t_paquete* paquete;
+    t_pf_request* pf = malloc(sizeof(t_pf_request));
     int size, desplazamiento = 0;
     void* buffer;
-    int num_pag, num_seg;
     buffer = recibir_buffer(&size, conexion_cpu_dispatch);
-    memcpy(&num_seg, buffer + desplazamiento, sizeof(int));
+    memcpy(&(pf->numero_seg), buffer + desplazamiento, sizeof(int));
     desplazamiento += sizeof(int);
-    memcpy(&num_pag, buffer + desplazamiento, sizeof(int));
+    memcpy(&(pf->numero_pag), buffer + desplazamiento, sizeof(int));
     desplazamiento += sizeof(int);
     t_pcb* pcb = deserializar_pcb(buffer, &desplazamiento);
     actualizar_estado(pcb, BLOCKED);
+    pf->pcb = pcb;
     pthread_mutex_lock(&mx_log);
-    log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb->pid, num_seg, num_pag);
+    log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb->pid, pf->numero_seg, pf->numero_pag);
     pthread_mutex_unlock(&mx_log);
-    paquete = crear_paquete(PAGE_FAULT);
-    t_segmento* entrada = list_get(pcb->tabla_segmentos, num_seg);
-    agregar_a_paquete(paquete, &(entrada->indice_tabla_paginas), sizeof(u_int32_t));
-    agregar_a_paquete(paquete, &(num_pag), sizeof(u_int32_t));
-    enviar_paquete(paquete, conexion_memoria);
-    eliminar_paquete(paquete);
     pthread_t t_page_fault;
-    pthread_create(&t_page_fault, NULL, (void*)esperar_carga_pagina, pcb);
+    pthread_create(&t_page_fault, NULL, (void*)esperar_carga_pagina, pf);
     pthread_detach(t_page_fault);
     free(buffer);
 }
 
-void esperar_carga_pagina(t_pcb* pcb) {
+void esperar_carga_pagina(t_pf_request* page_fault_request) {
+    t_paquete* paquete = crear_paquete(PAGE_FAULT);
+    t_segmento* entrada = list_get(page_fault_request->pcb->tabla_segmentos, page_fault_request->numero_seg);
+    agregar_a_paquete(paquete, &(entrada->indice_tabla_paginas), sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &(page_fault_request->numero_pag), sizeof(u_int32_t));
+    pthread_mutex_lock(&mx_memoria);
+    enviar_paquete(paquete, conexion_memoria);
+    eliminar_paquete(paquete);
     int respuesta;
     recv(conexion_memoria, &respuesta, sizeof(int), MSG_WAITALL);
-    actualizar_estado(pcb, READY);
-    pushear_semaforizado(cola_ready_prioritaria, pcb, &mx_cola_ready_prioritaria);
+    pthread_mutex_unlock(&mx_memoria);
+    actualizar_estado(page_fault_request->pcb, READY);
+    pushear_semaforizado(cola_ready_prioritaria, page_fault_request->pcb, &mx_cola_ready_prioritaria);
     loggear_colas_ready();
     sem_post(&sem_procesos_ready);
+    free(page_fault_request);
 }
 
 void terminar_proceso(op_code caso) {
@@ -263,13 +271,12 @@ void terminar_proceso(op_code caso) {
     actualizar_estado(pcb, EXIT);
     t_paquete* paquete = crear_paquete(PCB_EXIT);
     agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
-
+    pthread_mutex_lock(&mx_memoria);
     enviar_paquete(paquete, conexion_memoria);
     recv(conexion_memoria, &respuesta, sizeof(u_int32_t), MSG_WAITALL);
-
+    pthread_mutex_unlock(&mx_memoria);
     enviar_paquete(paquete, conexion_cpu_dispatch);
     recv(conexion_cpu_dispatch, &respuesta, sizeof(u_int32_t), MSG_WAITALL);
-
     eliminar_paquete(paquete);
 
     paquete = crear_paquete(caso);

@@ -6,7 +6,7 @@ t_log *logger;
 t_queue *cola_new, *cola_ready_prioritaria, *cola_ready_segundo_nivel;
 t_list *lista_colas_bloqueo;
 
-pthread_mutex_t mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda, mx_log, mx_cantidad_procesos;
+pthread_mutex_t mx_cola_new, mx_cola_ready_prioritaria, mx_cola_ready_segunda, mx_log, mx_cantidad_procesos, mx_memoria, mx_cpu;
 sem_t sem_procesos_new, sem_procesos_ready, sem_grado_multiprogramacion;
 pthread_t t_largo_plazo, t_quantum, t_corto_plazo, t_manejo_consola;
 
@@ -173,15 +173,4 @@ char *string_de_pids(t_queue *cola) {
         resultado = list_fold1(pid_list, (void *)concatenar_string_con_coma);
     list_destroy(pid_list);
     return resultado;
-}
-
-void manejador_seniales(int senial) {
-    switch (senial) {
-        case SIGINT:
-            pthread_mutex_lock(&mx_log);
-            log_info(logger, "Cerrando hilos");
-            pthread_mutex_unlock(&mx_log);
-            pthread_cancel(t_manejo_consola);
-            break;
-    }
 }

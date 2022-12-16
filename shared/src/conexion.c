@@ -17,6 +17,8 @@ int iniciar_servidor(char *puerto) {
                              servinfo->ai_protocol);
 
     bool bind_correcto = !(bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen));
+    if (setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) != 0)
+        printf("error");
 
     listen(socket_servidor, SOMAXCONN);
     freeaddrinfo(servinfo);

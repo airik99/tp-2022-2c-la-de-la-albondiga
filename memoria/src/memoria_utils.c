@@ -10,7 +10,7 @@ FILE* fp;
 t_bitarray* bit_array_swap;
 t_bitarray* bit_array_marcos_libres;
 int (*algoritmo_reemplazo)(proceso_en_memoria*);
-pthread_mutex_t mx_conexion;
+pthread_mutex_t mx_tablas_paginas, mx_procesos_cargados, mx_lista_marcos, mx_espacio_memoria, mx_log;
 
 pthread_t manejar_conexion_cpu, manejar_conexion_kernel;
 int socket_cliente_1, socket_cliente_2, socket_servidor;
@@ -31,7 +31,11 @@ void cargar_configuracion(char* path) {
 }
 
 void iniciar_estructuras_memoria() {
-    pthread_mutex_init(&mx_conexion, NULL);
+    pthread_mutex_init(&mx_log, NULL);
+    pthread_mutex_init(&mx_espacio_memoria, NULL);
+    pthread_mutex_init(&mx_lista_marcos, NULL);
+    pthread_mutex_init(&mx_procesos_cargados, NULL);
+    pthread_mutex_init(&mx_tablas_paginas, NULL);
 
     espacio_memoria = malloc(config_valores.tam_memoria);
     memset(espacio_memoria, '0', config_valores.tam_memoria);
@@ -95,14 +99,17 @@ void borrar_todo() {
     fclose(fp);
     log_destroy(logger);
     config_destroy(config);
-    pthread_mutex_destroy(&mx_conexion);
+    pthread_mutex_destroy(&mx_espacio_memoria);
+    pthread_mutex_destroy(&mx_lista_marcos);
+    pthread_mutex_destroy(&mx_procesos_cargados);
+    pthread_mutex_destroy(&mx_tablas_paginas);
     free(marcos_libres);
     free(swap_libre);
     bitarray_destroy(bit_array_marcos_libres);
     bitarray_destroy(bit_array_swap);
     list_destroy_and_destroy_elements(lista_marcos, free);
     list_destroy_and_destroy_elements(tablas_paginas, eliminar_entrada_tabla_pagina);
-    list_destroy(procesos_cargados);
+    list_destroy_and_destroy_elements(procesos_cargados, eliminar_proceso_en_memoria);
 }
 
 void eliminar_proceso_en_memoria(proceso_en_memoria* p) {
@@ -119,7 +126,9 @@ void handshake_cliente(int socket) {
     int cliente;
     recv(socket, &cliente, sizeof(int), MSG_WAITALL);
     if (cliente == 0) {
+        pthread_mutex_lock(&mx_log);
         log_info(logger, "Se conecto cpu");
+        pthread_mutex_unlock(&mx_log);
         t_paquete* paquete = crear_paquete(HANDSHAKE);
         agregar_a_paquete(paquete, &config_valores.entradas_por_tabla, sizeof(int));
         agregar_a_paquete(paquete, &config_valores.tam_pagina, sizeof(int));
@@ -127,7 +136,9 @@ void handshake_cliente(int socket) {
         eliminar_paquete(paquete);
         pthread_create(&manejar_conexion_kernel, NULL, (void*)escuchar_cpu, (void*)socket);
     } else if (cliente == 1) {
+        pthread_mutex_lock(&mx_log);
         log_info(logger, "Se conecto kernel");
+        pthread_mutex_unlock(&mx_log);
         send(socket, &cliente, sizeof(int), MSG_WAITALL);
         pthread_create(&manejar_conexion_cpu, NULL, (void*)escuchar_kernel, (void*)socket);
     }

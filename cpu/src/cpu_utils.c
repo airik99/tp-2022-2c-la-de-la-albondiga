@@ -32,6 +32,7 @@ void liberar_todo() {
     liberar_conexion(conexion_memoria);
     liberar_conexion(socket_servidor_dispatch);
     liberar_conexion(cliente_servidor_dispatch);
+    list_destroy_and_destroy_elements(tlb, free);
 }
 
 void copiar_valores_registros(int* origen, int* destino) {
