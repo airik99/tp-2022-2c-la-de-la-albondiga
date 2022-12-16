@@ -97,9 +97,9 @@ void recibir_pcb_cpu_FIFO() {
             break;
         case PAGE_FAULT:
             manejar_page_fault();
-            //pthread_t t_pf;
-            //pthread_create(&t_pf, NULL, (void*)manejar_page_fault, NULL);
-            //pthread_detach(t_pf);
+            // pthread_t t_pf;
+            // pthread_create(&t_pf, NULL, (void*)manejar_page_fault, NULL);
+            // pthread_detach(t_pf);
             break;
         case SEGMENTATION_FAULT:
             terminar_proceso(SEGMENTATION_FAULT);
@@ -236,11 +236,13 @@ void manejar_page_fault() {
     memcpy(&(pf->numero_pag), buffer + desplazamiento, sizeof(int));
     desplazamiento += sizeof(int);
     t_pcb* pcb = deserializar_pcb(buffer, &desplazamiento);
-    actualizar_estado(pcb, BLOCKED);
     pf->pcb = pcb;
+
+    actualizar_estado(pcb, BLOCKED);
     pthread_mutex_lock(&mx_log);
     log_info(logger, "Page Fault PID: <%d> - Segmento: <%d> - Pagina: <%d>", pcb->pid, pf->numero_seg, pf->numero_pag);
     pthread_mutex_unlock(&mx_log);
+
     pthread_t t_page_fault;
     pthread_create(&t_page_fault, NULL, (void*)esperar_carga_pagina, pf);
     pthread_detach(t_page_fault);
@@ -250,7 +252,9 @@ void manejar_page_fault() {
 void esperar_carga_pagina(t_pf_request* page_fault_request) {
     t_paquete* paquete = crear_paquete(PAGE_FAULT);
     t_segmento* entrada = list_get(page_fault_request->pcb->tabla_segmentos, page_fault_request->numero_seg);
+    agregar_a_paquete(paquete, &(page_fault_request->pcb->pid), sizeof(u_int32_t));
     agregar_a_paquete(paquete, &(entrada->indice_tabla_paginas), sizeof(u_int32_t));
+    agregar_a_paquete(paquete, &(page_fault_request->numero_seg), sizeof(u_int32_t));
     agregar_a_paquete(paquete, &(page_fault_request->numero_pag), sizeof(u_int32_t));
     pthread_mutex_lock(&mx_memoria);
     enviar_paquete(paquete, conexion_memoria);
@@ -271,6 +275,11 @@ void terminar_proceso(op_code caso) {
     actualizar_estado(pcb, EXIT);
     t_paquete* paquete = crear_paquete(PCB_EXIT);
     agregar_a_paquete(paquete, &(pcb->pid), sizeof(u_int32_t));
+    for (int i = 0; i < list_size(pcb->tabla_segmentos); i++) {
+        t_segmento* entrada = list_get(pcb->tabla_segmentos, i);
+        agregar_a_paquete(paquete, &(entrada->indice_tabla_paginas), sizeof(u_int32_t));
+    }
+
     pthread_mutex_lock(&mx_memoria);
     enviar_paquete(paquete, conexion_memoria);
     recv(conexion_memoria, &respuesta, sizeof(u_int32_t), MSG_WAITALL);

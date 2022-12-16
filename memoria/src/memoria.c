@@ -51,20 +51,17 @@ int main(int argc, char** argv) {
 }
 
 void escuchar_kernel(int socket) {
+    int cod_op, respuesta;
     t_list* lista;
-    t_paquete* paquete;
-    int cod_op, id_tabla, pagina, respuesta;
-    u_int32_t direccion, valor;
-    pthread_mutex_t conexion;
-    pthread_mutex_init(&conexion, NULL);
+    u_int32_t direccion, valor, pid, id_tabla, segmento, num_pagina;
     while (1) {
         cod_op = recibir_operacion(socket);
-        // pthread_mutex_lock(&conexion);
         switch (cod_op) {
             case INICIAR_PROCESO:
                 lista = recibir_lista(socket);
-                t_list* lista_id_tp = iniciar_estructuras(lista);
-                paquete = crear_paquete(INICIAR_PROCESO);
+                pid = list_remove(lista, 0);
+                t_list* lista_id_tp = iniciar_estructuras(pid, lista);
+                t_paquete* paquete = crear_paquete(INICIAR_PROCESO);
                 serializar_lista(paquete, lista_id_tp);
                 enviar_paquete(paquete, socket);
                 eliminar_paquete(paquete);
@@ -73,17 +70,19 @@ void escuchar_kernel(int socket) {
                 break;
             case PAGE_FAULT:
                 lista = recibir_lista(socket);
-                id_tabla = list_get(lista, 0);
-                pagina = list_get(lista, 1);
-                cargar_pagina(id_tabla, pagina);
+                pid = list_get(lista, 0);
+                id_tabla = list_get(lista, 1);
+                segmento = list_get(lista, 2);
+                num_pagina = list_get(lista, 3);
+                cargar_pagina(pid, id_tabla, segmento, num_pagina);
                 respuesta = 0;
                 send(socket, &respuesta, sizeof(int), MSG_WAITALL);
                 list_destroy(lista);
                 break;
             case PCB_EXIT:
                 lista = recibir_lista(socket);
-                int pid = list_get(lista, 0);
-                finalizar_proceso(pid);
+                pid = list_remove(lista, 0);
+                finalizar_proceso(pid, lista);
                 list_destroy(lista);
                 respuesta = 0;
                 send(socket, &respuesta, sizeof(int), MSG_WAITALL);
@@ -92,7 +91,6 @@ void escuchar_kernel(int socket) {
                 pthread_mutex_lock(&mx_log);
                 log_error(logger, "El cliente se desconecto. Terminando servidor");
                 pthread_mutex_unlock(&mx_log);
-                // pthread_mutex_unlock(&conexion);
                 return;
             default:
                 pthread_mutex_lock(&mx_log);
@@ -100,26 +98,22 @@ void escuchar_kernel(int socket) {
                 pthread_mutex_unlock(&mx_log);
                 break;
         }
-        // pthread_mutex_unlock(&conexion);
     }
 }
 
 void escuchar_cpu(int socket) {
+    int cod_op;
     t_list* lista;
-    t_paquete* paquete;
-    int cod_op, id_tabla, pagina, respuesta;
-    u_int32_t direccion, valor;
-    // pthread_mutex_t conexion;
-    // pthread_mutex_init(&conexion, NULL);
+    u_int32_t direccion, valor, pid, id_tabla, pagina;
     while (1) {
         cod_op = recibir_operacion(socket);
-        //     pthread_mutex_lock(&conexion);
         switch (cod_op) {
             case ACCESO_TABLA_PAGINAS:
                 lista = recibir_lista(socket);
-                id_tabla = list_get(lista, 0);
-                pagina = list_get(lista, 1);
-                int numero_marco = obtener_marco(id_tabla, pagina);
+                pid = list_get(lista, 0);
+                id_tabla = list_get(lista, 1);
+                pagina = list_get(lista, 2);
+                int numero_marco = obtener_marco(pid, id_tabla, pagina);
                 send(socket, &numero_marco, sizeof(int), MSG_WAITALL);
                 list_destroy(lista);
                 break;
@@ -135,7 +129,7 @@ void escuchar_cpu(int socket) {
                 direccion = list_get(lista, 0);
                 valor = list_get(lista, 1);
                 escribir_en_memoria(valor, direccion);
-                respuesta = 0;
+                int respuesta = 0;
                 send(socket, &respuesta, sizeof(int), MSG_WAITALL);
                 list_destroy(lista);
                 break;
@@ -143,7 +137,6 @@ void escuchar_cpu(int socket) {
                 pthread_mutex_lock(&mx_log);
                 log_error(logger, "El cliente se desconecto. Terminando servidor");
                 pthread_mutex_unlock(&mx_log);
-                //           pthread_mutex_unlock(&conexion);
                 return;
             default:
                 pthread_mutex_lock(&mx_log);
@@ -151,13 +144,10 @@ void escuchar_cpu(int socket) {
                 pthread_mutex_unlock(&mx_log);
                 break;
         }
-        // pthread_mutex_unlock(&conexion);
     }
 }
 
-t_list* iniciar_estructuras(t_list* tamanios_segmentos) {
-    int pid = list_get(tamanios_segmentos, 0);
-
+t_list* iniciar_estructuras(int pid, t_list* tamanios_segmentos) {
     proceso_en_memoria* proceso = malloc(sizeof(proceso_en_memoria));
     proceso->pid = pid;
     proceso->lista_marcos_asignados = list_create();
@@ -167,23 +157,17 @@ t_list* iniciar_estructuras(t_list* tamanios_segmentos) {
     pthread_mutex_unlock(&mx_procesos_cargados);
 
     t_list* lista_id_tp = list_create();
-    for (int i = 1; i < list_size(tamanios_segmentos); i++) {
+    for (int i = 0; i < list_size(tamanios_segmentos); i++) {
         int tamanio = list_get(tamanios_segmentos, i);
-
-        entrada_tablas_paginas* entrada_tp = malloc(sizeof(entrada_tablas_paginas));
-
-        entrada_tp->pid = pid;
-        entrada_tp->segmento = i - 1;
-        entrada_tp->tabla_de_paginas = list_create();
-
-        int cantidad_paginas = crear_tabla_paginas(entrada_tp->tabla_de_paginas, tamanio);
+        t_list* tabla_paginas = list_create();
+        int cantidad_paginas = crear_tabla_paginas(tabla_paginas, tamanio);
         pthread_mutex_lock(&mx_tablas_paginas);
-        list_add(tablas_paginas, entrada_tp);
+        list_add(tablas_paginas, tabla_paginas);
         pthread_mutex_unlock(&mx_tablas_paginas);
 
         list_add(lista_id_tp, list_size(tablas_paginas) - 1);
         pthread_mutex_lock(&mx_log);
-        log_info(logger, "Tablas creadas PID: <%d> - Segmento: <%d> -TAMAÑO: <%d> paginas", pid, i - 1, cantidad_paginas);
+        log_info(logger, "Tablas creadas PID: <%d> - Segmento: <%d> -TAMAÑO: <%d> paginas", pid, i, cantidad_paginas);
         pthread_mutex_unlock(&mx_log);
     }
     return lista_id_tp;
@@ -203,25 +187,22 @@ int crear_tabla_paginas(t_list* tabla_paginas, int tamanio_segmento) {
     return cantidad_paginas;
 }
 
-void finalizar_proceso(int pid) {
+void finalizar_proceso(int pid, t_list* indices_tabla) {
     int i;
     pthread_mutex_lock(&mx_tablas_paginas);
-    entrada_tablas_paginas* entrada = list_get(tablas_paginas, 0);
+    for (i = 0; i < list_size(indices_tabla); i++) {
+        int indice = list_get(indices_tabla, i);
+        t_list* tabla_paginas_segmento = list_get(tablas_paginas, indice);
+        list_iterate(tabla_paginas_segmento, (void*)liberar_swap_pagina);
+    }
     pthread_mutex_unlock(&mx_tablas_paginas);
-
-    for (i = 1; i < list_size(tablas_paginas) && entrada->pid != pid; i++)
-        entrada = list_get(tablas_paginas, i);
-
-    while (entrada->pid == pid && i < list_size(tablas_paginas)) {
-        list_iterate(entrada->tabla_de_paginas, (void*)liberar_swap_pagina);
-        entrada = list_get(tablas_paginas, i);
-        i++;
+    bool _coincide_pid(proceso_en_memoria * proceso, int pid) {
+        return proceso->pid == pid;
     }
 
     pthread_mutex_lock(&mx_procesos_cargados);
-    proceso_en_memoria* proceso = obtener_proceso_por_pid(pid);
+    list_remove_and_destroy_by_condition(procesos_cargados, _coincide_pid, eliminar_proceso_en_memoria);
     pthread_mutex_unlock(&mx_procesos_cargados);
-    list_iterate(proceso->lista_marcos_asignados, (void*)liberar_marcos_pagina);
 }
 
 void liberar_swap_pagina(t_pagina* pag) {
@@ -230,22 +211,17 @@ void liberar_swap_pagina(t_pagina* pag) {
     bitarray_clean_bit(bit_array_swap, bit);
 }
 
-void liberar_marcos_pagina(int numero_marco) {
-    bitarray_clean_bit(bit_array_marcos_libres, numero_marco);
-    cantidad_marcos_libres++;
-}
-
-int obtener_marco(int id_tabla, int num_pagina) {
+int obtener_marco(int pid, int id_tabla, int num_pagina) {
     int resultado = -1;
     usleep(config_valores.retardo_memoria * 1000);
     pthread_mutex_lock(&mx_tablas_paginas);
-    entrada_tablas_paginas* entrada_tp = list_get(tablas_paginas, id_tabla);
+    t_list* tabla_de_paginas = list_get(tablas_paginas, id_tabla);
 
-    t_pagina* pagina = list_get(entrada_tp->tabla_de_paginas, num_pagina);
+    t_pagina* pagina = list_get(tabla_de_paginas, num_pagina);
     if (pagina->presencia == 1) {
         pagina->uso = 1;
         pthread_mutex_lock(&mx_log);
-        log_info(logger, "ACCESO TABLA PAGINAS PID: <%d> - Página: <%d> - Marco: <%d>", entrada_tp->pid, num_pagina, pagina->marco);
+        log_info(logger, "ACCESO TABLA PAGINAS PID: <%d> - Página: <%d> - Marco: <%d>", pid, num_pagina, pagina->marco);
         pthread_mutex_unlock(&mx_log);
         resultado = pagina->marco;
     }
@@ -256,21 +232,22 @@ int obtener_marco(int id_tabla, int num_pagina) {
 uint32_t leer_memoria(int direccion) {
     usleep(config_valores.retardo_memoria * 1000);
     uint32_t leido;
-    pthread_mutex_lock(&mx_espacio_memoria);
-    void* posicion = direccion + espacio_memoria;
-    memcpy(&leido, posicion, sizeof(uint32_t));
-    pthread_mutex_unlock(&mx_espacio_memoria);
 
     int num_marco = floor((double)direccion / config_valores.tam_pagina);
     pthread_mutex_lock(&mx_lista_marcos);
     t_marco* marco = list_get(lista_marcos, num_marco);
     pthread_mutex_unlock(&mx_lista_marcos);
-
-    marco->pagina->modificado = 1;
     marco->pagina->uso = 1;
+    
     pthread_mutex_lock(&mx_log);
     log_info(logger, "PID: <%d> - Acción: <LEER> - Dirección física: <%d>", marco->pid, direccion);
     pthread_mutex_unlock(&mx_log);
+
+    pthread_mutex_lock(&mx_espacio_memoria);
+    void* posicion = direccion + espacio_memoria;
+    memcpy(&leido, posicion, sizeof(uint32_t));
+    pthread_mutex_unlock(&mx_espacio_memoria);
+
     return leido;
 }
 

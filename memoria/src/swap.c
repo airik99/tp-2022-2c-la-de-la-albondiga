@@ -1,17 +1,17 @@
 #include <swap.h>
 
-void cargar_pagina(int id_tabla, int num_pagina) {
+void cargar_pagina(int pid, int id_tabla, int segmento, int num_pagina) {
     pthread_mutex_lock(&mx_tablas_paginas);
-    entrada_tablas_paginas* entrada_tp = list_get(tablas_paginas, id_tabla);
+    t_list* tabla_paginas = list_get(tablas_paginas, id_tabla);
     pthread_mutex_unlock(&mx_tablas_paginas);
 
     pthread_mutex_lock(&mx_procesos_cargados);
-    proceso_en_memoria* proceso = obtener_proceso_por_pid(entrada_tp->pid);
+    proceso_en_memoria* proceso = obtener_proceso_por_pid(pid);
     pthread_mutex_unlock(&mx_procesos_cargados);
 
-    t_pagina* pagina = list_get(entrada_tp->tabla_de_paginas, num_pagina);
+    t_pagina* pagina = list_get(tabla_paginas, num_pagina);
 
-    int numero_marco = elegir_marco(proceso, entrada_tp->segmento, num_pagina);
+    int numero_marco = elegir_marco(proceso, segmento, num_pagina);
     pthread_mutex_lock(&mx_tablas_paginas);
     pagina->marco = numero_marco;
     pagina->uso = 1;
@@ -24,8 +24,8 @@ void cargar_pagina(int id_tabla, int num_pagina) {
 
     marco->pagina = pagina;
     marco->numero_pagina = num_pagina;
-    marco->segmento = entrada_tp->segmento;
-    marco->pid = entrada_tp->pid;
+    marco->segmento = segmento;
+    marco->pid = pid;
 
     usleep(config_valores.retardo_swap * 1000);
     int pos_swap = pagina->posicion_swap;
@@ -36,8 +36,8 @@ void cargar_pagina(int id_tabla, int num_pagina) {
     fread(posicion_memoria, config_valores.tam_pagina, 1, fp);
     pthread_mutex_unlock(&mx_espacio_memoria);
     pthread_mutex_lock(&mx_log);
-    log_info(logger, "SWAP IN - PID : <%d> - Marco : <%d> - Page In : <%d> | <%d>",
-             proceso->pid, numero_marco, marco->segmento, num_pagina);
+    log_info(logger, "SWAP IN - PID: <%d> - Marco: <%d> - Page In: <%d> | <%d>",
+             pid, numero_marco, segmento, num_pagina);
     pthread_mutex_unlock(&mx_log);
 }
 
@@ -60,7 +60,7 @@ int elegir_marco(proceso_en_memoria* proceso, int num_segmento, int num_pagina) 
         marco = list_get(lista_marcos, numero_marco);
         pthread_mutex_unlock(&mx_lista_marcos);
         pthread_mutex_lock(&mx_log);
-        log_info(logger, "REEMPLAZO - PID : <%d> - Marco : <%d> - Page Out : <%d> | <%d> - Page In : <%d> | <%d> ",
+        log_info(logger, "REEMPLAZO - PID: <%d> - Marco: <%d> - Page Out: <%d> | <%d> - Page In: <%d> | <%d> ",
                  proceso->pid, numero_marco, marco->segmento, marco->numero_pagina, num_segmento, num_pagina);
         pthread_mutex_unlock(&mx_log);
         descargar_pagina(marco->pagina);
@@ -69,24 +69,23 @@ int elegir_marco(proceso_en_memoria* proceso, int num_segmento, int num_pagina) 
 }
 
 int algoritmo_clock(proceso_en_memoria* proceso) {
-    int numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
-    pthread_mutex_lock(&mx_lista_marcos);
-    t_marco* marco = list_get(lista_marcos, numero_marco);
-    pthread_mutex_unlock(&mx_lista_marcos);
-    t_pagina* pagina = pagina = marco->pagina;
+    int numero_marco;
+    t_marco* marco;
+    t_pagina* pagina;
 
-    while (pagina->uso != 0) {
-        pagina->uso = 0;
-        proceso->indice_ptro_remplazo++;
-        if (proceso->indice_ptro_remplazo >= list_size(proceso->lista_marcos_asignados))
-            proceso->indice_ptro_remplazo = 0;
-        int numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
+    while (proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados)) {
+        numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
         pthread_mutex_lock(&mx_lista_marcos);
         marco = list_get(lista_marcos, numero_marco);
         pthread_mutex_unlock(&mx_lista_marcos);
         pagina = marco->pagina;
+        proceso->indice_ptro_remplazo++;
+        if (proceso->indice_ptro_remplazo >= list_size(proceso->lista_marcos_asignados))
+            proceso->indice_ptro_remplazo = 0;
+        if (pagina->uso == 0)
+            return numero_marco;
+        pagina->uso = 0;
     }
-    return numero_marco;
 }
 
 int algoritmo_clock_mejorado(proceso_en_memoria* proceso) {
@@ -95,26 +94,30 @@ int algoritmo_clock_mejorado(proceso_en_memoria* proceso) {
     t_pagina* pagina;
     bool selecciono_marco = false;
     while (!selecciono_marco) {
-        while (pagina->uso != 0 && pagina->modificado != 0 && proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados)) {
+        while (proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados)) {
             numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
             pthread_mutex_lock(&mx_lista_marcos);
             marco = list_get(lista_marcos, numero_marco);
             pthread_mutex_unlock(&mx_lista_marcos);
             pagina = marco->pagina;
             proceso->indice_ptro_remplazo++;
+            if (pagina->uso == 0 && pagina->modificado == 0)
+                return numero_marco;
         }
-        if (proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados))  // encontro 0/0
+        if (proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados)) {  // encontro 0/0
             selecciono_marco = true;
-        else {
+        } else {
             proceso->indice_ptro_remplazo = 0;  // Dio vuelta completa no encontro 0/0 reinicio el puntero
-            while (pagina->uso != 0 && proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados)) {
+            while (proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados)) {
                 numero_marco = list_get(proceso->lista_marcos_asignados, proceso->indice_ptro_remplazo);
                 pthread_mutex_lock(&mx_lista_marcos);
                 marco = list_get(lista_marcos, numero_marco);
                 pthread_mutex_unlock(&mx_lista_marcos);
                 pagina = marco->pagina;
-                pagina->uso = 0;
                 proceso->indice_ptro_remplazo++;
+                if (pagina->uso == 0)
+                    return numero_marco;
+                pagina->uso = 0;
             }
             if (proceso->indice_ptro_remplazo < list_size(proceso->lista_marcos_asignados))  // encontro 0/1
                 selecciono_marco = true;

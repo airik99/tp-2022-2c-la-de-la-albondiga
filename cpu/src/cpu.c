@@ -73,7 +73,7 @@ void esperar_kernel_dispatch() {
 
 void esperar_kernel_interrupt() {
     while (1) {
-        int temp;
+        int temp = 0;
         recv(cliente_servidor_interrupt, &temp, sizeof(uint32_t), MSG_WAITALL);
         pthread_mutex_lock(&mx_interrupcion);
         interrupcion = temp;

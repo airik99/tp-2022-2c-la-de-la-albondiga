@@ -18,7 +18,6 @@ void ciclo_de_instruccion(t_pcb* pcb) {
         if (check_interrupt()) {  // SE FIJA QUE NO HAYA UNA INTERRUPCION ANTES DE SEGUIR CON EL CICLO DE INSTRUCCION
             t_paquete* paquete = crear_paquete(INTERRUPCION);
             copiar_valores_registros(registros, (pcb->registro));
-            pcb_actual->program_counter++;
             serializar_pcb(paquete, pcb);
             enviar_paquete(paquete, cliente_servidor_dispatch);
             eliminar_paquete(paquete);

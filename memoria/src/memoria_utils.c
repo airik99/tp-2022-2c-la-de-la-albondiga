@@ -94,6 +94,10 @@ proceso_en_memoria* obtener_proceso_por_pid(int pid) {
     return proceso;
 }
 
+bool _coincide_pid(proceso_en_memoria* proceso, int pid) {
+    return proceso->pid == pid;
+}
+
 void borrar_todo() {
     free(espacio_memoria);
     fclose(fp);
@@ -103,23 +107,28 @@ void borrar_todo() {
     pthread_mutex_destroy(&mx_lista_marcos);
     pthread_mutex_destroy(&mx_procesos_cargados);
     pthread_mutex_destroy(&mx_tablas_paginas);
-    free(marcos_libres);
-    free(swap_libre);
-    bitarray_destroy(bit_array_marcos_libres);
-    bitarray_destroy(bit_array_swap);
     list_destroy_and_destroy_elements(lista_marcos, free);
     list_destroy_and_destroy_elements(tablas_paginas, eliminar_entrada_tabla_pagina);
     list_destroy_and_destroy_elements(procesos_cargados, eliminar_proceso_en_memoria);
+    bitarray_destroy(bit_array_marcos_libres);
+    bitarray_destroy(bit_array_swap);
+    free(marcos_libres);
+    free(swap_libre);
 }
 
 void eliminar_proceso_en_memoria(proceso_en_memoria* p) {
+    list_iterate(p->lista_marcos_asignados, liberar_marcos_pagina);
     list_destroy(p->lista_marcos_asignados);
     free(p);
 }
 
-void eliminar_entrada_tabla_pagina(entrada_tablas_paginas* tp) {
-    list_destroy_and_destroy_elements(tp->tabla_de_paginas, free);
-    free(tp);
+void liberar_marcos_pagina(int numero_marco) {
+    bitarray_clean_bit(bit_array_marcos_libres, numero_marco);
+    cantidad_marcos_libres++;
+}
+
+void eliminar_entrada_tabla_pagina(t_list* tabla_paginas) {
+    list_destroy_and_destroy_elements(tabla_paginas, free);
 }
 
 void handshake_cliente(int socket) {

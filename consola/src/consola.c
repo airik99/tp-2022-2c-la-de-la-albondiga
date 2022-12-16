@@ -10,18 +10,16 @@ int main(int argc, char **argv) {
 
     iniciar_config(path_config);
     logger = log_create("cfg/Consola.log", "Consola", true, LOG_LEVEL_INFO);
+    log_info(logger, "Conexion correcta. Enviando instrucciones");
+    t_list *instrucciones = leer_archivo(path_pseudocodigo);
+    list_iterate(instrucciones, print_instruccion);
 
     int socket_cliente = conectarse_a_servidor(config_consola.ip_kernel, config_consola.puerto_kernel);
-
     if (socket_cliente == -1) {
         log_info(logger, "Error en la conexion al servidor. Terminando consola");
         destruir_estructuras();
         return EXIT_FAILURE;
     }
-    log_info(logger, "Conexion correcta. Enviando instrucciones");
-    t_list *instrucciones = leer_archivo(path_pseudocodigo);
-    list_iterate(instrucciones, print_instruccion);
-
     t_paquete *paquete_instrucciones = crear_paquete(INSTRUCCIONES);
     serializar_instrucciones(paquete_instrucciones, instrucciones);
     serializar_segmentos(paquete_instrucciones, config_consola.segmentos);
@@ -51,7 +49,7 @@ t_list *leer_archivo(char *nombre) {
     t_list *lista_instrucciones = list_create();
 
     if (!puntero) {
-        printf("No se pudo leer el archivo \n");
+        log_error(logger, "No se pudo leer el archivo \n");
         exit(1);
     }
 
@@ -83,7 +81,7 @@ char *leer_linea(FILE *puntero) {
     cadena = NULL;
     bytes_leidos = getline(&cadena, &numero_bytes, puntero);
     if (bytes_leidos == -1) {
-        puts("Error al leer la linea del archivo");
+        log_error(logger, "Error al leer la linea del archivo");
     }
     // saca el newline a las cadenas que lo tengan
     if (string_ends_with(cadena, "\n")) {
@@ -128,7 +126,7 @@ void esperar_respuesta(int socket) {
             log_info(logger, "Ejecucion finalizada");
             break;
         case SEGMENTATION_FAULT:
-            log_error(logger, "SEGMENTATION FAULT");
+            log_error(logger, "TERMINADO POR SEGMENTATION FAULT");
             break;
         default:
             log_error(logger, "Error en la respuesta del kernel");

@@ -79,6 +79,7 @@ int main(int argc, char **argv) {
     liberar_conexion(socket_servidor);
     liberar_conexion(conexion_memoria);
     liberar_conexion(conexion_cpu_interrupt);
+    liberar_conexion(conexion_cpu_dispatch);
 
     liberar_colas();
     eliminar_semaforos();

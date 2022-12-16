@@ -15,10 +15,10 @@ int iniciar_servidor(char *puerto) {
     socket_servidor = socket(servinfo->ai_family,
                              servinfo->ai_socktype,
                              servinfo->ai_protocol);
-
+    setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int));
+    setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
+   
     bool bind_correcto = !(bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen));
-    if (setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) != 0)
-        printf("error");
 
     listen(socket_servidor, SOMAXCONN);
     freeaddrinfo(servinfo);

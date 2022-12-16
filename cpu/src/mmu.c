@@ -77,6 +77,7 @@ int esta_en_memoria(u_int32_t num_pagina, u_int32_t num_segmento) {
     t_segmento* seg = list_get(pcb_actual->tabla_segmentos, num_segmento);
     u_int32_t indice = seg->indice_tabla_paginas;
     t_paquete* paquete = crear_paquete(ACCESO_TABLA_PAGINAS);  // TODO: aca hay que acordarnos de evaluar este cod_op en memoria
+    agregar_a_paquete(paquete, &(pcb_actual->pid), sizeof(u_int32_t));
     agregar_a_paquete(paquete, &indice, sizeof(u_int32_t));
     agregar_a_paquete(paquete, &num_pagina, sizeof(u_int32_t));
     enviar_paquete(paquete, conexion_memoria);
