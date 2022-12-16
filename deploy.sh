@@ -6,6 +6,9 @@ CWD=$PWD
 echo -e "\n\nInstalling commons libraries...\n\n"
 COMMONS="so-commons-library"
 git clone "https://github.com/sisoputnfrba/${COMMONS}.git" $COMMONS
+
+git clone "https://github.com/sisoputnfrba/geck-pruebas.git"
+
 cd $COMMONS
 sudo make uninstall
 make all
