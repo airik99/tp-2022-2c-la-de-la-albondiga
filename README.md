@@ -1,6 +1,6 @@
 # La venganza de la albondiga
 
-|         Integrante         |    Perfil       |
+|         Integrante         |     GitHub      |
 | -------------------------- | --------------- |
 | Maximiliano Moyano Fontana | @MMoyanoFontana |
 |       Juan Pablo Aveni     |    @JPAveni     |
