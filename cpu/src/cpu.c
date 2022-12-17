@@ -25,12 +25,10 @@ int main(int argc, char** argv) {
     list_destroy(lista);
 
     socket_servidor_interrupt = iniciar_servidor(config_valores.puerto_escucha_interrupt);
-    log_info(logger, "Esperando cliente por Interrupt\n");
+    socket_servidor_dispatch = iniciar_servidor(config_valores.puerto_escucha_dispatch);
+    
     cliente_servidor_interrupt = esperar_cliente(socket_servidor_interrupt);
     log_info(logger, "Conexión con Kernel en puerto Interrupt establecida.\n");
-
-    socket_servidor_dispatch = iniciar_servidor(config_valores.puerto_escucha_dispatch);
-    log_info(logger, "Esperando cliente por dispatch\n");
     cliente_servidor_dispatch = esperar_cliente(socket_servidor_dispatch);
     log_info(logger, "Conexión con Kernel en puerto Dispatch establecida.\n");
 
