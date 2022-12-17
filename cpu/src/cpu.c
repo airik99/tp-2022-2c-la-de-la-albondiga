@@ -26,10 +26,13 @@ int main(int argc, char** argv) {
 
     socket_servidor_interrupt = iniciar_servidor(config_valores.puerto_escucha_interrupt);
     socket_servidor_dispatch = iniciar_servidor(config_valores.puerto_escucha_dispatch);
-    
+
     cliente_servidor_interrupt = esperar_cliente(socket_servidor_interrupt);
+    send(cliente_servidor_interrupt, &id_handshake, sizeof(int), MSG_WAITALL);
     log_info(logger, "Conexión con Kernel en puerto Interrupt establecida.\n");
+    
     cliente_servidor_dispatch = esperar_cliente(socket_servidor_dispatch);
+    send(cliente_servidor_dispatch, &id_handshake, sizeof(int), MSG_WAITALL);
     log_info(logger, "Conexión con Kernel en puerto Dispatch establecida.\n");
 
     pthread_create(&hilo_interrupt, NULL, (void*)esperar_kernel_interrupt, NULL);

@@ -50,7 +50,7 @@ void decode(t_instruccion* instruccion, t_pcb* pcb) {
         int direccion_logica = atoi(list_get(instruccion->params, 1));
         char* registro = list_get(instruccion->params, 0);
         pthread_mutex_lock(&mx_log);
-        log_info(logger, "PID: <%d> - Ejecutando: <MOV_IN> - <%d> - <%s>\n", pcb->pid, direccion_logica, registro);  // log obligatorio
+        log_info(logger, "PID: <%d> - Ejecutando: <MOV_IN> - <%s> - <%d>\n", pcb->pid,  registro, direccion_logica);  // log obligatorio
         pthread_mutex_unlock(&mx_log);
         ejecutar_MOV_IN(registro, direccion_logica);
     }

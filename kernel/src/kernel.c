@@ -52,6 +52,8 @@ int main(int argc, char **argv) {
         liberar_conexion(conexion_memoria);
         return EXIT_FAILURE;
     }
+    recv(conexion_cpu_interrupt, &id_handshake, sizeof(int), MSG_WAITALL);
+    
     pthread_mutex_lock(&mx_log);
     log_info(logger, "Conexion con cpu interrupt exitosa");
     pthread_mutex_unlock(&mx_log);
@@ -66,6 +68,7 @@ int main(int argc, char **argv) {
         liberar_conexion(conexion_cpu_interrupt);
         return EXIT_FAILURE;
     }
+    recv(conexion_cpu_dispatch, &id_handshake, sizeof(int), MSG_WAITALL);
     pthread_mutex_lock(&mx_log);
     log_info(logger, "Conexion con cpu dispatch exitosa");
     pthread_mutex_unlock(&mx_log);
