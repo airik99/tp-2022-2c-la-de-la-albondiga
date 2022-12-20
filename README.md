@@ -4,8 +4,8 @@
 | -------------------------- | --------------- |
 | Maximiliano Moyano Fontana | [MMoyanoFontana](https://github.com/MMoyanoFontana) |
 |       Juan Pablo Aveni     |    [JPAveni](https://github.com/JPAveni)     |
-|        Azula Facundo       | [JuanGutierrez1](https://github.com/JuanGutierrez1) |
-|    Juan Pablo Gutierrez    |     [sirhox](https://github.com/sirhox)     |
+|        Azula Facundo       | [sirhox](https://github.com/sirhox)|
+|    Juan Pablo Gutierrez    |       [JuanGutierrez1](https://github.com/JuanGutierrez1)    |
 |   Camila Garcia Federico   |     [airik99](https://github.com/airik99)    |
 
 ## [Enunciado del TP](https://docs.google.com/document/d/1xYmkJXRRddM51fQZfxr3CEuhNtFCWe5YU7hhvsUnTtg/edit)
