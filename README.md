@@ -4,7 +4,7 @@
 | -------------------------- | --------------- |
 | Maximiliano Moyano Fontana | [MMoyanoFontana](https://github.com/MMoyanoFontana) |
 |       Juan Pablo Aveni     |    [JPAveni](https://github.com/JPAveni)     |
-|        Azula Facundo       | [sirhox](https://github.com/sirhox)|
+|        Facundo Azula       | [sirhox](https://github.com/sirhox)|
 |    Juan Pablo Gutierrez    |       [JuanGutierrez1](https://github.com/JuanGutierrez1)    |
 |   Camila Garcia Federico   |     [airik99](https://github.com/airik99)    |
 
